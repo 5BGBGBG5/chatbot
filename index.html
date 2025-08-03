@@ -86,11 +86,137 @@
         .message.bot .message-content {
             background: #e3f2fd;
             color: #1565c0;
+            max-width: 85%; /* Allow wider for process maps */
         }
         
         .message.user .message-content {
             background: #2c3e50;
             color: white;
+        }
+        
+        /* Process Map Styles */
+        .process-map-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+            max-width: 100%;
+        }
+        
+        .process-map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .process-map-header h3 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 18px;
+        }
+        
+        .process-map-header p {
+            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+        
+        .process-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .process-status.well-mapped {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .process-status.partial {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .process-status.needs-work {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .process-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        
+        .legend-box.well-understood {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+        }
+        
+        .legend-box.pain-points {
+            background: #ffebee;
+            border: 2px solid #d32f2f;
+        }
+        
+        .legend-box.needs-exploration {
+            background: #e0e0e0;
+            border: 2px dashed #999;
+        }
+        
+        .legend-box.system-integration {
+            background: #e3f2fd;
+            border: 2px solid #1976d2;
+        }
+        
+        .process-insights {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .process-insights h4 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        
+        .process-insights ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #555;
+            font-size: 13px;
+            line-height: 1.5;
         }
         
         .chat-input-container {
@@ -406,6 +532,12 @@
                     console.log('Completion percentage:', response.completionPercentage);
                     
                     this.hideTypingIndicator();
+                    
+                    // Check if response contains process map data
+                    if (response.processMapHtml) {
+                        this.addProcessMap(response.processMapHtml);
+                    }
+                    
                     this.addMessage(response.botResponse, 'bot');
                     
                     if (response.collectedData) {
@@ -540,6 +672,26 @@
                     sender: sender,
                     timestamp: new Date().toISOString()
                 });
+                
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            addProcessMap(processMapHtml) {
+                const messagesContainer = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message bot';
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = processMapHtml;
+                
+                messageDiv.appendChild(contentDiv);
+                messagesContainer.appendChild(messageDiv);
+                
+                // Re-initialize mermaid for the new diagram
+                setTimeout(() => {
+                    mermaid.init(undefined, messageDiv.querySelectorAll('.mermaid'));
+                }, 100);
                 
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
