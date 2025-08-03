@@ -202,6 +202,65 @@
         .file-preview.show {
             display: block;
         }
+        
+        /* Progress Bar Styles */
+        .progress-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .progress-areas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .area-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .area-tag.completed {
+            background: #28a745;
+            color: white;
+        }
+        
+        .area-tag.incomplete {
+            background: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.8);
+        }
     </style>
 </head>
 <body>
@@ -209,6 +268,25 @@
         <div class="chat-header">
             <h2>Inecta Food ERP Discovery</h2>
             <p>Let's learn about your food business needs</p>
+            
+            <!-- Discovery Progress Bar -->
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-label">
+                    <span>Discovery Progress</span>
+                    <span id="progressPercentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-areas" id="progressAreas">
+                    <span class="area-tag" data-area="companyProfile">Company Profile</span>
+                    <span class="area-tag" data-area="operationalScale">Operations</span>
+                    <span class="area-tag" data-area="currentSystems">Systems</span>
+                    <span class="area-tag" data-area="painPoints">Pain Points</span>
+                    <span class="area-tag" data-area="businessProcesses">Processes</span>
+                    <span class="area-tag" data-area="timeline">Timeline</span>
+                </div>
+            </div>
         </div>
         
         <div class="chat-messages" id="chatMessages">
@@ -325,6 +403,9 @@
                     if (response.collectedData) {
                         this.collectedData = { ...this.collectedData, ...response.collectedData };
                     }
+                    
+                    // Update progress bar
+                    this.updateProgressBar(response.completionPercentage || 0);
                     
                     // Show download button after a few exchanges
                     console.log('Conversation history length:', this.conversationHistory.length);
@@ -626,6 +707,45 @@
     </div>
 </body>
 </html>`;
+            }
+            
+            updateProgressBar(completionPercentage) {
+                const progressContainer = document.getElementById('progressContainer');
+                const progressFill = document.getElementById('progressFill');
+                const progressPercentage = document.getElementById('progressPercentage');
+                
+                // Show progress bar after first exchange
+                if (this.conversationHistory.length >= 2) {
+                    progressContainer.style.display = 'block';
+                }
+                
+                // Update progress bar
+                const percentage = Math.max(0, Math.min(100, completionPercentage || 0));
+                progressFill.style.width = percentage + '%';
+                progressPercentage.textContent = percentage + '%';
+                
+                // Update area tags based on collected data
+                this.updateAreaTags();
+                
+                console.log('Progress updated:', percentage + '%');
+            }
+            
+            updateAreaTags() {
+                const areas = {
+                    companyProfile: !!(this.collectedData.companyName && this.collectedData.foodVertical && this.collectedData.businessModel),
+                    operationalScale: !!(this.collectedData.facilities && this.collectedData.skuCount && this.collectedData.customerCount),
+                    currentSystems: !!(this.collectedData.currentERP && this.collectedData.systemLimitations),
+                    painPoints: !!(this.collectedData.painPoints && Array.isArray(this.collectedData.painPoints) && this.collectedData.painPoints.length >= 2),
+                    businessProcesses: !!(this.collectedData.productionModel && this.collectedData.inventoryApproach),
+                    timeline: !!(this.collectedData.timeline && this.collectedData.decisionMakers)
+                };
+                
+                Object.entries(areas).forEach(([areaName, completed]) => {
+                    const tag = document.querySelector(`[data-area="${areaName}"]`);
+                    if (tag) {
+                        tag.className = `area-tag ${completed ? 'completed' : 'incomplete'}`;
+                    }
+                });
             }
         }
         
