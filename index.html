@@ -420,7 +420,7 @@ addMessage(text, sender) {
     
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
-    contentDiv.innerHTML = text;  // ← CHANGED FROM textContent TO innerHTML
+    contentDiv.innerHTML = text;
     
     messageDiv.appendChild(contentDiv);
     messagesContainer.appendChild(messageDiv);
@@ -434,12 +434,11 @@ addMessage(text, sender) {
     
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
-            }
-            
-            showTypingIndicator() {
-                document.getElementById('typingIndicator').style.display = 'block';
-                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-            }
+
+showTypingIndicator() {
+    document.getElementById('typingIndicator').style.display = 'block';
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+}
             
             hideTypingIndicator() {
                 document.getElementById('typingIndicator').style.display = 'none';
