@@ -397,6 +397,9 @@
                         collectedData: this.collectedData
                     });
                     
+                    console.log('Full response from n8n:', response);
+                    console.log('Completion percentage:', response.completionPercentage);
+                    
                     this.hideTypingIndicator();
                     this.addMessage(response.botResponse, 'bot');
                     
