@@ -412,26 +412,27 @@ async callN8nWebhook(payload) {
     }
 }
             
-            addMessage(text, sender) {
-                const messagesContainer = document.getElementById('chatMessages');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${sender}`;
-                
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'message-content';
-                contentDiv.textContent = text;
-                
-                messageDiv.appendChild(contentDiv);
-                messagesContainer.appendChild(messageDiv);
-                
-                // Store in conversation history
-                this.conversationHistory.push({
-                    text: text,
-                    sender: sender,
-                    timestamp: new Date().toISOString()
-                });
-                
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+addMessage(text, sender) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.innerHTML = text;  // ← CHANGED FROM textContent TO innerHTML
+    
+    messageDiv.appendChild(contentDiv);
+    messagesContainer.appendChild(messageDiv);
+    
+    // Store in conversation history
+    this.conversationHistory.push({
+        text: text,
+        sender: sender,
+        timestamp: new Date().toISOString()
+    });
+    
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
             }
             
             showTypingIndicator() {
