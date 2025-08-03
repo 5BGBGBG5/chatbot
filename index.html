@@ -320,6 +320,188 @@
                 transform: translateY(0);
                 opacity: 0.5;
             }
+            
+            generateBusinessInsights() {
+                const data = this.collectedData;
+                const processAnalysis = data.processAnalysis || {};
+                const coverage = processAnalysis.coverage || {};
+                
+                // Calculate completion percentage
+                const totalFields = ['companyName', 'foodVertical', 'businessModel', 'facilities', 'skuCount', 'customerCount', 'currentERP', 'painPoints', 'processSteps', 'decisionMakers'];
+                const completedFields = totalFields.filter(field => data[field] && data[field] !== '');
+                const completionPercentage = Math.round((completedFields.length / totalFields.length) * 100);
+                
+                // Generate executive summary
+                const executiveSummary = `${data.companyName || 'This company'} is a ${data.foodVertical || 'food'} ${data.businessModel || 'business'} with ${data.facilities || 'multiple'} facilities serving ${data.customerCount || 'numerous'} customers. Our discovery session revealed ${coverage.completeness || 0}% process coverage with ${(data.painPoints || []).length} key pain points identified. The organization shows ${processAnalysis.maturityLevel || 'developing'} process maturity and is ready for ERP modernization.`;
+                
+                // Analyze pain points
+                const painPointAnalysis = (data.painPoints || []).map(pain => {
+                    switch(pain.toLowerCase()) {
+                        case 'manual': return 'Heavy reliance on manual processes and spreadsheets creating inefficiency and error risk';
+                        case 'integration': return 'Lack of system integration causing data silos and duplicate data entry';
+                        case 'visibility': return 'Limited real-time visibility into operations hampering decision-making';
+                        case 'tracking': return 'Inadequate inventory and order tracking leading to customer service issues';
+                        case 'reporting': return 'Insufficient reporting capabilities limiting business intelligence';
+                        case 'scheduling': return 'Production scheduling challenges affecting efficiency and customer delivery';
+                        default: return `${pain} process challenges identified requiring system modernization`;
+                    }
+                });
+                
+                // Generate recommendations
+                const recommendations = [
+                    'Implement integrated ERP solution to eliminate data silos',
+                    'Automate manual processes to reduce errors and improve efficiency',
+                    'Deploy real-time dashboards for improved operational visibility',
+                    'Establish automated inventory management and tracking',
+                    'Create comprehensive reporting and analytics capabilities'
+                ];
+                
+                return {
+                    completionPercentage,
+                    executiveSummary,
+                    processMaturity: processAnalysis.maturityLevel || 'Initial',
+                    processesIdentified: (data.processSteps || []).length,
+                    processCoverage: coverage.completeness || 0,
+                    decisionPoints: (data.decisionMakers || []).length,
+                    painPoints: painPointAnalysis,
+                    recommendations: recommendations.slice(0, painPointAnalysis.length + 1)
+                };
+            }
+
+            generateDemoRecommendations() {
+                const data = this.collectedData;
+                const businessModel = data.businessModel || 'manufacturing';
+                const painPoints = data.painPoints || [];
+                const currentERP = data.currentERP || 'spreadsheets';
+                
+                let focus, duration, scenarios, primaryFocus;
+                
+                // Customize demo based on business model and pain points
+                if (businessModel === 'manufacturing') {
+                    focus = 'Production Planning, Quality Control, and Inventory Management';
+                    primaryFocus = 'manufacturing operations';
+                    scenarios = [
+                        'Production order creation and scheduling',
+                        'Material requirements planning (MRP)',
+                        'Quality control workflows and lot tracking',
+                        'Finished goods inventory management',
+                        'Customer order fulfillment process'
+                    ];
+                } else if (businessModel === 'distribution') {
+                    focus = 'Warehouse Management, Order Processing, and Customer Management';
+                    primaryFocus = 'distribution operations';
+                    scenarios = [
+                        'Inbound receiving and put-away processes',
+                        'Customer order processing and allocation',
+                        'Pick, pack, and ship workflows',
+                        'Inventory cycle counting and management',
+                        'Customer portal and order tracking'
+                    ];
+                } else {
+                    focus = 'End-to-End Process Integration';
+                    primaryFocus = 'integrated operations';
+                    scenarios = [
+                        'Order-to-cash process flow',
+                        'Purchase-to-pay process automation',
+                        'Production planning and execution',
+                        'Financial integration and reporting',
+                        'Customer relationship management'
+                    ];
+                }
+                
+                // Adjust duration based on complexity
+                const complexity = (data.facilities || 1) + (parseInt(data.skuCount) || 0) / 100 + painPoints.length;
+                duration = complexity > 10 ? '90-120 minutes' : complexity > 5 ? '60-90 minutes' : '45-60 minutes';
+                
+                // Add pain point specific scenarios
+                if (painPoints.includes('manual')) {
+                    scenarios.push('Automated data entry and process workflows');
+                }
+                if (painPoints.includes('integration')) {
+                    scenarios.push('System integration and data synchronization');
+                }
+                if (painPoints.includes('visibility')) {
+                    scenarios.push('Real-time dashboards and reporting');
+                }
+                if (painPoints.includes('tracking')) {
+                    scenarios.push('Advanced tracking and traceability features');
+                }
+                
+                return {
+                    focus,
+                    duration,
+                    scenarios: scenarios.slice(0, 6), // Limit to top 6 scenarios
+                    primaryFocus
+                };
+            }
+
+            organizeDataByCategory() {
+                const data = this.collectedData;
+                
+                const categories = {
+                    'Company Profile': [
+                        { label: 'Company Name', value: data.companyName || 'Not specified' },
+                        { label: 'Food Vertical', value: data.foodVertical || 'Not specified' },
+                        { label: 'Business Model', value: data.businessModel || 'Not specified' },
+                        { label: 'Years in Business', value: data.yearsInBusiness || 'Not specified' }
+                    ],
+                    'Operational Scale': [
+                        { label: 'Facilities', value: data.facilities || 'Not specified' },
+                        { label: 'SKU Count', value: data.skuCount || 'Not specified' },
+                        { label: 'Customer Count', value: data.customerCount || 'Not specified' },
+                        { label: 'Employee Count', value: data.employeeCount || 'Not specified' }
+                    ],
+                    'Current Systems': [
+                        { label: 'Primary ERP', value: data.currentERP || 'Not specified' },
+                        { label: 'System Limitations', value: data.systemLimitations || 'Not specified' },
+                        { label: 'Integration Needs', value: data.integrationNeeds || 'Not specified' }
+                    ],
+                    'Project Context': [
+                        { label: 'Timeline', value: data.timeline || 'Not specified' },
+                        { label: 'Decision Makers', value: Array.isArray(data.decisionMakers) ? data.decisionMakers.join(', ') : (data.decisionMakers || 'Not specified') },
+                        { label: 'Budget Range', value: data.budgetRange || 'Not specified' },
+                        { label: 'Project Driver', value: data.projectDriver || 'Not specified' }
+                    ]
+                };
+                
+                // Filter out empty categories and items
+                Object.keys(categories).forEach(category => {
+                    categories[category] = categories[category].filter(item => 
+                        item.value && item.value !== 'Not specified' && item.value !== ''
+                    );
+                    
+                    if (categories[category].length === 0) {
+                        delete categories[category];
+                    }
+                });
+                
+                return categories;
+            }
+
+            extractProcessMapSVG() {
+                // Try to find the most recent process map in the conversation
+                const processMapElements = document.querySelectorAll('.mermaid svg');
+                if (processMapElements.length > 0) {
+                    // Get the last (most recent) process map
+                    const lastSVG = processMapElements[processMapElements.length - 1];
+                    return lastSVG.outerHTML;
+                }
+                
+                // If no SVG found, generate a placeholder
+                return `
+                    <div class="mermaid">
+                        graph TD
+                            A[Process Discovery] --> B[Analysis Complete]
+                            B --> C[Demo Scheduled]
+                            C --> D[ERP Implementation]
+                            
+                            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+                            style B fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+                            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+                            style D fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+                    </div>
+                `;
+            }
             30% {
                 transform: translateY(-10px);
                 opacity: 1;
@@ -731,752 +913,29 @@
                 URL.revokeObjectURL(url);
             }
             
-// ENHANCED REPORT GENERATION - Replace the generateReportContent() method in your chat interface
-
-generateReportContent() {
-    const companyName = this.collectedData.companyName || 'Unknown Company';
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
-    
-    // Analyze the collected data for insights
-    const businessInsights = this.generateBusinessInsights();
-    const demoRecommendations = this.generateDemoRecommendations();
-    const processMapSVG = this.extractProcessMapSVG();
-    
-    // Filter meaningful conversation
-    const meaningfulConversation = this.conversationHistory
-        .filter(msg => !msg.text.includes("Hi! I'm here to learn"))
-        .map(msg => `
-            <div class="conversation-item">
-                <div class="speaker">${msg.sender === 'user' ? '👤 Client' : '🤖 Discovery Specialist'}</div>
-                <div class="timestamp">${new Date(msg.timestamp).toLocaleTimeString()}</div>
-                <div class="message-text">${msg.text}</div>
-            </div>
-        `).join('');
-    
-    // Organize collected data by categories
-    const dataCategories = this.organizeDataByCategory();
-    
-    return `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>ERP Discovery Report - ${companyName}</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            line-height: 1.6; 
-            color: #333;
-            background: #f8f9fa;
-            padding: 20px;
-        }
-        
-        .report-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .report-header { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-        
-        .report-header h1 { 
-            font-size: 32px;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-        
-        .report-header .company-info {
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            display: inline-block;
-        }
-        
-        .report-header .company-info h2 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .report-meta {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-        
-        .section { 
-            margin: 0;
-            padding: 40px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .section:last-child {
-            border-bottom: none;
-        }
-        
-        .section h2 { 
-            color: #2c3e50; 
-            font-size: 24px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .executive-summary {
-            background: #e8f4fd;
-            border-left: 5px solid #2196f3;
-            padding: 25px;
-            margin-bottom: 30px;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .executive-summary h3 {
-            color: #1976d2;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .key-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .metric-card {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            border-left: 4px solid #667eea;
-        }
-        
-        .metric-card .value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        
-        .metric-card .label {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 20px 0;
-        }
-        
-        .data-category {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-        }
-        
-        .data-category h4 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 16px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 8px;
-        }
-        
-        .data-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .data-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .data-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .data-label {
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .data-value {
-            color: #2c3e50;
-            max-width: 60%;
-            text-align: right;
-        }
-        
-        .process-map-section {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 25px;
-            margin: 20px 0;
-        }
-        
-        .process-map-svg {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .recommendations {
-            background: #e8f5e8;
-            border-left: 5px solid #4caf50;
-            border-radius: 0 8px 8px 0;
-            padding: 25px;
-            margin: 20px 0;
-        }
-        
-        .recommendations h4 {
-            color: #2e7d32;
-            margin-bottom: 15px;
-        }
-        
-        .demo-path {
-            background: #fff3e0;
-            border-left: 5px solid #ff9800;
-            border-radius: 0 8px 8px 0;
-            padding: 25px;
-            margin: 20px 0;
-        }
-        
-        .demo-path h4 {
-            color: #ef6c00;
-            margin-bottom: 15px;
-        }
-        
-        .pain-points {
-            background: #ffebee;
-            border-left: 5px solid #f44336;
-            border-radius: 0 8px 8px 0;
-            padding: 25px;
-            margin: 20px 0;
-        }
-        
-        .pain-points h4 {
-            color: #d32f2f;
-            margin-bottom: 15px;
-        }
-        
-        .conversation-item { 
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .conversation-item .speaker { 
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .conversation-item .timestamp {
-            font-size: 12px;
-            color: #666;
-            font-weight: normal;
-        }
-        
-        .message-text { 
-            color: #555;
-            line-height: 1.5;
-            white-space: pre-line;
-        }
-        
-        .next-steps {
-            background: #e3f2fd;
-            border-left: 5px solid #2196f3;
-            padding: 25px;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .next-steps h4 {
-            color: #1976d2;
-            margin-bottom: 15px;
-        }
-        
-        .priority-high { color: #d32f2f; font-weight: bold; }
-        .priority-medium { color: #f57c00; font-weight: bold; }
-        .priority-low { color: #388e3c; font-weight: bold; }
-        
-        .timeline-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .timeline-item:last-child {
-            border-bottom: none;
-        }
-        
-        .timeline-date {
-            background: #667eea;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            min-width: 80px;
-            text-align: center;
-        }
-        
-        .footer {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 30px 40px;
-            text-align: center;
-        }
-        
-        .footer .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-        
-        @media print {
-            body { 
-                background: white;
-                padding: 0;
-            }
-            .report-container {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-            .section {
-                page-break-inside: avoid;
-            }
-        }
-        
-        @page {
-            margin: 1in;
-        }
-    </style>
-</head>
-<body>
-    <div class="report-container">
-        <div class="report-header">
-            <h1>ERP Discovery Report</h1>
-            <div class="company-info">
-                <h2>${companyName}</h2>
-                <p>${this.collectedData.foodVertical || 'Food Industry'} • ${this.collectedData.businessModel || 'Business'}</p>
-            </div>
-        </div>
-        
-        <div class="report-meta">
-            <div>
-                <strong>Report Generated:</strong> ${currentDate} at ${currentTime}
-            </div>
-            <div>
-                <strong>Session ID:</strong> ${this.sessionId}
-            </div>
-            <div>
-                <strong>Discovery Completion:</strong> ${businessInsights.completionPercentage}%
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>📊 Executive Summary</h2>
-            <div class="executive-summary">
-                <h3>Discovery Overview</h3>
-                <p>${businessInsights.executiveSummary}</p>
-            </div>
-            
-            <div class="key-metrics">
-                <div class="metric-card">
-                    <div class="value">${this.collectedData.facilities || 'N/A'}</div>
-                    <div class="label">Facilities</div>
-                </div>
-                <div class="metric-card">
-                    <div class="value">${this.collectedData.skuCount || 'N/A'}</div>
-                    <div class="label">SKUs</div>
-                </div>
-                <div class="metric-card">
-                    <div class="value">${this.collectedData.customerCount || 'N/A'}</div>
-                    <div class="label">Customers</div>
-                </div>
-                <div class="metric-card">
-                    <div class="value">${businessInsights.processMaturity}</div>
-                    <div class="label">Process Maturity</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>🏢 Business Information</h2>
-            <div class="data-grid">
-                ${Object.entries(dataCategories).map(([category, items]) => `
-                    <div class="data-category">
-                        <h4>${category}</h4>
-                        <ul class="data-list">
-                            ${items.map(item => `
-                                <li>
-                                    <span class="data-label">${item.label}:</span>
-                                    <span class="data-value">${item.value}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>🔄 Business Process Analysis</h2>
-            <div class="process-map-section">
-                <h3>Current Process Flow Map</h3>
-                <p>The following diagram represents the current understanding of ${companyName}'s business processes based on our discovery conversation:</p>
+            generateReportContent() {
+                const companyName = this.collectedData.companyName || 'Unknown Company';
+                const currentDate = new Date().toLocaleDateString();
                 
-                <div class="process-map-svg">
-                    ${processMapSVG || '<p><em>Process map will be generated during live discovery session</em></p>'}
-                </div>
+                // Filter out bot messages that are just conversation starters
+                const meaningfulConversation = this.conversationHistory
+                    .filter(msg => !msg.text.includes("Hi! I'm here to learn"))
+                    .map(msg => `
+                        <div class="conversation-item">
+                            <strong>${msg.sender === 'user' ? 'Client' : 'Discovery Specialist'}:</strong>
+                            <div class="message-text">${msg.text}</div>
+                        </div>
+                    `).join('');
                 
-                <div class="key-metrics">
-                    <div class="metric-card">
-                        <div class="value">${businessInsights.processesIdentified}</div>
-                        <div class="label">Processes Identified</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="value">${businessInsights.processCoverage}%</div>
-                        <div class="label">Process Coverage</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="value">${businessInsights.decisionPoints}</div>
-                        <div class="label">Decision Points</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>⚠️ Pain Points & Challenges</h2>
-            <div class="pain-points">
-                <h4>Identified Challenges</h4>
-                <ul>
-                    ${businessInsights.painPoints.map(pain => `<li>${pain}</li>`).join('')}
-                </ul>
-            </div>
-            
-            <div class="recommendations">
-                <h4>Recommended Solutions</h4>
-                <ul>
-                    ${businessInsights.recommendations.map(rec => `<li>${rec}</li>`).join('')}
-                </ul>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>🎯 Suggested Demo Path</h2>
-            <div class="demo-path">
-                <h4>Customized Demo Recommendations</h4>
-                <p><strong>Demo Focus:</strong> ${demoRecommendations.focus}</p>
-                <p><strong>Duration:</strong> ${demoRecommendations.duration}</p>
-                <p><strong>Key Scenarios:</strong></p>
-                <ul>
-                    ${demoRecommendations.scenarios.map(scenario => `<li>${scenario}</li>`).join('')}
-                </ul>
-            </div>
-            
-            <div class="next-steps">
-                <h4>Recommended Next Steps</h4>
-                <div class="timeline-item">
-                    <div class="timeline-date">Day 1-2</div>
-                    <div>
-                        <strong class="priority-high">HIGH:</strong> Schedule comprehensive demo focusing on ${demoRecommendations.primaryFocus}
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">Week 1</div>
-                    <div>
-                        <strong class="priority-medium">MED:</strong> Provide detailed process mapping workshop
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">Week 2</div>
-                    <div>
-                        <strong class="priority-medium">MED:</strong> Technical requirements gathering session
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">Week 3-4</div>
-                    <div>
-                        <strong class="priority-low">LOW:</strong> Proposal preparation and presentation
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>💬 Discovery Conversation Log</h2>
-            <div class="conversation-log">
-                ${meaningfulConversation || '<p><em>No conversation recorded.</em></p>'}
-            </div>
-        </div>
-        
-        <div class="footer">
-            <div class="logo">Inecta Food ERP</div>
-            <p>This report was generated automatically from your discovery conversation.</p>
-            <p><strong>Next Steps:</strong> Our team will review this information and contact you within 24 hours to schedule your customized demo.</p>
-            <p style="margin-top: 15px; font-size: 12px; color: #95a5a6;">
-                Report generated on ${currentDate} at ${currentTime} | Session: ${this.sessionId}
-            </p>
-        </div>
-    </div>
-    
-    <script>
-        // Initialize Mermaid for any diagrams in the report
-        if (typeof mermaid !== 'undefined') {
-            mermaid.initialize({ 
-                startOnLoad: true,
-                theme: 'default',
-                themeVariables: {
-                    primaryColor: '#667eea',
-                    primaryTextColor: '#2c3e50',
-                    primaryBorderColor: '#5a6fd8',
-                    lineColor: '#74b9ff'
-                }
-            });
-            
-            // Re-render any mermaid diagrams
-            setTimeout(() => {
-                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-            }, 100);
-        }
-        
-        // Auto-print functionality for easy PDF generation
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                if (confirm('Would you like to save this report as a PDF?')) {
-                    window.print();
-                }
-            }, 1000);
-        });
-    </script>
-</body>
-</html>`;
-},
-
-// ADD THESE NEW HELPER METHODS TO YOUR DiscoveryChat CLASS
-
-generateBusinessInsights() {
-    const data = this.collectedData;
-    const processAnalysis = data.processAnalysis || {};
-    const coverage = processAnalysis.coverage || {};
-    
-    // Calculate completion percentage
-    const totalFields = ['companyName', 'foodVertical', 'businessModel', 'facilities', 'skuCount', 'customerCount', 'currentERP', 'painPoints', 'processSteps', 'decisionMakers'];
-    const completedFields = totalFields.filter(field => data[field] && data[field] !== '');
-    const completionPercentage = Math.round((completedFields.length / totalFields.length) * 100);
-    
-    // Generate executive summary
-    const executiveSummary = `${data.companyName || 'This company'} is a ${data.foodVertical || 'food'} ${data.businessModel || 'business'} with ${data.facilities || 'multiple'} facilities serving ${data.customerCount || 'numerous'} customers. Our discovery session revealed ${coverage.completeness || 0}% process coverage with ${(data.painPoints || []).length} key pain points identified. The organization shows ${processAnalysis.maturityLevel || 'developing'} process maturity and is ready for ERP modernization.`;
-    
-    // Analyze pain points
-    const painPointAnalysis = (data.painPoints || []).map(pain => {
-        switch(pain.toLowerCase()) {
-            case 'manual': return 'Heavy reliance on manual processes and spreadsheets creating inefficiency and error risk';
-            case 'integration': return 'Lack of system integration causing data silos and duplicate data entry';
-            case 'visibility': return 'Limited real-time visibility into operations hampering decision-making';
-            case 'tracking': return 'Inadequate inventory and order tracking leading to customer service issues';
-            case 'reporting': return 'Insufficient reporting capabilities limiting business intelligence';
-            case 'scheduling': return 'Production scheduling challenges affecting efficiency and customer delivery';
-            default: return `${pain} process challenges identified requiring system modernization`;
-        }
-    });
-    
-    // Generate recommendations
-    const recommendations = [
-        'Implement integrated ERP solution to eliminate data silos',
-        'Automate manual processes to reduce errors and improve efficiency',
-        'Deploy real-time dashboards for improved operational visibility',
-        'Establish automated inventory management and tracking',
-        'Create comprehensive reporting and analytics capabilities'
-    ];
-    
-    return {
-        completionPercentage,
-        executiveSummary,
-        processMaturity: processAnalysis.maturityLevel || 'Initial',
-        processesIdentified: (data.processSteps || []).length,
-        processCoverage: coverage.completeness || 0,
-        decisionPoints: (data.decisionMakers || []).length,
-        painPoints: painPointAnalysis,
-        recommendations: recommendations.slice(0, painPointAnalysis.length + 1)
-    };
-},
-
-generateDemoRecommendations() {
-    const data = this.collectedData;
-    const businessModel = data.businessModel || 'manufacturing';
-    const painPoints = data.painPoints || [];
-    const currentERP = data.currentERP || 'spreadsheets';
-    
-    let focus, duration, scenarios, primaryFocus;
-    
-    // Customize demo based on business model and pain points
-    if (businessModel === 'manufacturing') {
-        focus = 'Production Planning, Quality Control, and Inventory Management';
-        primaryFocus = 'manufacturing operations';
-        scenarios = [
-            'Production order creation and scheduling',
-            'Material requirements planning (MRP)',
-            'Quality control workflows and lot tracking',
-            'Finished goods inventory management',
-            'Customer order fulfillment process'
-        ];
-    } else if (businessModel === 'distribution') {
-        focus = 'Warehouse Management, Order Processing, and Customer Management';
-        primaryFocus = 'distribution operations';
-        scenarios = [
-            'Inbound receiving and put-away processes',
-            'Customer order processing and allocation',
-            'Pick, pack, and ship workflows',
-            'Inventory cycle counting and management',
-            'Customer portal and order tracking'
-        ];
-    } else {
-        focus = 'End-to-End Process Integration';
-        primaryFocus = 'integrated operations';
-        scenarios = [
-            'Order-to-cash process flow',
-            'Purchase-to-pay process automation',
-            'Production planning and execution',
-            'Financial integration and reporting',
-            'Customer relationship management'
-        ];
-    }
-    
-    // Adjust duration based on complexity
-    const complexity = (data.facilities || 1) + (parseInt(data.skuCount) || 0) / 100 + painPoints.length;
-    duration = complexity > 10 ? '90-120 minutes' : complexity > 5 ? '60-90 minutes' : '45-60 minutes';
-    
-    // Add pain point specific scenarios
-    if (painPoints.includes('manual')) {
-        scenarios.push('Automated data entry and process workflows');
-    }
-    if (painPoints.includes('integration')) {
-        scenarios.push('System integration and data synchronization');
-    }
-    if (painPoints.includes('visibility')) {
-        scenarios.push('Real-time dashboards and reporting');
-    }
-    if (painPoints.includes('tracking')) {
-        scenarios.push('Advanced tracking and traceability features');
-    }
-    
-    return {
-        focus,
-        duration,
-        scenarios: scenarios.slice(0, 6), // Limit to top 6 scenarios
-        primaryFocus
-    };
-},
-
-organizeDataByCategory() {
-    const data = this.collectedData;
-    
-    const categories = {
-        'Company Profile': [
-            { label: 'Company Name', value: data.companyName || 'Not specified' },
-            { label: 'Food Vertical', value: data.foodVertical || 'Not specified' },
-            { label: 'Business Model', value: data.businessModel || 'Not specified' },
-            { label: 'Years in Business', value: data.yearsInBusiness || 'Not specified' }
-        ],
-        'Operational Scale': [
-            { label: 'Facilities', value: data.facilities || 'Not specified' },
-            { label: 'SKU Count', value: data.skuCount || 'Not specified' },
-            { label: 'Customer Count', value: data.customerCount || 'Not specified' },
-            { label: 'Employee Count', value: data.employeeCount || 'Not specified' }
-        ],
-        'Current Systems': [
-            { label: 'Primary ERP', value: data.currentERP || 'Not specified' },
-            { label: 'System Limitations', value: data.systemLimitations || 'Not specified' },
-            { label: 'Integration Needs', value: data.integrationNeeds || 'Not specified' }
-        ],
-        'Project Context': [
-            { label: 'Timeline', value: data.timeline || 'Not specified' },
-            { label: 'Decision Makers', value: Array.isArray(data.decisionMakers) ? data.decisionMakers.join(', ') : (data.decisionMakers || 'Not specified') },
-            { label: 'Budget Range', value: data.budgetRange || 'Not specified' },
-            { label: 'Project Driver', value: data.projectDriver || 'Not specified' }
-        ]
-    };
-    
-    // Filter out empty categories and items
-    Object.keys(categories).forEach(category => {
-        categories[category] = categories[category].filter(item => 
-            item.value && item.value !== 'Not specified' && item.value !== ''
-        );
-        
-        if (categories[category].length === 0) {
-            delete categories[category];
-        }
-    });
-    
-    return categories;
-},
-
-extractProcessMapSVG() {
-    // Try to find the most recent process map in the conversation
-    const processMapElements = document.querySelectorAll('.mermaid svg');
-    if (processMapElements.length > 0) {
-        // Get the last (most recent) process map
-        const lastSVG = processMapElements[processMapElements.length - 1];
-        return lastSVG.outerHTML;
-    }
-    
-    // If no SVG found, generate a placeholder
-    return `
-        <div class="mermaid">
-            graph TD
-                A[Process Discovery] --> B[Analysis Complete]
-                B --> C[Demo Scheduled]
-                C --> D[ERP Implementation]
+                const collectedDataHtml = Object.entries(this.collectedData)
+                    .filter(([key, value]) => value && value !== "")
+                    .map(([key, value]) => {
+                        const displayKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                        const displayValue = Array.isArray(value) ? value.join(', ') : value;
+                        return `<tr><td><strong>${displayKey}:</strong></td><td>${displayValue}</td></tr>`;
+                    }).join('');
                 
-                style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
-                style B fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-                style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-                style D fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-        </div>
-    `;
-},
+                return `
 <!DOCTYPE html>
 <html>
 <head>
