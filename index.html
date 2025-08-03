@@ -60,13 +60,13 @@
             justify-content: flex-end;
         }
         
-       .message-content {
-    max-width: 70%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    word-wrap: break-word;
-    white-space: pre-line;  /* ADD THIS LINE */
-}
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            white-space: pre-line;
+        }
         
         .message.bot .message-content {
             background: #e3f2fd;
@@ -249,7 +249,7 @@
                 this.sessionId = this.generateSessionId();
                 this.conversationHistory = [];
                 this.collectedData = {};
-                this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat'; // Replace with actual webhook
+                this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat';
                 
                 this.initializeEventListeners();
                 this.autoResizeTextarea();
@@ -363,82 +363,82 @@
                 }
             }
             
-async callN8nWebhook(payload) {
-    console.log('Sending to webhook:', this.n8nWebhookUrl);
-    console.log('Payload:', payload);
-    
-    try {
-        const response = await fetch(this.n8nWebhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        console.log('Response status:', response.status);
-        console.log('Response headers:', [...response.headers.entries()]);
-        
-        const responseText = await response.text();
-        console.log('Raw response text:', responseText);
-        console.log('Response text length:', responseText.length);
-        
-        if (responseText.trim() === '') {
-            console.log('Empty response detected');
-            return {
-                botResponse: "Server returned empty response",
-                error: true
-            };
-        }
-        
-        try {
-            const jsonData = JSON.parse(responseText);
-            console.log('Parsed JSON:', jsonData);
-            return jsonData;
-        } catch (parseError) {
-            console.error('JSON parse error:', parseError);
-            console.log('Failed to parse this text:', responseText);
-            return {
-                botResponse: "Server returned invalid JSON: " + responseText.substring(0, 100),
-                error: true
-            };
-        }
-        
-    } catch (networkError) {
-        console.error('Network error:', networkError);
-        return {
-            botResponse: "Network error: " + networkError.message,
-            error: true
-        };
-    }
-}
+            async callN8nWebhook(payload) {
+                console.log('Sending to webhook:', this.n8nWebhookUrl);
+                console.log('Payload:', payload);
+                
+                try {
+                    const response = await fetch(this.n8nWebhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', [...response.headers.entries()]);
+                    
+                    const responseText = await response.text();
+                    console.log('Raw response text:', responseText);
+                    console.log('Response text length:', responseText.length);
+                    
+                    if (responseText.trim() === '') {
+                        console.log('Empty response detected');
+                        return {
+                            botResponse: "Server returned empty response",
+                            error: true
+                        };
+                    }
+                    
+                    try {
+                        const jsonData = JSON.parse(responseText);
+                        console.log('Parsed JSON:', jsonData);
+                        return jsonData;
+                    } catch (parseError) {
+                        console.error('JSON parse error:', parseError);
+                        console.log('Failed to parse this text:', responseText);
+                        return {
+                            botResponse: "Server returned invalid JSON: " + responseText.substring(0, 100),
+                            error: true
+                        };
+                    }
+                    
+                } catch (networkError) {
+                    console.error('Network error:', networkError);
+                    return {
+                        botResponse: "Network error: " + networkError.message,
+                        error: true
+                    };
+                }
+            }
             
-addMessage(text, sender) {
-    const messagesContainer = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${sender}`;
-    
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'message-content';
-    contentDiv.innerHTML = text;
-    
-    messageDiv.appendChild(contentDiv);
-    messagesContainer.appendChild(messageDiv);
-    
-    // Store in conversation history
-    this.conversationHistory.push({
-        text: text,
-        sender: sender,
-        timestamp: new Date().toISOString()
-    });
-    
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-showTypingIndicator() {
-    document.getElementById('typingIndicator').style.display = 'block';
-    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-}
+            addMessage(text, sender) {
+                const messagesContainer = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = text;
+                
+                messageDiv.appendChild(contentDiv);
+                messagesContainer.appendChild(messageDiv);
+                
+                // Store in conversation history
+                this.conversationHistory.push({
+                    text: text,
+                    sender: sender,
+                    timestamp: new Date().toISOString()
+                });
+                
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            showTypingIndicator() {
+                document.getElementById('typingIndicator').style.display = 'block';
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            }
             
             hideTypingIndicator() {
                 document.getElementById('typingIndicator').style.display = 'none';
