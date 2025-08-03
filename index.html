@@ -717,8 +717,12 @@
                 const progressFill = document.getElementById('progressFill');
                 const progressPercentage = document.getElementById('progressPercentage');
                 
-                // Show progress bar after first exchange
+                // Show progress bar after first exchange (force show for testing)
+                console.log('updateProgressBar called with:', completionPercentage);
+                console.log('Conversation length:', this.conversationHistory.length);
+                
                 if (this.conversationHistory.length >= 2) {
+                    console.log('Showing progress container');
                     progressContainer.style.display = 'block';
                 }
                 
