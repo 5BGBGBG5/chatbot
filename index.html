@@ -327,7 +327,9 @@
                     }
                     
                     // Show download button after a few exchanges
+                    console.log('Conversation history length:', this.conversationHistory.length);
                     if (this.conversationHistory.length >= 6) {
+                        console.log('Showing download button');
                         document.getElementById('downloadButton').style.display = 'flex';
                     }
                     
