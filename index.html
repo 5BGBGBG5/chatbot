@@ -187,10 +187,14 @@
                 if (!text) return;
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${sender}`;
+                
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
                 contentDiv.innerHTML = text;
-                messageDiv.appendChild(contentDiv); // <-- FIX: Appending contentDiv to messageDiv
+                
+                // This is the corrected line:
+                messageDiv.appendChild(contentDiv); 
+                
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
