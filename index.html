@@ -87,10 +87,8 @@
         }
         .chat-button:hover { background: #5a6fd8; }
         .chat-button:active { transform: scale(0.9); }
-        .upload-button { background: #28a745; }
-        .upload-button:hover { background: #218838; }
-        .test-button { background: #dc3545; }
-        .test-button:hover { background: #c82333; }
+        .download-button { background: #fd7e14; }
+        .download-button:hover { background: #e8590c; }
         .file-upload { display: none; }
         .typing-indicator { display: none; padding: 10px 16px; background: #e9ecef; border-radius: 18px; max-width: 70%; margin-bottom: 15px; }
         .typing-dots { display: flex; gap: 4px; }
@@ -99,6 +97,13 @@
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Progress Bar Styles */
+        .progress-container { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; display: none; }
+        .progress-label { text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+        .progress-areas { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .area-tag { font-size: 11px; padding: 6px 12px; border-radius: 15px; transition: all 0.3s ease; border: 1px solid transparent; }
+        .area-tag.completed { background: #28a745; color: white; border-color: #1e7e34; }
+        .area-tag.incomplete { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
     </style>
 </head>
 <body>
@@ -106,6 +111,18 @@
         <div class="chat-header">
             <h2>Inecta Food ERP Discovery</h2>
             <p>Let's learn about your food business needs</p>
+            <!-- Progress Bar HTML -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-label">Discovery Progress</div>
+                <div class="progress-areas" id="progressAreas">
+                  <span class="area-tag incomplete" data-area="companyProfile">Company Profile</span>
+                  <span class="area-tag incomplete" data-area="processFlow">Process Flow</span>
+                  <span class="area-tag incomplete" data-area="systemsAndDecisions">Systems & Decisions</span>
+                  <span class="area-tag incomplete" data-area="operationalScale">Operations Scale</span>
+                  <span class="area-tag incomplete" data-area="painPoints">Pain Points</span>
+                  <span class="area-tag incomplete" data-area="timeline">Timeline</span>
+                </div>
+            </div>
         </div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="typing-indicator" id="typingIndicator">
@@ -114,9 +131,7 @@
         <div class="chat-input-container">
             <div class="input-wrapper">
                 <textarea id="chatInput" class="chat-input" placeholder="Type your response..." rows="1"></textarea>
-                <input type="file" id="fileUpload" class="file-upload" accept=".pdf,.doc,.docx,.txt">
-                <button class="chat-button test-button" id="testButton" title="Run Test Case">🧪</button>
-                <button class="chat-button upload-button" id="uploadButton" title="Upload document">📎</button>
+                <button class="chat-button download-button" id="downloadButton" title="Download Report" style="display: none;">📄</button>
                 <button class="chat-button" id="sendButton" title="Send message">➤</button>
             </div>
         </div>
@@ -136,7 +151,10 @@
                     chatMessages: document.getElementById('chatMessages'),
                     chatInput: document.getElementById('chatInput'),
                     sendButton: document.getElementById('sendButton'),
+                    downloadButton: document.getElementById('downloadButton'),
                     typingIndicator: document.getElementById('typingIndicator'),
+                    progressContainer: document.getElementById('progressContainer'),
+                    progressAreas: document.getElementById('progressAreas'),
                 };
 
                 // Initialization
@@ -152,6 +170,7 @@
                         this.sendMessage();
                     }
                 });
+                // Add listener for download button later if needed
             }
 
             startNewSession() {
@@ -160,6 +179,7 @@
                 this.collectedData = {};
                 this.ui.chatMessages.innerHTML = '';
                 this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                this.updateProgressBar(); // Initial update
             }
 
             addMessage(text, sender) {
@@ -173,8 +193,9 @@
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
-                // Add to local history *after* displaying
-                this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
+                if (sender !== 'system') {
+                    this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
+                }
             }
 
             async sendMessage() {
@@ -199,6 +220,7 @@
                     if (response && response.botResponse) {
                         this.addMessage(response.botResponse, 'bot');
                         this.collectedData = response.collectedData || this.collectedData;
+                        this.updateProgressBar(); // Update progress after getting new data
                     } else {
                         this.addMessage("Sorry, I received an unexpected response. Please try again.", "bot");
                     }
@@ -222,6 +244,39 @@
                 }
                 
                 return await response.json();
+            }
+
+            updateProgressBar() {
+                const data = this.collectedData;
+                if (Object.keys(data).length > 0) {
+                    this.ui.progressContainer.style.display = 'block';
+                }
+
+                const areas = {
+                    companyProfile: !!(data.companyName && data.foodVertical && data.businessModel),
+                    processFlow: !!(data.processSteps && Array.isArray(data.processSteps) && data.processSteps.length > 0),
+                    systemsAndDecisions: !!(data.currentERP && data.decisionMakers && Array.isArray(data.decisionMakers) && data.decisionMakers.length > 0),
+                    operationalScale: !!(data.facilities && data.skuCount && data.customerCount),
+                    painPoints: !!(data.painPoints && Array.isArray(data.painPoints) && data.painPoints.length > 0),
+                    timeline: !!(data.timeline),
+                };
+
+                let completedCount = 0;
+                for (const areaName in areas) {
+                    const isCompleted = areas[areaName];
+                    const tag = this.ui.progressAreas.querySelector(`[data-area="${areaName}"]`);
+                    if (tag) {
+                        tag.className = `area-tag ${isCompleted ? 'completed' : 'incomplete'}`;
+                    }
+                    if (isCompleted) {
+                        completedCount++;
+                    }
+                }
+
+                // Show download button when 4 or more areas are complete
+                if (completedCount >= 4) {
+                    this.ui.downloadButton.style.display = 'flex';
+                }
             }
 
             showTypingIndicator() {
