@@ -443,24 +443,53 @@
                 });
             }
             
-            async sendMessage() {
-                const input = document.getElementById('chatInput');
-                const message = input.value.trim();
-                
-                if (!message) return;
-                
-                this.addMessage(message, 'user');
-                input.value = '';
-                input.style.height = 'auto';
-                
-                this.showTypingIndicator();
-                
-                const response = await this.callN8nWebhook({
-                    type: 'user_message',
-                    message: message,
-                    sessionId: this.sessionId,
-                    // The conversation history is now managed on the backend, but we send the new message
-                });
+async sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    this.addMessage(message, 'user');
+    input.value = '';
+    input.style.height = 'auto';
+    
+    this.showTypingIndicator();
+    
+    // --- THIS IS THE SECTION TO FIX ---
+    const response = await this.callN8nWebhook({
+        type: 'user_message',
+        message: message,
+        sessionId: this.sessionId,
+        conversationHistory: this.conversationHistory, // <-- ADD THIS LINE
+        collectedData: this.collectedData            // <-- ADD THIS LINE
+    });
+    // --- END OF FIX ---
+    
+    console.log('Full response from n8n:', response);
+    this.hideTypingIndicator();
+    
+    if (response.botResponse) {
+        this.addMessage(response.botResponse, 'bot');
+    }
+    
+    if (response.processMapHtml) {
+        this.addProcessMap(response.processMapHtml);
+    }
+    
+    if (response.collectedData) {
+        this.collectedData = response.collectedData;
+    }
+    
+    this.updateProgressBar();
+    
+    if (this.conversationHistory.length >= 6 || response.discoveryComplete) {
+        document.getElementById('downloadButton').style.display = 'flex';
+    }
+    
+    if (response.discoveryComplete) {
+        this.handleDiscoveryComplete(response.summary);
+    }
+}
                 
                 console.log('Full response from n8n:', response);
                 this.hideTypingIndicator();
