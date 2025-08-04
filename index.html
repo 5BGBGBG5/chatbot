@@ -99,12 +99,6 @@
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .progress-container { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; }
-        .progress-label { text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
-        .progress-areas { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .area-tag { font-size: 11px; padding: 6px 12px; border-radius: 15px; transition: all 0.3s ease; border: 1px solid transparent; }
-        .area-tag.completed { background: #28a745; color: white; border-color: #1e7e34; }
-        .area-tag.incomplete { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
     </style>
 </head>
 <body>
@@ -112,17 +106,6 @@
         <div class="chat-header">
             <h2>Inecta Food ERP Discovery</h2>
             <p>Let's learn about your food business needs</p>
-            <div class="progress-container" id="progressContainer" style="display: none;">
-                <div class="progress-label">Discovery Progress</div>
-                <div class="progress-areas" id="progressAreas">
-                  <span class="area-tag incomplete" data-area="companyProfile">Company Profile</span>
-                  <span class="area-tag incomplete" data-area="processFlow">Process Flow</span>
-                  <span class="area-tag incomplete" data-area="systemsAndDecisions">Systems & Decisions</span>
-                  <span class="area-tag incomplete" data-area="operationalScale">Operations Scale</span>
-                  <span class="area-tag incomplete" data-area="painPoints">Pain Points</span>
-                  <span class="area-tag incomplete" data-area="timeline">Timeline</span>
-                </div>
-            </div>
         </div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="typing-indicator" id="typingIndicator">
@@ -142,33 +125,27 @@
     <script>
         class DiscoveryChat {
             constructor() {
-                console.log("DiscoveryChat Initializing..."); // Debug log
+                // Core properties
                 this.sessionId = null;
                 this.conversationHistory = [];
                 this.collectedData = {};
-                this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat'; // Ensure this is your correct webhook URL
+                this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat';
 
+                // UI Elements
                 this.ui = {
                     chatMessages: document.getElementById('chatMessages'),
                     chatInput: document.getElementById('chatInput'),
                     sendButton: document.getElementById('sendButton'),
-                    uploadButton: document.getElementById('uploadButton'),
-                    fileUpload: document.getElementById('fileUpload'),
-                    testButton: document.getElementById('testButton'),
                     typingIndicator: document.getElementById('typingIndicator'),
-                    progressContainer: document.getElementById('progressContainer'),
                 };
 
+                // Initialization
                 this.initializeEventListeners();
-                this.autoResizeTextarea();
                 this.startNewSession();
-                console.log("DiscoveryChat Initialized Successfully."); // Debug log
             }
 
             initializeEventListeners() {
                 this.ui.sendButton.addEventListener('click', () => this.sendMessage());
-                this.ui.uploadButton.addEventListener('click', () => this.ui.fileUpload.click());
-                this.ui.testButton.addEventListener('click', () => this.runFullTestCase());
                 this.ui.chatInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -186,17 +163,17 @@
             }
 
             addMessage(text, sender) {
-                if (!text) return; // Don't add empty messages
+                if (!text) return;
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${sender}`;
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
-                contentDiv.innerHTML = text; // Using innerHTML to render potential HTML tags from bot
+                contentDiv.innerHTML = text;
                 messageDiv.appendChild(contentDiv);
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
-                // Add to history *after* displaying
+                // Add to local history *after* displaying
                 this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
             }
 
@@ -206,7 +183,6 @@
 
                 this.addMessage(messageText, 'user');
                 this.ui.chatInput.value = '';
-                this.autoResizeTextarea();
                 this.showTypingIndicator();
 
                 try {
@@ -223,20 +199,18 @@
                     if (response && response.botResponse) {
                         this.addMessage(response.botResponse, 'bot');
                         this.collectedData = response.collectedData || this.collectedData;
-                        this.updateProgressBar();
                     } else {
-                        this.addMessage("Sorry, I encountered an issue. Please try again.", "bot");
+                        this.addMessage("Sorry, I received an unexpected response. Please try again.", "bot");
                     }
                 } catch (error) {
-                    console.error("Error in sendMessage:", error);
-                    this.addMessage("I'm having trouble connecting. Please check the console for details.", "bot");
+                    console.error("Error during sendMessage:", error);
+                    this.addMessage("I'm having trouble connecting to the server. Please try again later.", "bot");
                 } finally {
                     this.hideTypingIndicator();
                 }
             }
 
             async callN8nWebhook(payload) {
-                console.log("Sending payload to n8n:", payload);
                 const response = await fetch(this.n8nWebhookUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -247,26 +221,7 @@
                     throw new Error(`Webhook failed with status: ${response.status}`);
                 }
                 
-                const responseData = await response.json();
-                console.log("Received data from n8n:", responseData);
-                return responseData;
-            }
-            
-            updateProgressBar() {
-                if (Object.keys(this.collectedData).length > 0) {
-                    this.ui.progressContainer.style.display = 'block';
-                }
-                const areas = {
-                    companyProfile: !!(this.collectedData.companyName && this.collectedData.foodVertical && this.collectedData.businessModel),
-                    // Add other area checks as needed
-                };
-                
-                Object.entries(areas).forEach(([areaName, completed]) => {
-                    const tag = document.querySelector(`[data-area="${areaName}"]`);
-                    if (tag) {
-                        tag.className = `area-tag ${completed ? 'completed' : 'incomplete'}`;
-                    }
-                });
+                return await response.json();
             }
 
             showTypingIndicator() {
@@ -277,25 +232,9 @@
             hideTypingIndicator() {
                 this.ui.typingIndicator.style.display = 'none';
             }
-
-            autoResizeTextarea() {
-                this.ui.chatInput.style.height = 'auto';
-                this.ui.chatInput.style.height = Math.min(this.ui.chatInput.scrollHeight, 120) + 'px';
-            }
-            
-            runFullTestCase() {
-                this.startNewSession();
-                this.addMessage("Running a test case for 'Gourmet Frozen Foods Inc.'...", "bot");
-                this.collectedData = {
-                    companyName: "Gourmet Frozen Foods Inc.",
-                    foodVertical: "Frozen Meals",
-                    businessModel: "manufacturing",
-                };
-                this.updateProgressBar();
-                this.addMessage("Test data has been loaded. Please ask me a question.", "bot");
-            }
         }
 
+        // Initialize the chat when the page is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             new DiscoveryChat();
         });
