@@ -206,10 +206,10 @@
             flex-shrink: 0;
         }
         
-        .send-button:hover, .upload-button:hover, .download-button:hover {
+        .send-button:hover, .upload-button:hover, .download-button:hover, .test-button:hover {
             background: #5a6fd8;
         }
-        .send-button:active, .upload-button:active, .download-button:active {
+        .send-button:active, .upload-button:active, .download-button:active, .test-button:active {
             transform: scale(0.9);
         }
         
@@ -218,6 +218,9 @@
         
         .download-button { background: #fd7e14; }
         .download-button:hover { background: #e8590c; }
+        
+        .test-button { background: #dc3545; }
+        .test-button:hover { background: #c82333; }
         
         .file-upload { display: none; }
         
@@ -335,6 +338,7 @@
                 <input type="file" id="fileUpload" class="file-upload" accept=".pdf,.doc,.docx,.txt">
                 <button class="upload-button" id="uploadButton" title="Upload document">📎</button>
                 <button class="send-button" id="sendButton" title="Send message">➤</button>
+                <button class="test-button" id="testButton" title="Run Test Case">🧪</button>
                 <button class="download-button" id="downloadButton" title="Download Report" style="display: none;">📄</button>
             </div>
         </div>
@@ -362,11 +366,13 @@
                 const uploadButton = document.getElementById('uploadButton');
                 const downloadButton = document.getElementById('downloadButton');
                 const fileUpload = document.getElementById('fileUpload');
+                const testButton = document.getElementById('testButton');
                 
                 sendButton.addEventListener('click', () => this.sendMessage());
                 uploadButton.addEventListener('click', () => fileUpload.click());
                 downloadButton.addEventListener('click', () => this.downloadReport());
                 fileUpload.addEventListener('change', (e) => this.handleFileUpload(e));
+                testButton.addEventListener('click', () => this.runFullTestCase());
                 
                 chatInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -473,11 +479,6 @@
                 }
             }
             
-            /**
-             * Calls the n8n webhook with robust error handling.
-             * @param {object} payload - The data to send to the webhook.
-             * @returns {Promise<object>} - The parsed JSON response from the server.
-             */
             async callN8nWebhook(payload) {
                 console.log('Sending to webhook:', this.n8nWebhookUrl);
                 console.log('Payload:', payload);
@@ -593,11 +594,6 @@
                 this.addMessage('📄 Your discovery report has been downloaded!', 'bot');
             }
             
-            /**
-             * RESTORED: This function now generates the full, detailed HTML report
-             * on the client-side, using the collected data. This prevents issues
-             * with malformed responses from the backend.
-             */
             generateReportContent() {
                 const companyName = this.collectedData.companyName || 'Unknown Company';
                 const currentDate = new Date().toLocaleDateString();
@@ -684,7 +680,6 @@
             }
 
             generateBusinessInsights() {
-                // This is a helper function for generateReportContent
                 const data = this.collectedData;
                 const painPoints = (data.painPoints || []).map(pain => `<li>${pain}</li>`).join('');
                 return {
@@ -693,7 +688,6 @@
             }
 
             generateDemoRecommendations() {
-                // This is a helper function for generateReportContent
                 return {
                     focus: 'End-to-End Process Integration',
                     duration: '60-90 minutes',
@@ -702,7 +696,6 @@
             }
 
             organizeDataByCategory() {
-                // This is a helper function for generateReportContent
                 const data = this.collectedData;
                 const categories = {
                     'Company Profile': [
@@ -732,7 +725,6 @@
             }
 
             extractProcessMapSVG() {
-                // This is a helper function for generateReportContent
                 const processMapElements = document.querySelectorAll('.mermaid svg');
                 if (processMapElements.length > 0) {
                     const lastSVG = processMapElements[processMapElements.length - 1];
@@ -768,6 +760,71 @@
                         console.warn(`Could not find progress tag for area: ${areaName}`);
                     }
                 });
+            }
+
+            /**
+             * ADDED: This function runs a full test case for a food manufacturer.
+             */
+            runFullTestCase() {
+                this.addMessage("🧪 Running full test case for a food manufacturer...", "bot");
+
+                // 1. Define the test data
+                this.collectedData = {
+                    companyName: "Gourmet Frozen Foods Inc.",
+                    foodVertical: "Frozen Meals",
+                    businessModel: "manufacturing",
+                    processSteps: ["Receiving", "QC Inspection", "Production", "Packaging", "Shipping"],
+                    currentERP: "QuickBooks and Excel",
+                    decisionMakers: ["John (CEO)", "Sarah (Operations)"],
+                    facilities: "2",
+                    skuCount: "150",
+                    customerCount: "300+",
+                    painPoints: ["Manual data entry", "Poor inventory tracking"],
+                    timeline: "3-6 months"
+                };
+
+                // 2. Define a sample process map HTML that would come from the webhook
+                const sampleProcessMapHtml = `
+                <div class="process-map-container">
+                    <div class="process-map-header">
+                        <h3>📊 Gourmet Frozen Foods Inc. - Process Flow Map</h3>
+                    </div>
+                    <div class="mermaid">
+                        graph TD
+                            A[Receiving] --> B(QC Inspection);
+                            B --> C{Production Planning};
+                            C --> D[Manufacturing];
+                            D --> E(In-Process QC);
+                            E --> F[Packaging];
+                            F --> G((Finished Goods));
+                            G --> H{Order Fulfillment};
+                            H --> I[Shipping];
+                            
+                            style A fill:#e8f5e8,stroke:#4caf50
+                            style D fill:#e8f5e8,stroke:#4caf50
+                            style I fill:#e8f5e8,stroke:#4caf50
+                            style B fill:#fff3e0,stroke:#ff9800
+                            style E fill:#fff3e0,stroke:#ff9800
+                    </div>
+                    <div class="process-insights">
+                        <h4>Insights</h4>
+                        <ul>
+                            <li>Key pain point: Inventory tracking between Production and Finished Goods.</li>
+                            <li>Decision point: Production Planning determines the daily schedule.</li>
+                        </ul>
+                    </div>
+                </div>`;
+
+                // 3. Add the process map to the chat
+                this.addProcessMap(sampleProcessMapHtml);
+
+                // 4. Update the progress bar UI
+                this.updateProgressBar();
+
+                // 5. Show the download button
+                document.getElementById('downloadButton').style.display = 'flex';
+
+                this.addMessage("✅ Test case loaded. All data is populated, the process map is displayed, and the download report button is now active.", "bot");
             }
         }
         
