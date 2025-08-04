@@ -3,32 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- MermaidJS for rendering process flow diagrams -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    <script>
-        // Initialize MermaidJS on page load
-        mermaid.initialize({ 
-            startOnLoad: true,
-            theme: 'base',
-            themeVariables: {
-                primaryColor: '#667eea',
-                primaryTextColor: '#2c3e50',
-                primaryBorderColor: '#5a6fd8',
-                lineColor: '#74b9ff',
-                secondaryColor: '#fd7e14',
-                tertiaryColor: '#28a745'
-            }
-        });
-    </script>
     <title>Inecta Food ERP - Discovery Chat</title>
     <style>
         /* General Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -38,8 +16,6 @@
             justify-content: center;
             color: #333;
         }
-        
-        /* Main Chat Container */
         .chat-container {
             width: 90%;
             max-width: 800px;
@@ -52,8 +28,6 @@
             flex-direction: column;
             overflow: hidden;
         }
-        
-        /* Chat Header */
         .chat-header {
             background: #2c3e50;
             color: white;
@@ -61,119 +35,29 @@
             text-align: center;
             border-bottom: 4px solid #667eea;
         }
-        .chat-header h2 {
-            font-weight: 600;
-        }
-        .chat-header p {
-            font-weight: 300;
-            opacity: 0.9;
-            font-size: 0.9em;
-        }
-        
-        /* Message Area */
+        .chat-header h2 { font-weight: 600; }
+        .chat-header p { font-weight: 300; opacity: 0.9; font-size: 0.9em; }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             background: #f8f9fa;
         }
-        
-        .message {
-            margin-bottom: 15px;
-            display: flex;
-            animation: fadeIn 0.3s ease-in;
-        }
-        
-        .message.bot {
-            justify-content: flex-start;
-        }
-        
-        .message.user {
-            justify-content: flex-end;
-        }
-        
+        .message { margin-bottom: 15px; display: flex; animation: fadeIn 0.3s ease-in; }
+        .message.bot { justify-content: flex-start; }
+        .message.user { justify-content: flex-end; }
         .message-content {
             max-width: 85%;
             padding: 12px 18px;
             border-radius: 18px;
             word-wrap: break-word;
-            white-space: pre-wrap; /* Handles line breaks correctly */
+            white-space: pre-wrap;
             line-height: 1.5;
         }
-        
-        .message.bot .message-content {
-            background: #e9ecef;
-            color: #212529;
-            border-bottom-left-radius: 4px;
-        }
-        
-        .message.user .message-content {
-            background: #667eea;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        
-        /* Process Map Styles */
-        .process-map-container {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 10px 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border-left: 5px solid #667eea;
-            max-width: 100%;
-        }
-        
-        .process-map-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .process-map-header h3 {
-            color: #2c3e50; margin: 0; font-size: 18px;
-        }
-        
-        .process-map-header p {
-            color: #666; margin: 5px 0 0 0; font-size: 14px;
-        }
-        
-        .process-status {
-            padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 12px;
-        }
-        
-        .mermaid {
-            text-align: center; margin: 20px 0; background: #fafafa; border-radius: 8px; padding: 15px;
-        }
-        
-        .process-insights {
-            background: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 20px;
-        }
-        
-        .process-insights h4 {
-            color: #2c3e50; margin: 0 0 10px 0; font-size: 14px;
-        }
-        
-        .process-insights ul {
-            margin: 0; padding-left: 20px; color: #555; font-size: 13px; line-height: 1.5;
-        }
-        
-        /* Input Area */
-        .chat-input-container {
-            padding: 15px 20px;
-            border-top: 1px solid #e0e0e0;
-            background: #f1f3f5;
-        }
-        
-        .input-wrapper {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-        
+        .message.bot .message-content { background: #e9ecef; color: #212529; border-bottom-left-radius: 4px; }
+        .message.user .message-content { background: #667eea; color: white; border-bottom-right-radius: 4px; }
+        .chat-input-container { padding: 15px 20px; border-top: 1px solid #e0e0e0; background: #f1f3f5; }
+        .input-wrapper { display: flex; gap: 10px; align-items: flex-end; }
         .chat-input {
             flex: 1;
             border: 2px solid #ddd;
@@ -186,12 +70,8 @@
             max-height: 120px;
             transition: border-color 0.2s;
         }
-        
-        .chat-input:focus {
-            border-color: #667eea;
-        }
-        
-        .send-button, .upload-button, .download-button, .test-button {
+        .chat-input:focus { border-color: #667eea; }
+        .chat-button {
             background: #667eea;
             color: white;
             border: none;
@@ -205,87 +85,26 @@
             transition: background 0.2s, transform 0.1s;
             flex-shrink: 0;
         }
-        
-        .send-button:hover, .upload-button:hover, .download-button:hover, .test-button:hover {
-            background: #5a6fd8;
-        }
-        .send-button:active, .upload-button:active, .download-button:active, .test-button:active {
-            transform: scale(0.9);
-        }
-        
+        .chat-button:hover { background: #5a6fd8; }
+        .chat-button:active { transform: scale(0.9); }
         .upload-button { background: #28a745; }
         .upload-button:hover { background: #218838; }
-        
-        .download-button { background: #fd7e14; }
-        .download-button:hover { background: #e8590c; }
-        
         .test-button { background: #dc3545; }
         .test-button:hover { background: #c82333; }
-        
         .file-upload { display: none; }
-        
-        /* Typing Indicator */
-        .typing-indicator {
-            display: none;
-            padding: 10px 16px;
-            background: #e9ecef;
-            border-radius: 18px;
-            max-width: 70%;
-            margin-bottom: 15px;
-        }
-        
+        .typing-indicator { display: none; padding: 10px 16px; background: #e9ecef; border-radius: 18px; max-width: 70%; margin-bottom: 15px; }
         .typing-dots { display: flex; gap: 4px; }
-        
-        .typing-dots span {
-            width: 8px; height: 8px; border-radius: 50%; background: #868e96;
-            animation: typing 1.4s infinite ease-in-out both;
-        }
-        
+        .typing-dots span { width: 8px; height: 8px; border-radius: 50%; background: #868e96; animation: typing 1.4s infinite ease-in-out both; }
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typing {
-            0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* File Preview */
-        .file-preview {
-            background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px;
-            padding: 12px; margin: 0 20px 10px 20px; display: none;
-        }
-        .file-preview.show { display: block; }
-        
-        /* Discovery Progress Bar */
-        .progress-container {
-            margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1);
-            border-radius: 10px; backdrop-filter: blur(5px);
-        }
-        
-        .progress-label {
-            text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 600;
-        }
-        
-        .progress-areas {
-            display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-        }
-        
-        .area-tag {
-            font-size: 11px; padding: 6px 12px; border-radius: 15px;
-            transition: all 0.3s ease; border: 1px solid transparent;
-        }
-        
-        .area-tag.completed {
-            background: #28a745; color: white; border-color: #1e7e34;
-        }
-        
-        .area-tag.incomplete {
-            background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8);
-        }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-container { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .progress-label { text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+        .progress-areas { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .area-tag { font-size: 11px; padding: 6px 12px; border-radius: 15px; transition: all 0.3s ease; border: 1px solid transparent; }
+        .area-tag.completed { background: #28a745; color: white; border-color: #1e7e34; }
+        .area-tag.incomplete { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
     </style>
 </head>
 <body>
@@ -293,8 +112,6 @@
         <div class="chat-header">
             <h2>Inecta Food ERP Discovery</h2>
             <p>Let's learn about your food business needs</p>
-            
-            <!-- Discovery Progress Area -->
             <div class="progress-container" id="progressContainer" style="display: none;">
                 <div class="progress-label">Discovery Progress</div>
                 <div class="progress-areas" id="progressAreas">
@@ -307,35 +124,17 @@
                 </div>
             </div>
         </div>
-        
-        <div class="chat-messages" id="chatMessages">
-            <!-- Messages will be dynamically added here -->
-        </div>
-        
+        <div class="chat-messages" id="chatMessages"></div>
         <div class="typing-indicator" id="typingIndicator">
-            <div class="typing-dots">
-                <span></span><span></span><span></span>
-            </div>
+            <div class="typing-dots"><span></span><span></span><span></span></div>
         </div>
-        
-        <div class="file-preview" id="filePreview">
-            <strong>Document uploaded:</strong> <span id="fileName"></span>
-            <p>I'll analyze this document and adjust my questions accordingly.</p>
-        </div>
-        
         <div class="chat-input-container">
             <div class="input-wrapper">
-                <textarea 
-                    id="chatInput" 
-                    class="chat-input" 
-                    placeholder="Type your response..."
-                    rows="1"
-                ></textarea>
+                <textarea id="chatInput" class="chat-input" placeholder="Type your response..." rows="1"></textarea>
                 <input type="file" id="fileUpload" class="file-upload" accept=".pdf,.doc,.docx,.txt">
-                <button class="test-button" id="testButton" title="Run Test Case">🧪</button>
-                <button class="upload-button" id="uploadButton" title="Upload document">📎</button>
-                <button class="send-button" id="sendButton" title="Send message">➤</button>
-                <button class="download-button" id="downloadButton" title="Download Report" style="display: none;">📄</button>
+                <button class="chat-button test-button" id="testButton" title="Run Test Case">🧪</button>
+                <button class="chat-button upload-button" id="uploadButton" title="Upload document">📎</button>
+                <button class="chat-button" id="sendButton" title="Send message">➤</button>
             </div>
         </div>
     </div>
@@ -343,587 +142,160 @@
     <script>
         class DiscoveryChat {
             constructor() {
-                // MODIFIED for session handling
-                this.sessionId = null; 
+                console.log("DiscoveryChat Initializing..."); // Debug log
+                this.sessionId = null;
                 this.conversationHistory = [];
                 this.collectedData = {};
-                this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat';
-                
+                this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat'; // Ensure this is your correct webhook URL
+
+                this.ui = {
+                    chatMessages: document.getElementById('chatMessages'),
+                    chatInput: document.getElementById('chatInput'),
+                    sendButton: document.getElementById('sendButton'),
+                    uploadButton: document.getElementById('uploadButton'),
+                    fileUpload: document.getElementById('fileUpload'),
+                    testButton: document.getElementById('testButton'),
+                    typingIndicator: document.getElementById('typingIndicator'),
+                    progressContainer: document.getElementById('progressContainer'),
+                };
+
                 this.initializeEventListeners();
                 this.autoResizeTextarea();
-                this.handleSessionInit(); // ADDED to check for existing sessions on load
+                this.startNewSession();
+                console.log("DiscoveryChat Initialized Successfully."); // Debug log
             }
 
-            // ADDED: This new function handles session startup
-            async handleSessionInit() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const sessionIdFromUrl = urlParams.get('sessionId');
-
-                if (sessionIdFromUrl) {
-                    // A session ID was found in the URL, let's try to resume it
-                    this.sessionId = sessionIdFromUrl;
-                    this.addMessage("Resuming your previous session...", "bot");
-                    this.showTypingIndicator();
-
-                    const response = await this.callN8nWebhook({
-                        type: 'resume_session',
-                        sessionId: this.sessionId
-                    });
-                    
-                    this.hideTypingIndicator();
-                    this.repopulateChat(response);
-
-                } else {
-                    // No session ID found, start a fresh session
-                    this.sessionId = this.generateSessionId();
-                    this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
-                }
-            }
-
-            // ADDED: This new function repopulates the chat window with old messages
-            repopulateChat(sessionData) {
-                const messagesContainer = document.getElementById('chatMessages');
-                messagesContainer.innerHTML = ''; // Clear the chat
-
-                if (!sessionData || !sessionData.conversationHistory || sessionData.conversationHistory.length === 0) {
-                    this.addMessage("Sorry, I couldn't find that session, or it was empty. Let's start a new one.", "bot");
-                    return;
-                }
-
-                this.conversationHistory = sessionData.conversationHistory;
-                this.collectedData = sessionData.collectedData;
-
-                this.conversationHistory.forEach(message => {
-                    // This is a simplified addMessage to avoid re-adding to history
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `message ${message.sender}`;
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'message-content';
-                    contentDiv.innerHTML = message.text;
-                    messageDiv.appendChild(contentDiv);
-                    messagesContainer.appendChild(messageDiv);
-                });
-
-                this.addMessage("We're right back where we left off!", "bot");
-                this.updateProgressBar();
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            generateSessionId() {
-                return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            }
-            
             initializeEventListeners() {
-                const chatInput = document.getElementById('chatInput');
-                const sendButton = document.getElementById('sendButton');
-                const uploadButton = document.getElementById('uploadButton');
-                const downloadButton = document.getElementById('downloadButton');
-                const fileUpload = document.getElementById('fileUpload');
-                const testButton = document.getElementById('testButton');
-                
-                sendButton.addEventListener('click', () => this.sendMessage());
-                uploadButton.addEventListener('click', () => fileUpload.click());
-                downloadButton.addEventListener('click', () => this.downloadReport());
-                fileUpload.addEventListener('change', (e) => this.handleFileUpload(e));
-                testButton.addEventListener('click', () => this.runFullTestCase());
-                
-                chatInput.addEventListener('keypress', (e) => {
+                this.ui.sendButton.addEventListener('click', () => this.sendMessage());
+                this.ui.uploadButton.addEventListener('click', () => this.ui.fileUpload.click());
+                this.ui.testButton.addEventListener('click', () => this.runFullTestCase());
+                this.ui.chatInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
                         this.sendMessage();
                     }
                 });
             }
-            
-            autoResizeTextarea() {
-                const textarea = document.getElementById('chatInput');
-                textarea.addEventListener('input', () => {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-                });
-            }
-            
-async sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    
-    if (!message) return;
-    
-    this.addMessage(message, 'user');
-    input.value = '';
-    input.style.height = 'auto';
-    
-    this.showTypingIndicator();
-    
-    // --- THIS IS THE SECTION TO FIX ---
-    const response = await this.callN8nWebhook({
-        type: 'user_message',
-        message: message,
-        sessionId: this.sessionId,
-        conversationHistory: this.conversationHistory, // <-- ADD THIS LINE
-        collectedData: this.collectedData            // <-- ADD THIS LINE
-    });
-    // --- END OF FIX ---
-    
-    console.log('Full response from n8n:', response);
-    this.hideTypingIndicator();
-    
-    if (response.botResponse) {
-        this.addMessage(response.botResponse, 'bot');
-    }
-    
-    if (response.processMapHtml) {
-        this.addProcessMap(response.processMapHtml);
-    }
-    
-    if (response.collectedData) {
-        this.collectedData = response.collectedData;
-    }
-    
-    this.updateProgressBar();
-    
-    if (this.conversationHistory.length >= 6 || response.discoveryComplete) {
-        document.getElementById('downloadButton').style.display = 'flex';
-    }
-    
-    if (response.discoveryComplete) {
-        this.handleDiscoveryComplete(response.summary);
-    }
-}
-                
-                console.log('Full response from n8n:', response);
-                this.hideTypingIndicator();
-                
-                if (response.botResponse) {
-                    this.addMessage(response.botResponse, 'bot');
-                }
-                
-                if (response.processMapHtml) {
-                    this.addProcessMap(response.processMapHtml);
-                }
-                
-                if (response.collectedData) {
-                    this.collectedData = response.collectedData;
-                }
-                
-                this.updateProgressBar();
-                
-                if (this.conversationHistory.length >= 6 || response.discoveryComplete) {
-                    document.getElementById('downloadButton').style.display = 'flex';
-                }
-                
-                if (response.discoveryComplete) {
-                    this.handleDiscoveryComplete(response.summary);
-                }
-            }
-            
-            async handleFileUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                const filePreview = document.getElementById('filePreview');
-                document.getElementById('fileName').textContent = file.name;
-                filePreview.classList.add('show');
-                
-                this.showTypingIndicator();
-                
-                try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('sessionId', this.sessionId);
-                    formData.append('type', 'document_upload');
-                    
-                    const response = await fetch(this.n8nWebhookUrl, {
-                        method: 'POST',
-                        body: formData
-                    });
 
-                    const result = await response.json();
-                    
-                    this.hideTypingIndicator();
-                    
-                    if (result.collectedData) {
-                        this.collectedData = { ...this.collectedData, ...result.collectedData };
+            startNewSession() {
+                this.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                this.conversationHistory = [];
+                this.collectedData = {};
+                this.ui.chatMessages.innerHTML = '';
+                this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+            }
+
+            addMessage(text, sender) {
+                if (!text) return; // Don't add empty messages
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.innerHTML = text; // Using innerHTML to render potential HTML tags from bot
+                messageDiv.appendChild(contentDiv);
+                this.ui.chatMessages.appendChild(messageDiv);
+                this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
+
+                // Add to history *after* displaying
+                this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
+            }
+
+            async sendMessage() {
+                const messageText = this.ui.chatInput.value.trim();
+                if (!messageText) return;
+
+                this.addMessage(messageText, 'user');
+                this.ui.chatInput.value = '';
+                this.autoResizeTextarea();
+                this.showTypingIndicator();
+
+                try {
+                    const payload = {
+                        type: 'user_message',
+                        message: messageText,
+                        sessionId: this.sessionId,
+                        conversationHistory: this.conversationHistory,
+                        collectedData: this.collectedData
+                    };
+
+                    const response = await this.callN8nWebhook(payload);
+
+                    if (response && response.botResponse) {
+                        this.addMessage(response.botResponse, 'bot');
+                        this.collectedData = response.collectedData || this.collectedData;
+                        this.updateProgressBar();
+                    } else {
+                        this.addMessage("Sorry, I encountered an issue. Please try again.", "bot");
                     }
-                    if(result.botResponse) {
-                        this.addMessage(result.botResponse, 'bot');
-                    }
-                    
                 } catch (error) {
+                    console.error("Error in sendMessage:", error);
+                    this.addMessage("I'm having trouble connecting. Please check the console for details.", "bot");
+                } finally {
                     this.hideTypingIndicator();
-                    this.addMessage('Sorry, I had trouble processing that document. Please try again.', 'bot');
-                    console.error('Upload error:', error);
                 }
             }
 
             async callN8nWebhook(payload) {
-    console.log('Sending to webhook:', this.n8nWebhookUrl);
-    console.log('Payload:', payload);
-    
-    try {
-        const response = await fetch(this.n8nWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-
-        if (!response.ok) {
-            console.error(`Webhook returned an error: ${response.status} ${response.statusText}`);
-            let errorMsg = `The server responded with an error (${response.status}). This often means there's an issue in the n8n workflow.`;
-            return { botResponse: errorMsg, error: true };
-        }
-
-        const responseText = await response.text();
-        console.log('Raw response from webhook:', responseText);
-        console.log('Response length:', responseText.length);
-
-        // Check if response is actually empty
-        if (!responseText || responseText.trim() === '') {
-            console.error('Webhook returned an empty response.');
-            return { botResponse: "The server returned an empty response. The n8n workflow might have an issue.", error: true };
-        }
-
-        // Check if response is just whitespace or invalid
-        if (responseText.trim() === '' || responseText.trim() === 'null' || responseText.trim() === 'undefined') {
-            console.error('Webhook returned invalid response:', responseText);
-            return { botResponse: "The server returned an invalid response. Please check the n8n workflow.", error: true };
-        }
-
-        try {
-            const parsedResponse = JSON.parse(responseText);
-            console.log('Parsed response:', parsedResponse);
-            
-            // Validate that we have a botResponse
-            if (!parsedResponse.botResponse) {
-                console.error('Response missing botResponse field:', parsedResponse);
-                return { 
-                    botResponse: "I received a response but it was missing the expected content. Please check the workflow.", 
-                    error: true 
-                };
-            }
-            
-            return parsedResponse;
-        } catch (parseError) {
-            console.error('Failed to parse successful response as JSON:', parseError);
-            console.error('Response text that failed to parse:', responseText);
-            return { 
-                botResponse: `I received an unexpected response format from the server: "${responseText.substring(0, 100)}..."`, 
-                error: true 
-            };
-        }
-
-    } catch (networkError) {
-        console.error('Network error calling webhook:', networkError);
-        return { botResponse: "I'm having trouble connecting to the server. Please check your network connection and the webhook URL.", error: true };
-    }
-}
-            
-            addMessage(text, sender) {
-                const messagesContainer = document.getElementById('chatMessages');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${sender}`;
-                
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'message-content';
-                contentDiv.innerHTML = text; 
-                
-                messageDiv.appendChild(contentDiv);
-                messagesContainer.appendChild(messageDiv);
-                
-                // Only add to local history if it's not a resumed message
-                if (sender !== 'system') {
-                    this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
-                }
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            addProcessMap(processMapHtml) {
-                const messagesContainer = document.getElementById('chatMessages');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message bot';
-                
-                messageDiv.innerHTML = processMapHtml;
-                
-                messagesContainer.appendChild(messageDiv);
-                
-                setTimeout(() => {
-                    try {
-                        mermaid.run({
-                            nodes: messageDiv.querySelectorAll('.mermaid'),
-                        });
-                    } catch(e) {
-                        console.error("Mermaid run error:", e);
-                    }
-                }, 100);
-                
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            showTypingIndicator() {
-                document.getElementById('typingIndicator').style.display = 'block';
-                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-            }
-            
-            hideTypingIndicator() {
-                document.getElementById('typingIndicator').style.display = 'none';
-            }
-            
-            handleDiscoveryComplete(summary) {
-                document.getElementById('downloadButton').style.display = 'flex';
-                setTimeout(() => {
-                    this.addMessage(`Perfect! I have all the information I need. Here's a summary: ${summary}`, 'bot');
-                    setTimeout(() => {
-                        this.addMessage('A member of our team will reach out within 24 hours to schedule a demo. You can also download a detailed report now. Thank you!', 'bot');
-                    }, 1500);
-                }, 1000);
-            }
-            
-            downloadReport() {
-                const reportContent = this.generateReportContent();
-                const blob = new Blob([reportContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                
-                const companyName = this.collectedData.companyName || 'Discovery-Report';
-                const sanitizedCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '-');
-                const timestamp = new Date().toISOString().split('T')[0];
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${sanitizedCompanyName}-ERP-Discovery-${timestamp}.html`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                this.addMessage('📄 Your discovery report has been downloaded!', 'bot');
-            }
-            
-            generateReportContent() {
-                const companyName = this.collectedData.companyName || 'Unknown Company';
-                const currentDate = new Date().toLocaleDateString();
-                const currentTime = new Date().toLocaleTimeString();
-                
-                const businessInsights = this.generateBusinessInsights();
-                const demoRecommendations = this.generateDemoRecommendations();
-                const processMapSVG = this.extractProcessMapSVG();
-                
-                const meaningfulConversation = this.conversationHistory
-                    .filter(msg => !msg.text.includes("Hi! I'm here to learn"))
-                    .map(msg => `
-                        <div class="conversation-item">
-                            <div class="speaker">${msg.sender === 'user' ? '👤 Client' : '🤖 Discovery Specialist'}</div>
-                            <div class="timestamp">${new Date(msg.timestamp).toLocaleTimeString()}</div>
-                            <div class="message-text">${msg.text}</div>
-                        </div>
-                    `).join('');
-                
-                const dataCategories = this.organizeDataByCategory();
-                
-                return `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>ERP Discovery Report - ${companyName}</title>
-                        <style>
-                            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; padding: 20px; }
-                            .report-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
-                            .report-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; text-align: center; }
-                            .report-header h1 { font-size: 32px; margin-bottom: 10px; }
-                            .report-header h2 { font-size: 24px; margin-bottom: 5px; }
-                            .report-meta { background: #2c3e50; color: #ecf0f1; padding: 15px 40px; display: flex; justify-content: space-between; font-size: 14px; }
-                            .section { padding: 40px; border-bottom: 1px solid #eee; }
-                            .section h2 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
-                            .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-                            .data-category { background: #f8f9fa; border-radius: 8px; padding: 20px; }
-                            .data-category h4 { color: #2c3e50; margin-bottom: 15px; font-size: 16px; }
-                            .data-list { list-style: none; padding: 0; }
-                            .data-list li { padding: 8px 0; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; }
-                            .data-label { font-weight: 600; }
-                            .process-map-svg { text-align: center; margin: 20px 0; }
-                            .conversation-log { margin-top: 20px; }
-                            .conversation-item { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #667eea; }
-                            .speaker { font-weight: bold; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="report-container">
-                            <div class="report-header">
-                                <h1>ERP Discovery Report</h1>
-                                <h2>${companyName}</h2>
-                            </div>
-                            <div class="report-meta">
-                                <div><strong>Report Generated:</strong> ${currentDate} at ${currentTime}</div>
-                                <div><strong>Session ID:</strong> ${this.sessionId}</div>
-                            </div>
-                            <div class="section">
-                                <h2>🏢 Business Information</h2>
-                                <div class="data-grid">
-                                    ${Object.entries(dataCategories).map(([category, items]) => `
-                                        <div class="data-category">
-                                            <h4>${category}</h4>
-                                            <ul class="data-list">
-                                                ${items.map(item => `<li><span class="data-label">${item.label}:</span> <span>${item.value}</span></li>`).join('')}
-                                            </ul>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <div class="section">
-                                <h2>🔄 Business Process Analysis</h2>
-                                <div class="process-map-svg">${processMapSVG || '<p>No process map was generated.</p>'}</div>
-                            </div>
-                            <div class="section">
-                                <h2>💬 Discovery Conversation Log</h2>
-                                <div class="conversation-log">${meaningfulConversation}</div>
-                            </div>
-                        </div>
-                    </body>
-                    </html>
-                `;
-            }
-
-            generateBusinessInsights() {
-                const data = this.collectedData;
-                const painPoints = (data.painPoints || []).map(pain => `<li>${pain}</li>`).join('');
-                return {
-                    painPoints: painPoints || '<li>No specific pain points identified.</li>'
-                };
-            }
-
-            generateDemoRecommendations() {
-                return {
-                    focus: 'End-to-End Process Integration',
-                    duration: '60-90 minutes',
-                    scenarios: ['Order-to-cash process', 'Procure-to-pay process', 'Inventory and warehouse management']
-                };
-            }
-
-            organizeDataByCategory() {
-                const data = this.collectedData;
-                const categories = {
-                    'Company Profile': [
-                        { label: 'Company Name', value: data.companyName },
-                        { label: 'Food Vertical', value: data.foodVertical },
-                        { label: 'Business Model', value: data.businessModel }
-                    ],
-                    'Operational Scale': [
-                        { label: 'Facilities', value: data.facilities },
-                        { label: 'SKU Count', value: data.skuCount },
-                        { label: 'Customer Count', value: data.customerCount }
-                    ],
-                    'Systems & Decisions': [
-                        { label: 'Current ERP', value: data.currentERP },
-                        { label: 'Decision Makers', value: Array.isArray(data.decisionMakers) ? data.decisionMakers.join(', ') : data.decisionMakers }
-                    ],
-                    'Project Context': [
-                        { label: 'Timeline', value: data.timeline }
-                    ]
-                };
-                
-                Object.keys(categories).forEach(category => {
-                    categories[category] = categories[category].filter(item => item.value);
-                    if (categories[category].length === 0) delete categories[category];
+                console.log("Sending payload to n8n:", payload);
+                const response = await fetch(this.n8nWebhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-                return categories;
-            }
 
-            extractProcessMapSVG() {
-                const processMapElements = document.querySelectorAll('.mermaid svg');
-                if (processMapElements.length > 0) {
-                    const lastSVG = processMapElements[processMapElements.length - 1];
-                    return lastSVG.outerHTML;
+                if (!response.ok) {
+                    throw new Error(`Webhook failed with status: ${response.status}`);
                 }
-                return null;
+                
+                const responseData = await response.json();
+                console.log("Received data from n8n:", responseData);
+                return responseData;
             }
             
             updateProgressBar() {
-                const progressContainer = document.getElementById('progressContainer');
-                if (this.conversationHistory.length >= 2) {
-                    progressContainer.style.display = 'block';
+                if (Object.keys(this.collectedData).length > 0) {
+                    this.ui.progressContainer.style.display = 'block';
                 }
-                this.updateAreaTags();
-            }
-            
-            updateAreaTags() {
-                const data = this.collectedData;
                 const areas = {
-                    companyProfile: !!(data.companyName && data.foodVertical && data.businessModel),
-                    processFlow: !!(data.processSteps && Array.isArray(data.processSteps) && data.processSteps.length >= 3),
-                    systemsAndDecisions: !!(data.currentERP && data.decisionMakers && Array.isArray(data.decisionMakers) && data.decisionMakers.length >= 1),
-                    operationalScale: !!(data.facilities && data.skuCount && data.customerCount),
-                    painPoints: !!(data.painPoints && Array.isArray(data.painPoints) && data.painPoints.length >= 2),
-                    timeline: !!(data.timeline && data.decisionMakers)
+                    companyProfile: !!(this.collectedData.companyName && this.collectedData.foodVertical && this.collectedData.businessModel),
+                    // Add other area checks as needed
                 };
                 
                 Object.entries(areas).forEach(([areaName, completed]) => {
                     const tag = document.querySelector(`[data-area="${areaName}"]`);
                     if (tag) {
                         tag.className = `area-tag ${completed ? 'completed' : 'incomplete'}`;
-                    } else {
-                        console.warn(`Could not find progress tag for area: ${areaName}`);
                     }
                 });
             }
 
-            runFullTestCase() {
-                this.addMessage("🧪 Running full test case for a food manufacturer...", "bot");
+            showTypingIndicator() {
+                this.ui.typingIndicator.style.display = 'flex';
+                this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
+            }
 
+            hideTypingIndicator() {
+                this.ui.typingIndicator.style.display = 'none';
+            }
+
+            autoResizeTextarea() {
+                this.ui.chatInput.style.height = 'auto';
+                this.ui.chatInput.style.height = Math.min(this.ui.chatInput.scrollHeight, 120) + 'px';
+            }
+            
+            runFullTestCase() {
+                this.startNewSession();
+                this.addMessage("Running a test case for 'Gourmet Frozen Foods Inc.'...", "bot");
                 this.collectedData = {
                     companyName: "Gourmet Frozen Foods Inc.",
                     foodVertical: "Frozen Meals",
                     businessModel: "manufacturing",
-                    processSteps: ["Receiving", "QC Inspection", "Production", "Packaging", "Shipping"],
-                    currentERP: "QuickBooks and Excel",
-                    decisionMakers: ["John (CEO)", "Sarah (Operations)"],
-                    facilities: "2",
-                    skuCount: "150",
-                    customerCount: "300+",
-                    painPoints: ["Manual data entry", "Poor inventory tracking"],
-                    timeline: "3-6 months"
                 };
-
-                const sampleProcessMapHtml = `
-                <div class="process-map-container">
-                    <div class="process-map-header">
-                        <h3>📊 Gourmet Frozen Foods Inc. - Process Flow Map</h3>
-                    </div>
-                    <div class="mermaid">
-                        graph TD
-                            A[Receiving] --> B(QC Inspection);
-                            B --> C{Production Planning};
-                            C --> D[Manufacturing];
-                            D --> E(In-Process QC);
-                            E --> F[Packaging];
-                            F --> G((Finished Goods));
-                            G --> H{Order Fulfillment};
-                            H --> I[Shipping];
-                            
-                            style A fill:#e8f5e8,stroke:#4caf50
-                            style D fill:#e8f5e8,stroke:#4caf50
-                            style I fill:#e8f5e8,stroke:#4caf50
-                            style B fill:#fff3e0,stroke:#ff9800
-                            style E fill:#fff3e0,stroke:#ff9800
-                    </div>
-                    <div class="process-insights">
-                        <h4>Insights</h4>
-                        <ul>
-                            <li>Key pain point: Inventory tracking between Production and Finished Goods.</li>
-                            <li>Decision point: Production Planning determines the daily schedule.</li>
-                        </ul>
-                    </div>
-                </div>`;
-
-                this.addProcessMap(sampleProcessMapHtml);
                 this.updateProgressBar();
-                document.getElementById('downloadButton').style.display = 'flex';
-                this.addMessage("✅ Test case loaded. All data is populated, the process map is displayed, and the download report button is now active.", "bot");
+                this.addMessage("Test data has been loaded. Please ask me a question.", "bot");
             }
         }
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             new DiscoveryChat();
         });
