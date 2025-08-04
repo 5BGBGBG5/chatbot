@@ -170,7 +170,7 @@
                         this.sendMessage();
                     }
                 });
-                // Add listener for download button later if needed
+                // Note: The download report functionality is not fully implemented in this version
             }
 
             startNewSession() {
@@ -189,7 +189,7 @@
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
                 contentDiv.innerHTML = text;
-                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(messageDiv);
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
@@ -276,6 +276,8 @@
                 // Show download button when 4 or more areas are complete
                 if (completedCount >= 4) {
                     this.ui.downloadButton.style.display = 'flex';
+                } else {
+                    this.ui.downloadButton.style.display = 'none';
                 }
             }
 
