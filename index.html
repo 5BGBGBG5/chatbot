@@ -526,44 +526,71 @@
                     console.error('Upload error:', error);
                 }
             }
-            
+
             async callN8nWebhook(payload) {
-                console.log('Sending to webhook:', this.n8nWebhookUrl);
-                console.log('Payload:', payload);
-                
-                try {
-                    const response = await fetch(this.n8nWebhookUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+    console.log('Sending to webhook:', this.n8nWebhookUrl);
+    console.log('Payload:', payload);
+    
+    try {
+        const response = await fetch(this.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-                    const responseText = await response.text();
-                    console.log('Raw response from webhook:', responseText);
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
 
-                    if (!response.ok) {
-                        console.error(`Webhook returned an error: ${response.status} ${response.statusText}`);
-                        let errorMsg = `The server responded with an error (${response.status}). This often means there's an issue in the n8n workflow.`;
-                        return { botResponse: errorMsg, error: true };
-                    }
+        if (!response.ok) {
+            console.error(`Webhook returned an error: ${response.status} ${response.statusText}`);
+            let errorMsg = `The server responded with an error (${response.status}). This often means there's an issue in the n8n workflow.`;
+            return { botResponse: errorMsg, error: true };
+        }
 
-                    if (!responseText) {
-                        console.error('Webhook returned an empty response.');
-                        return { botResponse: "The server returned an empty response. The n8n workflow might have an issue.", error: true };
-                    }
+        const responseText = await response.text();
+        console.log('Raw response from webhook:', responseText);
+        console.log('Response length:', responseText.length);
 
-                    try {
-                        return JSON.parse(responseText);
-                    } catch (parseError) {
-                        console.error('Failed to parse successful response as JSON:', parseError);
-                        return { botResponse: `I received an unexpected response from the server. Please check the n8n workflow's output.`, error: true };
-                    }
+        // Check if response is actually empty
+        if (!responseText || responseText.trim() === '') {
+            console.error('Webhook returned an empty response.');
+            return { botResponse: "The server returned an empty response. The n8n workflow might have an issue.", error: true };
+        }
 
-                } catch (networkError) {
-                    console.error('Network error calling webhook:', networkError);
-                    return { botResponse: "I'm having trouble connecting to the server. Please check your network connection and the webhook URL.", error: true };
-                }
+        // Check if response is just whitespace or invalid
+        if (responseText.trim() === '' || responseText.trim() === 'null' || responseText.trim() === 'undefined') {
+            console.error('Webhook returned invalid response:', responseText);
+            return { botResponse: "The server returned an invalid response. Please check the n8n workflow.", error: true };
+        }
+
+        try {
+            const parsedResponse = JSON.parse(responseText);
+            console.log('Parsed response:', parsedResponse);
+            
+            // Validate that we have a botResponse
+            if (!parsedResponse.botResponse) {
+                console.error('Response missing botResponse field:', parsedResponse);
+                return { 
+                    botResponse: "I received a response but it was missing the expected content. Please check the workflow.", 
+                    error: true 
+                };
             }
+            
+            return parsedResponse;
+        } catch (parseError) {
+            console.error('Failed to parse successful response as JSON:', parseError);
+            console.error('Response text that failed to parse:', responseText);
+            return { 
+                botResponse: `I received an unexpected response format from the server: "${responseText.substring(0, 100)}..."`, 
+                error: true 
+            };
+        }
+
+    } catch (networkError) {
+        console.error('Network error calling webhook:', networkError);
+        return { botResponse: "I'm having trouble connecting to the server. Please check your network connection and the webhook URL.", error: true };
+    }
+}
             
             addMessage(text, sender) {
                 const messagesContainer = document.getElementById('chatMessages');
