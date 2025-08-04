@@ -170,7 +170,6 @@
                         this.sendMessage();
                     }
                 });
-                // ADDED: Event listener for the download button
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
             }
 
@@ -180,7 +179,7 @@
                 this.collectedData = {};
                 this.ui.chatMessages.innerHTML = '';
                 this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
-                this.updateProgressBar(); // Initial update
+                this.updateProgressBar();
             }
 
             addMessage(text, sender) {
@@ -192,8 +191,7 @@
                 contentDiv.className = 'message-content';
                 contentDiv.innerHTML = text;
                 
-                // This is the corrected line:
-                messageDiv.appendChild(contentDiv); 
+                messageDiv.appendChild(contentDiv); // Correctly append content to the message container
                 
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
@@ -225,7 +223,7 @@
                     if (response && response.botResponse) {
                         this.addMessage(response.botResponse, 'bot');
                         this.collectedData = response.collectedData || this.collectedData;
-                        this.updateProgressBar(); // Update progress after getting new data
+                        this.updateProgressBar();
                     } else {
                         this.addMessage("Sorry, I received an unexpected response. Please try again.", "bot");
                     }
@@ -258,7 +256,7 @@
                 }
 
                 const areas = {
-                    companyProfile: !!(data.companyName && data.foodVertical && data.businessModel),
+                    companyProfile: !!(data.companyName && data.contactName && data.contactEmail && data.foodVertical && data.businessModel),
                     processFlow: !!(data.processSteps && Array.isArray(data.processSteps) && data.processSteps.length > 0),
                     systemsAndDecisions: !!(data.currentERP && data.decisionMakers && Array.isArray(data.decisionMakers) && data.decisionMakers.length > 0),
                     operationalScale: !!(data.facilities && data.skuCount && data.customerCount),
@@ -278,7 +276,6 @@
                     }
                 }
 
-                // Show download button when 4 or more areas are complete
                 if (completedCount >= 4) {
                     this.ui.downloadButton.style.display = 'flex';
                 } else {
@@ -286,7 +283,6 @@
                 }
             }
 
-            // ADDED: Function to handle downloading the report
             downloadReport() {
                 const reportContent = this.generateReportContent();
                 const blob = new Blob([reportContent], { type: 'text/html' });
@@ -307,7 +303,6 @@
                 this.addMessage('📄 Your discovery report has been downloaded!', 'system');
             }
 
-            // ADDED: Function to generate the HTML content for the report
             generateReportContent() {
                 const companyName = this.collectedData.companyName || 'Unknown Company';
                 const currentDate = new Date().toLocaleDateString();
@@ -385,6 +380,8 @@
                 const data = this.collectedData;
                 const categories = {
                     'Company Profile': [
+                        { label: 'Contact Name', value: data.contactName },
+                        { label: 'Contact Email', value: data.contactEmail },
                         { label: 'Company Name', value: data.companyName },
                         { label: 'Food Vertical', value: data.foodVertical },
                         { label: 'Business Model', value: data.businessModel }
