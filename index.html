@@ -523,8 +523,6 @@
                 
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
-                // Use innerText to prevent HTML injection from bot responses, unless it's a special case.
-                // For simplicity here, we trust the bot response, but in production, this should be sanitized.
                 contentDiv.innerHTML = text; 
                 
                 messageDiv.appendChild(contentDiv);
@@ -539,12 +537,10 @@
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message bot';
                 
-                // The container for the map is part of the HTML string from the server
                 messageDiv.innerHTML = processMapHtml;
                 
                 messagesContainer.appendChild(messageDiv);
                 
-                // Re-initialize mermaid for the new diagram
                 setTimeout(() => {
                     try {
                         mermaid.run({
@@ -597,29 +593,152 @@
                 this.addMessage('📄 Your discovery report has been downloaded!', 'bot');
             }
             
+            /**
+             * RESTORED: This function now generates the full, detailed HTML report
+             * on the client-side, using the collected data. This prevents issues
+             * with malformed responses from the backend.
+             */
             generateReportContent() {
-                // This large function generates the full HTML for the downloadable report.
-                // It remains largely the same as your original, as the logic was sound.
-                // ... (The full generateReportContent function from your file would go here)
-                // For brevity, I'm showing a simplified version. You can paste your full version back in.
-                const companyName = this.collectedData.companyName || 'Your Company';
-                let dataHtml = '';
-                for (const [key, value] of Object.entries(this.collectedData)) {
-                    dataHtml += `<li><strong>${key}:</strong> ${JSON.stringify(value)}</li>`;
-                }
+                const companyName = this.collectedData.companyName || 'Unknown Company';
+                const currentDate = new Date().toLocaleDateString();
+                const currentTime = new Date().toLocaleTimeString();
+                
+                const businessInsights = this.generateBusinessInsights();
+                const demoRecommendations = this.generateDemoRecommendations();
+                const processMapSVG = this.extractProcessMapSVG();
+                
+                const meaningfulConversation = this.conversationHistory
+                    .filter(msg => !msg.text.includes("Hi! I'm here to learn"))
+                    .map(msg => `
+                        <div class="conversation-item">
+                            <div class="speaker">${msg.sender === 'user' ? '👤 Client' : '🤖 Discovery Specialist'}</div>
+                            <div class="timestamp">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                            <div class="message-text">${msg.text}</div>
+                        </div>
+                    `).join('');
+                
+                const dataCategories = this.organizeDataByCategory();
+                
                 return `
                     <!DOCTYPE html>
                     <html>
-                    <head><title>Discovery Report for ${companyName}</title></head>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>ERP Discovery Report - ${companyName}</title>
+                        <style>
+                            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; padding: 20px; }
+                            .report-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+                            .report-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; text-align: center; }
+                            .report-header h1 { font-size: 32px; margin-bottom: 10px; }
+                            .report-header h2 { font-size: 24px; margin-bottom: 5px; }
+                            .report-meta { background: #2c3e50; color: #ecf0f1; padding: 15px 40px; display: flex; justify-content: space-between; font-size: 14px; }
+                            .section { padding: 40px; border-bottom: 1px solid #eee; }
+                            .section h2 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+                            .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+                            .data-category { background: #f8f9fa; border-radius: 8px; padding: 20px; }
+                            .data-category h4 { color: #2c3e50; margin-bottom: 15px; font-size: 16px; }
+                            .data-list { list-style: none; padding: 0; }
+                            .data-list li { padding: 8px 0; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; }
+                            .data-label { font-weight: 600; }
+                            .process-map-svg { text-align: center; margin: 20px 0; }
+                            .conversation-log { margin-top: 20px; }
+                            .conversation-item { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #667eea; }
+                            .speaker { font-weight: bold; }
+                        </style>
+                    </head>
                     <body>
-                        <h1>Discovery Report for ${companyName}</h1>
-                        <h2>Collected Data:</h2>
-                        <ul>${dataHtml}</ul>
-                        <h2>Conversation History:</h2>
-                        <pre>${JSON.stringify(this.conversationHistory, null, 2)}</pre>
+                        <div class="report-container">
+                            <div class="report-header">
+                                <h1>ERP Discovery Report</h1>
+                                <h2>${companyName}</h2>
+                            </div>
+                            <div class="report-meta">
+                                <div><strong>Report Generated:</strong> ${currentDate} at ${currentTime}</div>
+                                <div><strong>Session ID:</strong> ${this.sessionId}</div>
+                            </div>
+                            <div class="section">
+                                <h2>🏢 Business Information</h2>
+                                <div class="data-grid">
+                                    ${Object.entries(dataCategories).map(([category, items]) => `
+                                        <div class="data-category">
+                                            <h4>${category}</h4>
+                                            <ul class="data-list">
+                                                ${items.map(item => `<li><span class="data-label">${item.label}:</span> <span>${item.value}</span></li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="section">
+                                <h2>🔄 Business Process Analysis</h2>
+                                <div class="process-map-svg">${processMapSVG || '<p>No process map was generated.</p>'}</div>
+                            </div>
+                            <div class="section">
+                                <h2>💬 Discovery Conversation Log</h2>
+                                <div class="conversation-log">${meaningfulConversation}</div>
+                            </div>
+                        </div>
                     </body>
                     </html>
                 `;
+            }
+
+            generateBusinessInsights() {
+                // This is a helper function for generateReportContent
+                const data = this.collectedData;
+                const painPoints = (data.painPoints || []).map(pain => `<li>${pain}</li>`).join('');
+                return {
+                    painPoints: painPoints || '<li>No specific pain points identified.</li>'
+                };
+            }
+
+            generateDemoRecommendations() {
+                // This is a helper function for generateReportContent
+                return {
+                    focus: 'End-to-End Process Integration',
+                    duration: '60-90 minutes',
+                    scenarios: ['Order-to-cash process', 'Procure-to-pay process', 'Inventory and warehouse management']
+                };
+            }
+
+            organizeDataByCategory() {
+                // This is a helper function for generateReportContent
+                const data = this.collectedData;
+                const categories = {
+                    'Company Profile': [
+                        { label: 'Company Name', value: data.companyName },
+                        { label: 'Food Vertical', value: data.foodVertical },
+                        { label: 'Business Model', value: data.businessModel }
+                    ],
+                    'Operational Scale': [
+                        { label: 'Facilities', value: data.facilities },
+                        { label: 'SKU Count', value: data.skuCount },
+                        { label: 'Customer Count', value: data.customerCount }
+                    ],
+                    'Systems & Decisions': [
+                        { label: 'Current ERP', value: data.currentERP },
+                        { label: 'Decision Makers', value: Array.isArray(data.decisionMakers) ? data.decisionMakers.join(', ') : data.decisionMakers }
+                    ],
+                    'Project Context': [
+                        { label: 'Timeline', value: data.timeline }
+                    ]
+                };
+                
+                Object.keys(categories).forEach(category => {
+                    categories[category] = categories[category].filter(item => item.value);
+                    if (categories[category].length === 0) delete categories[category];
+                });
+                return categories;
+            }
+
+            extractProcessMapSVG() {
+                // This is a helper function for generateReportContent
+                const processMapElements = document.querySelectorAll('.mermaid svg');
+                if (processMapElements.length > 0) {
+                    const lastSVG = processMapElements[processMapElements.length - 1];
+                    return lastSVG.outerHTML;
+                }
+                return null;
             }
             
             updateProgressBar() {
@@ -630,10 +749,6 @@
                 this.updateAreaTags();
             }
             
-            /**
-             * CORRECTED: This function now uses the correct keys and logic
-             * to match the HTML and the n8n workflow's criteria.
-             */
             updateAreaTags() {
                 const data = this.collectedData;
                 const areas = {
