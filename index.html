@@ -309,11 +309,7 @@
         </div>
         
         <div class="chat-messages" id="chatMessages">
-            <div class="message bot">
-                <div class="message-content">
-                    Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?
-                </div>
-            </div>
+            <!-- Messages will be dynamically added here -->
         </div>
         
         <div class="typing-indicator" id="typingIndicator">
@@ -347,13 +343,70 @@
     <script>
         class DiscoveryChat {
             constructor() {
-                this.sessionId = this.generateSessionId();
+                // MODIFIED for session handling
+                this.sessionId = null; 
                 this.conversationHistory = [];
                 this.collectedData = {};
                 this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat';
                 
                 this.initializeEventListeners();
                 this.autoResizeTextarea();
+                this.handleSessionInit(); // ADDED to check for existing sessions on load
+            }
+
+            // ADDED: This new function handles session startup
+            async handleSessionInit() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const sessionIdFromUrl = urlParams.get('sessionId');
+
+                if (sessionIdFromUrl) {
+                    // A session ID was found in the URL, let's try to resume it
+                    this.sessionId = sessionIdFromUrl;
+                    this.addMessage("Resuming your previous session...", "bot");
+                    this.showTypingIndicator();
+
+                    const response = await this.callN8nWebhook({
+                        type: 'resume_session',
+                        sessionId: this.sessionId
+                    });
+                    
+                    this.hideTypingIndicator();
+                    this.repopulateChat(response);
+
+                } else {
+                    // No session ID found, start a fresh session
+                    this.sessionId = this.generateSessionId();
+                    this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                }
+            }
+
+            // ADDED: This new function repopulates the chat window with old messages
+            repopulateChat(sessionData) {
+                const messagesContainer = document.getElementById('chatMessages');
+                messagesContainer.innerHTML = ''; // Clear the chat
+
+                if (!sessionData || !sessionData.conversationHistory || sessionData.conversationHistory.length === 0) {
+                    this.addMessage("Sorry, I couldn't find that session, or it was empty. Let's start a new one.", "bot");
+                    return;
+                }
+
+                this.conversationHistory = sessionData.conversationHistory;
+                this.collectedData = sessionData.collectedData;
+
+                this.conversationHistory.forEach(message => {
+                    // This is a simplified addMessage to avoid re-adding to history
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${message.sender}`;
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'message-content';
+                    contentDiv.innerHTML = message.text;
+                    messageDiv.appendChild(contentDiv);
+                    messagesContainer.appendChild(messageDiv);
+                });
+
+                this.addMessage("We're right back where we left off!", "bot");
+                this.updateProgressBar();
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
             
             generateSessionId() {
@@ -406,8 +459,7 @@
                     type: 'user_message',
                     message: message,
                     sessionId: this.sessionId,
-                    conversationHistory: this.conversationHistory,
-                    collectedData: this.collectedData
+                    // The conversation history is now managed on the backend, but we send the new message
                 });
                 
                 console.log('Full response from n8n:', response);
@@ -417,19 +469,16 @@
                     this.addMessage(response.botResponse, 'bot');
                 }
                 
-                // Check if response contains process map data and add it to the chat
                 if (response.processMapHtml) {
                     this.addProcessMap(response.processMapHtml);
                 }
                 
                 if (response.collectedData) {
-                    this.collectedData = { ...this.collectedData, ...response.collectedData };
+                    this.collectedData = response.collectedData;
                 }
                 
-                // Update progress bar based on the latest data
                 this.updateProgressBar();
                 
-                // Show download button after a few exchanges or if discovery is complete
                 if (this.conversationHistory.length >= 6 || response.discoveryComplete) {
                     document.getElementById('downloadButton').style.display = 'flex';
                 }
@@ -450,7 +499,6 @@
                 this.showTypingIndicator();
                 
                 try {
-                    // NOTE: n8n webhook must be configured to handle multipart/form-data
                     const formData = new FormData();
                     formData.append('file', file);
                     formData.append('sessionId', this.sessionId);
@@ -465,8 +513,8 @@
                     
                     this.hideTypingIndicator();
                     
-                    if (result.extractedInfo) {
-                        this.collectedData = { ...this.collectedData, ...result.extractedInfo };
+                    if (result.collectedData) {
+                        this.collectedData = { ...this.collectedData, ...result.collectedData };
                     }
                     if(result.botResponse) {
                         this.addMessage(result.botResponse, 'bot');
@@ -529,7 +577,10 @@
                 messageDiv.appendChild(contentDiv);
                 messagesContainer.appendChild(messageDiv);
                 
-                this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
+                // Only add to local history if it's not a resumed message
+                if (sender !== 'system') {
+                    this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
+                }
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
             
@@ -762,13 +813,9 @@
                 });
             }
 
-            /**
-             * ADDED: This function runs a full test case for a food manufacturer.
-             */
             runFullTestCase() {
                 this.addMessage("🧪 Running full test case for a food manufacturer...", "bot");
 
-                // 1. Define the test data
                 this.collectedData = {
                     companyName: "Gourmet Frozen Foods Inc.",
                     foodVertical: "Frozen Meals",
@@ -783,7 +830,6 @@
                     timeline: "3-6 months"
                 };
 
-                // 2. Define a sample process map HTML that would come from the webhook
                 const sampleProcessMapHtml = `
                 <div class="process-map-container">
                     <div class="process-map-header">
@@ -815,20 +861,13 @@
                     </div>
                 </div>`;
 
-                // 3. Add the process map to the chat
                 this.addProcessMap(sampleProcessMapHtml);
-
-                // 4. Update the progress bar UI
                 this.updateProgressBar();
-
-                // 5. Show the download button
                 document.getElementById('downloadButton').style.display = 'flex';
-
                 this.addMessage("✅ Test case loaded. All data is populated, the process map is displayed, and the download report button is now active.", "bot");
             }
         }
         
-        // Initialize chat when page loads
         document.addEventListener('DOMContentLoaded', () => {
             new DiscoveryChat();
         });
