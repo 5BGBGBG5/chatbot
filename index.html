@@ -186,6 +186,8 @@
     <script>
         class DiscoveryChat {
             constructor() {
+                console.log('DiscoveryChat constructor called');
+                
                 // Core properties
                 this.sessionId = null;
                 this.conversationHistory = [];
@@ -204,6 +206,14 @@
                     sessionStatus: document.getElementById('sessionStatus'),
                     startOverButton: document.getElementById('startOverButton'),
                 };
+
+                // Check if all UI elements were found
+                console.log('UI Elements found:', this.ui);
+                Object.entries(this.ui).forEach(([key, element]) => {
+                    if (!element) {
+                        console.error(`UI element not found: ${key}`);
+                    }
+                });
 
                 // Initialization
                 this.initializeEventListeners();
@@ -258,7 +268,7 @@
                         this.addMessage("Welcome back! I've restored your previous conversation. Feel free to continue where we left off.", "system", false);
                     } else {
                         // Session exists but no conversation yet
-                        this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                        this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot", true);
                     }
                 } else {
                     console.log('Creating new session');
@@ -268,7 +278,7 @@
                     this.conversationHistory = [];
                     this.collectedData = {};
                     this.ui.chatMessages.innerHTML = '';
-                    this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                    this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot", true);
                     
                     // Save the new session immediately
                     this.saveSessionToStorage();
@@ -276,6 +286,8 @@
                 
                 this.updateProgressBar();
                 console.log('Session started. ID:', this.sessionId);
+                console.log('Chat messages container:', this.ui.chatMessages);
+                console.log('Number of messages in UI:', this.ui.chatMessages.children.length);
             }
 
             // Save session to localStorage
@@ -596,8 +608,26 @@
 
         // Initialize the chat when the page is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
-            new DiscoveryChat();
+            console.log('DOM loaded, initializing chat...');
+            try {
+                new DiscoveryChat();
+            } catch (error) {
+                console.error('Error initializing chat:', error);
+            }
         });
+
+        // Fallback initialization in case DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            // Document is still loading, wait for DOMContentLoaded
+        } else {
+            // Document is already loaded
+            console.log('Document already loaded, initializing chat immediately...');
+            try {
+                new DiscoveryChat();
+            } catch (error) {
+                console.error('Error initializing chat:', error);
+            }
+        }
     </script>
 </body>
 </html>
