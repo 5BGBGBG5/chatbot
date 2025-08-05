@@ -633,6 +633,8 @@
                         collectedData: this.collectedData
                     };
 
+                    console.log('Sending payload:', JSON.stringify(payload, null, 2));
+
                     const response = await this.callN8nWebhook(payload);
 
                     if (response && response.botResponse) {
@@ -648,28 +650,72 @@
                         this.updateResearchButton();
                         this.saveSessionToStorage();
                     } else {
+                        console.error('Invalid response structure:', response);
                         this.addMessage("Sorry, I received an unexpected response. Please try again.", "bot");
                     }
                 } catch (error) {
-                    console.error("Error during sendMessage:", error);
-                    this.addMessage("I'm having trouble connecting to the server. Please try again later.", "bot");
+                    console.error("Detailed error during sendMessage:", error);
+                    console.error("Error stack:", error.stack);
+                    
+                    // More specific error messages
+                    if (error.message.includes('JSON')) {
+                        this.addMessage("I'm having trouble processing the server response. Please try again.", "bot");
+                    } else if (error.message.includes('fetch')) {
+                        this.addMessage("I'm having trouble connecting to the server. Please check your internet connection.", "bot");
+                    } else {
+                        this.addMessage("I'm having trouble connecting to the server. Please try again later.", "bot");
+                    }
                 } finally {
                     this.hideTypingIndicator();
                 }
             }
 
             async callN8nWebhook(payload) {
-                const response = await fetch(this.n8nWebhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                try {
+                    console.log('Sending payload to webhook:', payload);
+                    
+                    const response = await fetch(this.n8nWebhookUrl, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`Webhook failed with status: ${response.status}`);
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`Webhook failed with status: ${response.status}`, errorText);
+                        throw new Error(`Webhook failed with status: ${response.status} - ${errorText}`);
+                    }
+                    
+                    const responseText = await response.text();
+                    console.log('Raw response text:', responseText);
+                    
+                    // Check if response is empty
+                    if (!responseText || responseText.trim() === '') {
+                        console.error('Empty response from webhook');
+                        throw new Error('Empty response from webhook');
+                    }
+                    
+                    // Try to parse JSON
+                    try {
+                        const jsonResponse = JSON.parse(responseText);
+                        console.log('Parsed JSON response:', jsonResponse);
+                        return jsonResponse;
+                    } catch (parseError) {
+                        console.error('Failed to parse JSON response:', parseError);
+                        console.error('Response text that failed to parse:', responseText);
+                        throw new Error(`Invalid JSON response: ${parseError.message}`);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error in callN8nWebhook:', error);
+                    throw error;
                 }
-                
-                return await response.json();
             }
 
             updateResearchButton() {
