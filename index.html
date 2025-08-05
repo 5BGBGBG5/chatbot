@@ -323,7 +323,7 @@
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
                 this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
                 
-                // Add click listeners to progress area tags with debugging
+                // Add click listeners to progress area tags with proper scope binding
                 if (this.ui.progressAreas) {
                     this.ui.progressAreas.addEventListener('click', (e) => {
                         console.log('Progress area clicked:', e.target);
@@ -333,6 +333,7 @@
                         if (e.target.classList.contains('area-tag')) {
                             const areaName = e.target.dataset.area;
                             console.log('Toggling details for:', areaName);
+                            console.log('this.toggleProgressDetails exists:', typeof this.toggleProgressDetails);
                             this.toggleProgressDetails(areaName);
                         }
                     });
@@ -754,6 +755,164 @@
 
             hideTypingIndicator() {
                 this.ui.typingIndicator.style.display = 'none';
+            }
+
+            // Toggle progress details panel
+            toggleProgressDetails(areaName = null) {
+                console.log('toggleProgressDetails called with:', areaName);
+                const isCurrentlyOpen = this.ui.progressDetails.classList.contains('show');
+                console.log('Panel currently open:', isCurrentlyOpen);
+                
+                if (isCurrentlyOpen) {
+                    // Close the panel
+                    this.ui.progressDetails.classList.remove('show');
+                    console.log('Closing panel');
+                } else {
+                    // Open the panel and show details
+                    console.log('Opening panel and generating details');
+                    this.generateProgressDetails(areaName);
+                    this.ui.progressDetails.classList.add('show');
+                    console.log('Panel should now be visible');
+                }
+            }
+
+            // Generate detailed progress content
+            generateProgressDetails(focusArea = null) {
+                console.log('generateProgressDetails called with:', focusArea);
+                const data = this.collectedData;
+                console.log('Current collected data:', data);
+                
+                const sections = [
+                    {
+                        id: 'companyProfile',
+                        name: 'Company Profile',
+                        icon: '🏢',
+                        fields: [
+                            { key: 'companyName', label: 'Company Name' },
+                            { key: 'contactName', label: 'Contact Name' },
+                            { key: 'contactEmail', label: 'Contact Email' },
+                            { key: 'foodVertical', label: 'Food Vertical' },
+                            { key: 'businessModel', label: 'Business Model' }
+                        ]
+                    },
+                    {
+                        id: 'processFlow',
+                        name: 'Process Flow',
+                        icon: '🔄',
+                        fields: [
+                            { key: 'processSteps', label: 'Process Steps', isArray: true }
+                        ]
+                    },
+                    {
+                        id: 'systemsAndDecisions',
+                        name: 'Systems & Decisions',
+                        icon: '⚙️',
+                        fields: [
+                            { key: 'currentERP', label: 'Current ERP System' },
+                            { key: 'decisionMakers', label: 'Decision Makers', isArray: true }
+                        ]
+                    },
+                    {
+                        id: 'operationalScale',
+                        name: 'Operations Scale',
+                        icon: '📊',
+                        fields: [
+                            { key: 'facilities', label: 'Facilities' },
+                            { key: 'skuCount', label: 'SKU Count' },
+                            { key: 'customerCount', label: 'Customer Count' }
+                        ]
+                    },
+                    {
+                        id: 'painPoints',
+                        name: 'Pain Points',
+                        icon: '⚠️',
+                        fields: [
+                            { key: 'painPoints', label: 'Pain Points', isArray: true }
+                        ]
+                    },
+                    {
+                        id: 'timeline',
+                        name: 'Timeline',
+                        icon: '⏰',
+                        fields: [
+                            { key: 'timeline', label: 'Implementation Timeline' }
+                        ]
+                    }
+                ];
+
+                // Filter sections if focusing on one area
+                const sectionsToShow = focusArea ? sections.filter(s => s.id === focusArea) : sections;
+                console.log('Sections to show:', sectionsToShow.map(s => s.name));
+                
+                let html = '';
+                
+                sectionsToShow.forEach(section => {
+                    const hasData = section.fields.some(field => {
+                        const value = data[field.key];
+                        return value && (typeof value === 'string' ? value.trim() : true) && 
+                               (Array.isArray(value) ? value.length > 0 : true);
+                    });
+                    
+                    if (hasData || Object.keys(data).length === 0) {
+                        html += `
+                            <div class="detail-section">
+                                <div class="section-header">
+                                    <span>${section.icon} ${section.name}</span>
+                                    <button class="close-details" onclick="document.getElementById('progressDetails').classList.remove('show')">×</button>
+                                </div>
+                                <div class="section-content">
+                        `;
+                        
+                        section.fields.forEach(field => {
+                            const value = data[field.key];
+                            let displayValue = '';
+                            
+                            if (value) {
+                                if (field.isArray && Array.isArray(value)) {
+                                    displayValue = value.join(', ');
+                                } else if (Array.isArray(value)) {
+                                    displayValue = value.join(', ');
+                                } else {
+                                    displayValue = value.toString();
+                                }
+                            }
+                            
+                            html += `
+                                <div class="data-item">
+                                    <span class="data-label">${field.label}:</span>
+                                    <span class="${displayValue ? 'data-value' : 'data-empty'}">
+                                        ${displayValue || 'Not collected yet'}
+                                    </span>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                if (html === '') {
+                    html = `
+                        <div class="detail-section">
+                            <div class="section-header">
+                                <span>📋 Discovery Progress</span>
+                                <button class="close-details" onclick="document.getElementById('progressDetails').classList.remove('show')">×</button>
+                            </div>
+                            <div class="section-content">
+                                <div class="data-item">
+                                    <span class="data-empty">Start chatting to see your information appear here!</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                console.log('Generated HTML length:', html.length);
+                this.ui.detailsContent.innerHTML = html;
+                console.log('Details content updated');
             }
         }
 
