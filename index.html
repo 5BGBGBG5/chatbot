@@ -34,9 +34,42 @@
             padding: 20px;
             text-align: center;
             border-bottom: 4px solid #667eea;
+            position: relative;
         }
         .chat-header h2 { font-weight: 600; }
         .chat-header p { font-weight: 300; opacity: 0.9; font-size: 0.9em; }
+        .session-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .control-button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .control-button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .session-status {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 12px;
+            opacity: 0.8;
+            display: none;
+        }
+        .session-status.restored {
+            display: block;
+            color: #4CAF50;
+        }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -46,6 +79,7 @@
         .message { margin-bottom: 15px; display: flex; animation: fadeIn 0.3s ease-in; }
         .message.bot { justify-content: flex-start; }
         .message.user { justify-content: flex-end; }
+        .message.system { justify-content: center; }
         .message-content {
             max-width: 85%;
             padding: 12px 18px;
@@ -56,6 +90,14 @@
         }
         .message.bot .message-content { background: #e9ecef; color: #212529; border-bottom-left-radius: 4px; }
         .message.user .message-content { background: #667eea; color: white; border-bottom-right-radius: 4px; }
+        .message.system .message-content { 
+            background: #fff3cd; 
+            color: #856404; 
+            border: 1px solid #ffeaa7; 
+            font-size: 14px; 
+            max-width: 95%;
+            text-align: center;
+        }
         .chat-input-container { padding: 15px 20px; border-top: 1px solid #e0e0e0; background: #f1f3f5; }
         .input-wrapper { display: flex; gap: 10px; align-items: flex-end; }
         .chat-input {
@@ -109,6 +151,11 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
+            <div class="session-status" id="sessionStatus">Session restored</div>
+            <div class="session-controls">
+                <button class="control-button" id="copyUrlButton" title="Copy session URL">🔗 Copy URL</button>
+                <button class="control-button" id="startOverButton" title="Start new conversation">🔄 Start Over</button>
+            </div>
             <h2>Inecta Food ERP Discovery</h2>
             <p>Let's learn about your food business needs</p>
             <!-- Progress Bar HTML -->
@@ -155,6 +202,9 @@
                     typingIndicator: document.getElementById('typingIndicator'),
                     progressContainer: document.getElementById('progressContainer'),
                     progressAreas: document.getElementById('progressAreas'),
+                    sessionStatus: document.getElementById('sessionStatus'),
+                    copyUrlButton: document.getElementById('copyUrlButton'),
+                    startOverButton: document.getElementById('startOverButton'),
                 };
 
                 // Initialization
@@ -171,19 +221,117 @@
                     }
                 });
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
+                this.ui.copyUrlButton.addEventListener('click', () => this.copySessionUrl());
+                this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
             }
 
             startNewSession() {
-                this.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                this.conversationHistory = [];
-                this.collectedData = {};
-                this.ui.chatMessages.innerHTML = '';
-                this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                // Try to restore existing session first
+                const savedSession = this.loadSessionFromStorage();
+                
+                if (savedSession) {
+                    // Restore previous session
+                    this.sessionId = savedSession.sessionId;
+                    this.conversationHistory = savedSession.conversationHistory || [];
+                    this.collectedData = savedSession.collectedData || {};
+                    
+                    // Clear and restore chat messages to UI
+                    this.ui.chatMessages.innerHTML = '';
+                    this.conversationHistory.forEach(msg => {
+                        if (msg.sender !== 'system') { // Don't restore system messages
+                            this.addMessage(msg.text, msg.sender, false); // false = don't add to history again
+                        }
+                    });
+                    
+                    // Show session restored indicator
+                    this.ui.sessionStatus.classList.add('restored');
+                    setTimeout(() => {
+                        this.ui.sessionStatus.classList.remove('restored');
+                    }, 3000);
+                    
+                    // If no conversation history, show welcome message
+                    if (this.conversationHistory.length === 0) {
+                        this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                    } else {
+                        // Add a welcome back message
+                        this.addMessage("Welcome back! I've restored your previous conversation. Feel free to continue where we left off.", "system");
+                    }
+                } else {
+                    // Create new session
+                    this.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    this.conversationHistory = [];
+                    this.collectedData = {};
+                    this.ui.chatMessages.innerHTML = '';
+                    this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                }
+                
                 this.updateProgressBar();
             }
 
-            addMessage(text, sender) {
+            // Save session to localStorage
+            saveSessionToStorage() {
+                const sessionData = {
+                    sessionId: this.sessionId,
+                    conversationHistory: this.conversationHistory,
+                    collectedData: this.collectedData,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                try {
+                    localStorage.setItem('discovery_session', JSON.stringify(sessionData));
+                } catch (error) {
+                    console.error('Error saving session to storage:', error);
+                }
+            }
+
+            // Load session from localStorage
+            loadSessionFromStorage() {
+                try {
+                    const saved = localStorage.getItem('discovery_session');
+                    if (!saved) return null;
+                    
+                    const sessionData = JSON.parse(saved);
+                    
+                    // Check if session is too old (older than 7 days)
+                    const lastUpdated = new Date(sessionData.lastUpdated);
+                    const daysSinceUpdate = (new Date() - lastUpdated) / (1000 * 60 * 60 * 24);
+                    
+                    if (daysSinceUpdate > 7) {
+                        localStorage.removeItem('discovery_session');
+                        return null;
+                    }
+                    
+                    return sessionData;
+                } catch (error) {
+                    console.error('Error loading session from storage:', error);
+                    localStorage.removeItem('discovery_session');
+                    return null;
+                }
+            }
+
+            // Clear session and start fresh
+            startOverSession() {
+                if (confirm('Are you sure you want to start a new conversation? This will clear your current progress.')) {
+                    localStorage.removeItem('discovery_session');
+                    this.startNewSession();
+                    this.addMessage("Started a new conversation. Let's begin fresh!", "system");
+                }
+            }
+
+            // Copy session URL to clipboard
+            copySessionUrl() {
+                const sessionInfo = `Session ID: ${this.sessionId}`;
+                navigator.clipboard.writeText(sessionInfo).then(() => {
+                    this.addMessage('📋 Session ID copied to clipboard! You can save this to return to your conversation later.', 'system');
+                }).catch(() => {
+                    // Fallback for browsers that don't support clipboard API
+                    this.addMessage(`📋 Your Session ID: ${this.sessionId} (Save this to return to your conversation)`, 'system');
+                });
+            }
+
+            addMessage(text, sender, addToHistory = true) {
                 if (!text) return;
+                
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${sender}`;
                 
@@ -191,13 +339,17 @@
                 contentDiv.className = 'message-content';
                 contentDiv.innerHTML = text;
                 
-                messageDiv.appendChild(contentDiv); // Correctly append content to the message container
-                
+                messageDiv.appendChild(contentDiv);
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
-                if (sender !== 'system') {
-                    this.conversationHistory.push({ text, sender, timestamp: new Date().toISOString() });
+                // Add to conversation history (except for system messages when restoring)
+                if (addToHistory && sender !== 'system') {
+                    this.conversationHistory.push({ 
+                        text, 
+                        sender, 
+                        timestamp: new Date().toISOString() 
+                    });
                 }
             }
 
@@ -224,6 +376,9 @@
                         this.addMessage(response.botResponse, 'bot');
                         this.collectedData = response.collectedData || this.collectedData;
                         this.updateProgressBar();
+                        
+                        // Save session after successful interaction
+                        this.saveSessionToStorage();
                     } else {
                         this.addMessage("Sorry, I received an unexpected response. Please try again.", "bot");
                     }
