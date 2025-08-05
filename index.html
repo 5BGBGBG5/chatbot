@@ -323,23 +323,26 @@
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
                 this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
                 
-                // Add click listeners to progress area tags with proper scope binding
+                // FIXED: Progress area click listener with proper binding
                 if (this.ui.progressAreas) {
-                    this.ui.progressAreas.addEventListener('click', (e) => {
-                        console.log('Progress area clicked:', e.target);
-                        console.log('Has area-tag class:', e.target.classList.contains('area-tag'));
-                        console.log('Dataset area:', e.target.dataset.area);
-                        
-                        if (e.target.classList.contains('area-tag')) {
-                            const areaName = e.target.dataset.area;
-                            console.log('Toggling details for:', areaName);
-                            console.log('this.toggleProgressDetails exists:', typeof this.toggleProgressDetails);
-                            this.toggleProgressDetails(areaName);
-                        }
-                    });
+                    // Use bind to ensure 'this' refers to the class instance
+                    this.ui.progressAreas.addEventListener('click', this.handleProgressAreaClick.bind(this));
                     console.log('Progress area click listener attached');
                 } else {
                     console.error('progressAreas element not found!');
+                }
+            }
+
+            // FIXED: Separate method for handling progress area clicks
+            handleProgressAreaClick(e) {
+                console.log('Progress area clicked:', e.target);
+                console.log('Has area-tag class:', e.target.classList.contains('area-tag'));
+                console.log('Dataset area:', e.target.dataset.area);
+                
+                if (e.target.classList.contains('area-tag')) {
+                    const areaName = e.target.dataset.area;
+                    console.log('Toggling details for:', areaName);
+                    this.toggleProgressDetails(areaName);
                 }
             }
 
@@ -401,7 +404,7 @@
                 console.log('Number of messages in UI:', this.ui.chatMessages.children.length);
             }
 
-            // Save session to localStorage
+            // Save session
             saveSessionToStorage() {
                 const sessionData = {
                     sessionId: this.sessionId,
@@ -419,7 +422,7 @@
                 }
             }
 
-            // Load session from localStorage
+            // Load session
             loadSessionFromStorage() {
                 try {
                     const saved = localStorage.getItem('discovery_session');
@@ -461,17 +464,6 @@
                 }
             }
 
-            // Copy session URL to clipboard
-            copySessionUrl() {
-                const sessionInfo = `Session ID: ${this.sessionId}`;
-                navigator.clipboard.writeText(sessionInfo).then(() => {
-                    this.addMessage('📋 Session ID copied to clipboard! You can save this to return to your conversation later.', 'system');
-                }).catch(() => {
-                    // Fallback for browsers that don't support clipboard API
-                    this.addMessage(`📋 Your Session ID: ${this.sessionId} (Save this to return to your conversation)`, 'system');
-                });
-            }
-
             addMessage(text, sender, addToHistory = true) {
                 if (!text) return;
                 
@@ -486,7 +478,7 @@
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
-                // Add to conversation history (except system messages or when explicitly told not to)
+                // Add to conversation history
                 if (addToHistory) {
                     this.conversationHistory.push({ 
                         text, 
@@ -593,7 +585,7 @@
                     const tag = this.ui.progressAreas.querySelector(`[data-area="${areaName}"]`);
                     
                     if (tag) {
-                        // Count completed and partial fields
+                        // Count completed fields
                         const completedFields = area.required.filter(field => {
                             const value = data[field];
                             return value && (typeof value === 'string' ? value.trim() : true) && 
@@ -757,7 +749,7 @@
                 this.ui.typingIndicator.style.display = 'none';
             }
 
-            // Toggle progress details panel
+            // FIXED: Toggle progress details panel
             toggleProgressDetails(areaName = null) {
                 console.log('toggleProgressDetails called with:', areaName);
                 const isCurrentlyOpen = this.ui.progressDetails.classList.contains('show');
@@ -926,7 +918,7 @@
             }
         });
 
-        // Fallback initialization in case DOMContentLoaded already fired
+        // Fallback initialization
         if (document.readyState === 'loading') {
             // Document is still loading, wait for DOMContentLoaded
         } else {
