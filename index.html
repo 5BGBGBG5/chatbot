@@ -80,6 +80,7 @@
         .message.bot { justify-content: flex-start; }
         .message.user { justify-content: flex-end; }
         .message.system { justify-content: center; }
+        .message.research { justify-content: flex-start; }
         .message-content {
             max-width: 85%;
             padding: 12px 18px;
@@ -97,6 +98,55 @@
             font-size: 14px; 
             max-width: 95%;
             text-align: center;
+        }
+        .message.research .message-content {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            color: #2d5a2d;
+            border: 2px solid #4CAF50;
+            border-bottom-left-radius: 4px;
+            position: relative;
+        }
+        .research-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #1b5e20;
+        }
+        .research-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        .research-content {
+            margin-bottom: 15px;
+        }
+        .research-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .research-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .research-btn.confirm {
+            background: #4CAF50;
+            color: white;
+        }
+        .research-btn.confirm:hover {
+            background: #45a049;
+        }
+        .research-btn.correct {
+            background: #ff9800;
+            color: white;
+        }
+        .research-btn.correct:hover {
+            background: #f57c00;
         }
         .chat-input-container { padding: 15px 20px; border-top: 1px solid #e0e0e0; background: #f1f3f5; }
         .input-wrapper { display: flex; gap: 10px; align-items: flex-end; }
@@ -131,14 +181,28 @@
         .chat-button:active { transform: scale(0.9); }
         .download-button { background: #fd7e14; }
         .download-button:hover { background: #e8590c; }
+        .research-button { background: #4CAF50; }
+        .research-button:hover { background: #45a049; }
         .file-upload { display: none; }
         .typing-indicator { display: none; padding: 10px 16px; background: #e9ecef; border-radius: 18px; max-width: 70%; margin-bottom: 15px; }
+        .research-indicator { 
+            display: none; 
+            padding: 10px 16px; 
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border: 2px solid #4CAF50;
+            border-radius: 18px; 
+            max-width: 70%; 
+            margin-bottom: 15px; 
+            color: #2d5a2d;
+            font-weight: 600;
+        }
         .typing-dots { display: flex; gap: 4px; }
         .typing-dots span { width: 8px; height: 8px; border-radius: 50%; background: #868e96; animation: typing 1.4s infinite ease-in-out both; }
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         /* Progress Bar Styles */
         .progress-container { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; display: none; }
         .progress-label { text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
@@ -165,6 +229,7 @@
         .area-tag.completed { background: #28a745; color: white; border-color: #1e7e34; }
         .area-tag.partial { background: #ffc107; color: #212529; border-color: #d39e00; }
         .area-tag.incomplete { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
+        .area-tag.researched { background: #17a2b8; color: white; border-color: #138496; }
         
         /* Expandable Details */
         .progress-details { 
@@ -211,6 +276,7 @@
         .data-item:last-child { border-bottom: none; }
         .data-label { font-weight: 600; color: #495057; }
         .data-value { color: #28a745; font-weight: 500; }
+        .data-researched { color: #17a2b8; font-weight: 500; }
         .data-empty { color: #6c757d; font-style: italic; }
         
         .close-details { 
@@ -239,6 +305,7 @@
         <div class="chat-header">
             <div class="session-status" id="sessionStatus">Session restored</div>
             <div class="session-controls">
+                <button class="control-button" id="researchButton" title="Research my company">🔍 Research</button>
                 <button class="control-button" id="startOverButton" title="Start new conversation">🔄 Start Over</button>
             </div>
             <h2>Inecta Food ERP Discovery</h2>
@@ -264,10 +331,14 @@
         <div class="typing-indicator" id="typingIndicator">
             <div class="typing-dots"><span></span><span></span><span></span></div>
         </div>
+        <div class="research-indicator" id="researchIndicator">
+            🔍 Researching your company...
+        </div>
         <div class="chat-input-container">
             <div class="input-wrapper">
                 <textarea id="chatInput" class="chat-input" placeholder="Type your response..." rows="1"></textarea>
                 <button class="chat-button download-button" id="downloadButton" title="Download Report" style="display: none;">📄</button>
+                <button class="chat-button research-button" id="manualResearchButton" title="Research Company" style="display: none;">🔍</button>
                 <button class="chat-button" id="sendButton" title="Send message">➤</button>
             </div>
         </div>
@@ -290,7 +361,10 @@
                     chatInput: document.getElementById('chatInput'),
                     sendButton: document.getElementById('sendButton'),
                     downloadButton: document.getElementById('downloadButton'),
+                    manualResearchButton: document.getElementById('manualResearchButton'),
+                    researchButton: document.getElementById('researchButton'),
                     typingIndicator: document.getElementById('typingIndicator'),
+                    researchIndicator: document.getElementById('researchIndicator'),
                     progressContainer: document.getElementById('progressContainer'),
                     progressAreas: document.getElementById('progressAreas'),
                     progressDetails: document.getElementById('progressDetails'),
@@ -322,10 +396,11 @@
                 });
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
                 this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
+                this.ui.researchButton.addEventListener('click', () => this.triggerManualResearch());
+                this.ui.manualResearchButton.addEventListener('click', () => this.triggerManualResearch());
                 
-                // FIXED: Progress area click listener with proper binding
+                // Progress area click listener
                 if (this.ui.progressAreas) {
-                    // Use bind to ensure 'this' refers to the class instance
                     this.ui.progressAreas.addEventListener('click', this.handleProgressAreaClick.bind(this));
                     console.log('Progress area click listener attached');
                 } else {
@@ -333,12 +408,8 @@
                 }
             }
 
-            // FIXED: Separate method for handling progress area clicks
             handleProgressAreaClick(e) {
                 console.log('Progress area clicked:', e.target);
-                console.log('Has area-tag class:', e.target.classList.contains('area-tag'));
-                console.log('Dataset area:', e.target.dataset.area);
-                
                 if (e.target.classList.contains('area-tag')) {
                     const areaName = e.target.dataset.area;
                     console.log('Toggling details for:', areaName);
@@ -349,62 +420,51 @@
             startNewSession() {
                 console.log('Starting session...');
                 
-                // Try to restore existing session first
                 const savedSession = this.loadSessionFromStorage();
                 console.log('Loaded session:', savedSession);
                 
                 if (savedSession && savedSession.sessionId) {
                     console.log('Restoring previous session:', savedSession.sessionId);
                     
-                    // Restore previous session
                     this.sessionId = savedSession.sessionId;
                     this.conversationHistory = savedSession.conversationHistory || [];
                     this.collectedData = savedSession.collectedData || {};
                     
-                    // Clear chat messages
                     this.ui.chatMessages.innerHTML = '';
                     
-                    // Restore conversation history to UI
                     if (this.conversationHistory.length > 0) {
                         this.conversationHistory.forEach(msg => {
-                            if (msg.sender !== 'system') { // Don't restore system messages
-                                this.addMessage(msg.text, msg.sender, false); // false = don't add to history again
+                            if (msg.sender !== 'system') {
+                                this.addMessage(msg.text, msg.sender, false);
                             }
                         });
                         
-                        // Show session restored indicator
                         this.ui.sessionStatus.classList.add('restored');
                         setTimeout(() => {
                             this.ui.sessionStatus.classList.remove('restored');
                         }, 3000);
                         
-                        // Add a welcome back message
                         this.addMessage("Welcome back! I've restored your previous conversation. Feel free to continue where we left off.", "system", false);
                     } else {
-                        // Session exists but no conversation yet
                         this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot", true);
                     }
                 } else {
                     console.log('Creating new session');
                     
-                    // Create new session
                     this.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     this.conversationHistory = [];
                     this.collectedData = {};
                     this.ui.chatMessages.innerHTML = '';
                     this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot", true);
                     
-                    // Save the new session immediately
                     this.saveSessionToStorage();
                 }
                 
                 this.updateProgressBar();
+                this.updateResearchButton();
                 console.log('Session started. ID:', this.sessionId);
-                console.log('Chat messages container:', this.ui.chatMessages);
-                console.log('Number of messages in UI:', this.ui.chatMessages.children.length);
             }
 
-            // Save session
             saveSessionToStorage() {
                 const sessionData = {
                     sessionId: this.sessionId,
@@ -422,7 +482,6 @@
                 }
             }
 
-            // Load session
             loadSessionFromStorage() {
                 try {
                     const saved = localStorage.getItem('discovery_session');
@@ -436,7 +495,6 @@
                     const sessionData = JSON.parse(saved);
                     console.log('Parsed session data:', sessionData);
                     
-                    // Check if session is too old (older than 7 days)
                     const lastUpdated = new Date(sessionData.lastUpdated);
                     const daysSinceUpdate = (new Date() - lastUpdated) / (1000 * 60 * 60 * 24);
                     console.log('Days since last update:', daysSinceUpdate);
@@ -455,7 +513,6 @@
                 }
             }
 
-            // Clear session and start fresh
             startOverSession() {
                 if (confirm('Are you sure you want to start a new conversation? This will clear your current progress.')) {
                     localStorage.removeItem('discovery_session');
@@ -472,19 +529,90 @@
                 
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
-                contentDiv.innerHTML = text;
+                
+                // Handle research messages differently
+                if (sender === 'research') {
+                    contentDiv.innerHTML = this.formatResearchMessage(text);
+                } else {
+                    contentDiv.innerHTML = text;
+                }
                 
                 messageDiv.appendChild(contentDiv);
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
-                // Add to conversation history
                 if (addToHistory) {
                     this.conversationHistory.push({ 
                         text, 
                         sender, 
                         timestamp: new Date().toISOString() 
                     });
+                }
+            }
+
+            formatResearchMessage(researchData) {
+                if (typeof researchData === 'string') {
+                    return `
+                        <div class="research-header">
+                            <span class="research-icon">🔍</span>
+                            Company Research Results
+                        </div>
+                        <div class="research-content">${researchData}</div>
+                        <div class="research-actions">
+                            <button class="research-btn confirm" onclick="window.discoveryChat.confirmResearch()">✓ Confirm</button>
+                            <button class="research-btn correct" onclick="window.discoveryChat.correctResearch()">✏️ Make Corrections</button>
+                        </div>
+                    `;
+                }
+                return researchData;
+            }
+
+            async confirmResearch() {
+                this.addMessage("Thanks for confirming! I'll use this information as we continue.", "bot");
+                // Mark research as confirmed
+                if (this.collectedData.researchData) {
+                    this.collectedData.researchData.confirmed = true;
+                    this.saveSessionToStorage();
+                    this.updateProgressBar();
+                }
+            }
+
+            async correctResearch() {
+                this.addMessage("No problem! Please tell me what information needs to be corrected.", "bot");
+            }
+
+            async triggerManualResearch() {
+                const companyName = this.collectedData.companyName || 
+                                  prompt("What's your company name?");
+                
+                if (!companyName) return;
+                
+                this.showResearchIndicator();
+                
+                try {
+                    const payload = {
+                        type: 'company_research',
+                        companyName: companyName,
+                        sessionId: this.sessionId,
+                        conversationHistory: this.conversationHistory,
+                        collectedData: this.collectedData
+                    };
+
+                    const response = await this.callN8nWebhook(payload);
+                    
+                    if (response && response.researchData) {
+                        this.collectedData = response.collectedData || this.collectedData;
+                        this.addMessage(response.researchMessage || "Research completed!", "research");
+                        this.updateProgressBar();
+                        this.saveSessionToStorage();
+                    } else {
+                        this.addMessage("I couldn't find detailed information about that company. Let's continue with manual discovery.", "bot");
+                    }
+                } catch (error) {
+                    console.error("Error during manual research:", error);
+                    this.addMessage("I had trouble researching that company. Let's continue with our conversation.", "bot");
+                } finally {
+                    this.hideResearchIndicator();
                 }
             }
 
@@ -508,11 +636,16 @@
                     const response = await this.callN8nWebhook(payload);
 
                     if (response && response.botResponse) {
-                        this.addMessage(response.botResponse, 'bot');
+                        // Handle research responses
+                        if (response.researchPresented) {
+                            this.addMessage(response.botResponse, 'research');
+                        } else {
+                            this.addMessage(response.botResponse, 'bot');
+                        }
+                        
                         this.collectedData = response.collectedData || this.collectedData;
                         this.updateProgressBar();
-                        
-                        // Save session after successful interaction
+                        this.updateResearchButton();
                         this.saveSessionToStorage();
                     } else {
                         this.addMessage("Sorry, I received an unexpected response. Please try again.", "bot");
@@ -537,6 +670,17 @@
                 }
                 
                 return await response.json();
+            }
+
+            updateResearchButton() {
+                const hasCompanyName = this.collectedData.companyName;
+                const hasResearch = this.collectedData.researchData;
+                
+                if (hasCompanyName && !hasResearch) {
+                    this.ui.manualResearchButton.style.display = 'flex';
+                } else {
+                    this.ui.manualResearchButton.style.display = 'none';
+                }
             }
 
             updateProgressBar() {
@@ -585,7 +729,6 @@
                     const tag = this.ui.progressAreas.querySelector(`[data-area="${areaName}"]`);
                     
                     if (tag) {
-                        // Count completed fields
                         const completedFields = area.required.filter(field => {
                             const value = data[field];
                             return value && (typeof value === 'string' ? value.trim() : true) && 
@@ -594,11 +737,13 @@
                         
                         const isCompleted = completedFields.length === area.required.length;
                         const isPartial = completedFields.length > 0 && completedFields.length < area.required.length;
+                        const hasResearch = data.researchData && areaName === 'companyProfile';
                         
-                        // Update tag class
                         if (isCompleted) {
                             tag.className = 'area-tag completed';
                             completedCount++;
+                        } else if (hasResearch) {
+                            tag.className = 'area-tag researched';
                         } else if (isPartial) {
                             tag.className = 'area-tag partial';
                         } else {
@@ -614,132 +759,6 @@
                 }
             }
 
-            downloadReport() {
-                const reportContent = this.generateReportContent();
-                const blob = new Blob([reportContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                
-                const companyName = this.collectedData.companyName || 'Discovery-Report';
-                const sanitizedCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '-');
-                const timestamp = new Date().toISOString().split('T')[0];
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${sanitizedCompanyName}-ERP-Discovery-${timestamp}.html`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                this.addMessage('📄 Your discovery report has been downloaded!', 'system');
-            }
-
-            generateReportContent() {
-                const companyName = this.collectedData.companyName || 'Unknown Company';
-                const currentDate = new Date().toLocaleDateString();
-                
-                const dataCategories = this.organizeDataByCategory();
-                
-                const meaningfulConversation = this.conversationHistory
-                    .filter(msg => msg.sender !== 'system')
-                    .map(msg => `
-                        <div class="conversation-item">
-                            <div class="speaker">${msg.sender === 'user' ? '👤 Client' : '🤖 Discovery Bot'}</div>
-                            <div class="message-text">${msg.text}</div>
-                        </div>
-                    `).join('');
-                
-                return `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>ERP Discovery Report - ${companyName}</title>
-                        <style>
-                            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; padding: 20px; }
-                            .report-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
-                            .report-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; text-align: center; }
-                            .report-header h1 { font-size: 32px; margin-bottom: 10px; }
-                            .report-header h2 { font-size: 24px; margin-bottom: 5px; }
-                            .report-meta { background: #2c3e50; color: #ecf0f1; padding: 15px 40px; display: flex; justify-content: space-between; font-size: 14px; }
-                            .section { padding: 40px; border-bottom: 1px solid #eee; }
-                            .section h2 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
-                            .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-                            .data-category { background: #f8f9fa; border-radius: 8px; padding: 20px; }
-                            .data-category h4 { color: #2c3e50; margin-bottom: 15px; font-size: 16px; }
-                            .data-list { list-style: none; padding: 0; }
-                            .data-list li { padding: 8px 0; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; }
-                            .data-label { font-weight: 600; }
-                            .conversation-log { margin-top: 20px; }
-                            .conversation-item { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #667eea; }
-                            .speaker { font-weight: bold; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="report-container">
-                            <div class="report-header">
-                                <h1>ERP Discovery Report</h1>
-                                <h2>${companyName}</h2>
-                            </div>
-                            <div class="report-meta">
-                                <div><strong>Report Generated:</strong> ${currentDate}</div>
-                                <div><strong>Session ID:</strong> ${this.sessionId}</div>
-                            </div>
-                            <div class="section">
-                                <h2>🏢 Business Information</h2>
-                                <div class="data-grid">
-                                    ${Object.entries(dataCategories).map(([category, items]) => `
-                                        <div class="data-category">
-                                            <h4>${category}</h4>
-                                            <ul class="data-list">
-                                                ${items.map(item => `<li><span class="data-label">${item.label}:</span> <span>${item.value}</span></li>`).join('')}
-                                            </ul>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <div class="section">
-                                <h2>💬 Discovery Conversation Log</h2>
-                                <div class="conversation-log">${meaningfulConversation}</div>
-                            </div>
-                        </div>
-                    </body>
-                    </html>
-                `;
-            }
-
-            organizeDataByCategory() {
-                const data = this.collectedData;
-                const categories = {
-                    'Company Profile': [
-                        { label: 'Contact Name', value: data.contactName },
-                        { label: 'Contact Email', value: data.contactEmail },
-                        { label: 'Company Name', value: data.companyName },
-                        { label: 'Food Vertical', value: data.foodVertical },
-                        { label: 'Business Model', value: data.businessModel }
-                    ],
-                    'Operational Scale': [
-                        { label: 'Facilities', value: data.facilities },
-                        { label: 'SKU Count', value: data.skuCount },
-                        { label: 'Customer Count', value: data.customerCount }
-                    ],
-                    'Systems & Decisions': [
-                        { label: 'Current ERP', value: data.currentERP },
-                        { label: 'Decision Makers', value: Array.isArray(data.decisionMakers) ? data.decisionMakers.join(', ') : data.decisionMakers }
-                    ],
-                    'Project Context': [
-                        { label: 'Timeline', value: data.timeline }
-                    ],
-                    'Pain Points': (data.painPoints || []).map(p => ({ label: 'Pain Point', value: p })),
-                    'Process Flow': (data.processSteps || []).map(p => ({ label: 'Process Step', value: p }))
-                };
-                
-                Object.keys(categories).forEach(category => {
-                    categories[category] = categories[category].filter(item => item.value && item.value.length > 0);
-                    if (categories[category].length === 0) delete categories[category];
-                });
-                return categories;
-            }
-
             showTypingIndicator() {
                 this.ui.typingIndicator.style.display = 'flex';
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
@@ -749,18 +768,24 @@
                 this.ui.typingIndicator.style.display = 'none';
             }
 
-            // FIXED: Toggle progress details panel
+            showResearchIndicator() {
+                this.ui.researchIndicator.style.display = 'flex';
+                this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
+            }
+
+            hideResearchIndicator() {
+                this.ui.researchIndicator.style.display = 'none';
+            }
+
             toggleProgressDetails(areaName = null) {
                 console.log('toggleProgressDetails called with:', areaName);
                 const isCurrentlyOpen = this.ui.progressDetails.classList.contains('show');
                 console.log('Panel currently open:', isCurrentlyOpen);
                 
                 if (isCurrentlyOpen) {
-                    // Close the panel
                     this.ui.progressDetails.classList.remove('show');
                     console.log('Closing panel');
                 } else {
-                    // Open the panel and show details
                     console.log('Opening panel and generating details');
                     this.generateProgressDetails(areaName);
                     this.ui.progressDetails.classList.add('show');
@@ -768,7 +793,6 @@
                 }
             }
 
-            // Generate detailed progress content
             generateProgressDetails(focusArea = null) {
                 console.log('generateProgressDetails called with:', focusArea);
                 const data = this.collectedData;
@@ -832,7 +856,22 @@
                     }
                 ];
 
-                // Filter sections if focusing on one area
+                // Add research data section if available
+                if (data.researchData) {
+                    sections.unshift({
+                        id: 'researchData',
+                        name: 'Research Data',
+                        icon: '🔍',
+                        fields: [
+                            { key: 'researchData.description', label: 'What they do' },
+                            { key: 'researchData.industry', label: 'Industry' },
+                            { key: 'researchData.employeeCount', label: 'Employee Count' },
+                            { key: 'researchData.location', label: 'Location' },
+                            { key: 'researchData.website', label: 'Website' }
+                        ]
+                    });
+                }
+
                 const sectionsToShow = focusArea ? sections.filter(s => s.id === focusArea) : sections;
                 console.log('Sections to show:', sectionsToShow.map(s => s.name));
                 
@@ -840,7 +879,7 @@
                 
                 sectionsToShow.forEach(section => {
                     const hasData = section.fields.some(field => {
-                        const value = data[field.key];
+                        const value = this.getNestedValue(data, field.key);
                         return value && (typeof value === 'string' ? value.trim() : true) && 
                                (Array.isArray(value) ? value.length > 0 : true);
                     });
@@ -856,8 +895,9 @@
                         `;
                         
                         section.fields.forEach(field => {
-                            const value = data[field.key];
+                            const value = this.getNestedValue(data, field.key);
                             let displayValue = '';
+                            let valueClass = 'data-empty';
                             
                             if (value) {
                                 if (field.isArray && Array.isArray(value)) {
@@ -867,12 +907,15 @@
                                 } else {
                                     displayValue = value.toString();
                                 }
+                                
+                                // Mark research data differently
+                                valueClass = field.key.startsWith('researchData.') ? 'data-researched' : 'data-value';
                             }
                             
                             html += `
                                 <div class="data-item">
                                     <span class="data-label">${field.label}:</span>
-                                    <span class="${displayValue ? 'data-value' : 'data-empty'}">
+                                    <span class="${valueClass}">
                                         ${displayValue || 'Not collected yet'}
                                     </span>
                                 </div>
@@ -906,13 +949,161 @@
                 this.ui.detailsContent.innerHTML = html;
                 console.log('Details content updated');
             }
+
+            getNestedValue(obj, path) {
+                return path.split('.').reduce((current, key) => current && current[key], obj);
+            }
+
+            downloadReport() {
+                const reportContent = this.generateReportContent();
+                const blob = new Blob([reportContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                const companyName = this.collectedData.companyName || 'Discovery-Report';
+                const sanitizedCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '-');
+                const timestamp = new Date().toISOString().split('T')[0];
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${sanitizedCompanyName}-ERP-Discovery-${timestamp}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.addMessage('📄 Your discovery report has been downloaded!', 'system');
+            }
+
+            generateReportContent() {
+                const companyName = this.collectedData.companyName || 'Unknown Company';
+                const currentDate = new Date().toLocaleDateString();
+                
+                const dataCategories = this.organizeDataByCategory();
+                
+                const meaningfulConversation = this.conversationHistory
+                    .filter(msg => msg.sender !== 'system')
+                    .map(msg => `
+                        <div class="conversation-item">
+                            <div class="speaker">${msg.sender === 'user' ? '👤 Client' : msg.sender === 'research' ? '🔍 Research' : '🤖 Discovery Bot'}</div>
+                            <div class="message-text">${msg.text}</div>
+                        </div>
+                    `).join('');
+                
+                return `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>ERP Discovery Report - ${companyName}</title>
+                        <style>
+                            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; padding: 20px; }
+                            .report-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+                            .report-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; text-align: center; }
+                            .report-header h1 { font-size: 32px; margin-bottom: 10px; }
+                            .report-header h2 { font-size: 24px; margin-bottom: 5px; }
+                            .report-meta { background: #2c3e50; color: #ecf0f1; padding: 15px 40px; display: flex; justify-content: space-between; font-size: 14px; }
+                            .section { padding: 40px; border-bottom: 1px solid #eee; }
+                            .section h2 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+                            .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+                            .data-category { background: #f8f9fa; border-radius: 8px; padding: 20px; }
+                            .data-category h4 { color: #2c3e50; margin-bottom: 15px; font-size: 16px; }
+                            .data-list { list-style: none; padding: 0; }
+                            .data-list li { padding: 8px 0; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; }
+                            .data-label { font-weight: 600; }
+                            .conversation-log { margin-top: 20px; }
+                            .conversation-item { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #667eea; }
+                            .speaker { font-weight: bold; }
+                            .research-data { background: #e8f5e8; border: 1px solid #4CAF50; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="report-container">
+                            <div class="report-header">
+                                <h1>ERP Discovery Report</h1>
+                                <h2>${companyName}</h2>
+                            </div>
+                            <div class="report-meta">
+                                <div><strong>Report Generated:</strong> ${currentDate}</div>
+                                <div><strong>Session ID:</strong> ${this.sessionId}</div>
+                            </div>
+                            <div class="section">
+                                <h2>🏢 Business Information</h2>
+                                <div class="data-grid">
+                                    ${Object.entries(dataCategories).map(([category, items]) => `
+                                        <div class="data-category ${category === 'Research Data' ? 'research-data' : ''}">
+                                            <h4>${category}</h4>
+                                            <ul class="data-list">
+                                                ${items.map(item => `<li><span class="data-label">${item.label}:</span> <span>${item.value}</span></li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="section">
+                                <h2>💬 Discovery Conversation Log</h2>
+                                <div class="conversation-log">${meaningfulConversation}</div>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `;
+            }
+
+            organizeDataByCategory() {
+                const data = this.collectedData;
+                const categories = {
+                    'Company Profile': [
+                        { label: 'Contact Name', value: data.contactName },
+                        { label: 'Contact Email', value: data.contactEmail },
+                        { label: 'Company Name', value: data.companyName },
+                        { label: 'Food Vertical', value: data.foodVertical },
+                        { label: 'Business Model', value: data.businessModel }
+                    ],
+                    'Operational Scale': [
+                        { label: 'Facilities', value: data.facilities },
+                        { label: 'SKU Count', value: data.skuCount },
+                        { label: 'Customer Count', value: data.customerCount }
+                    ],
+                    'Systems & Decisions': [
+                        { label: 'Current ERP', value: data.currentERP },
+                        { label: 'Decision Makers', value: Array.isArray(data.decisionMakers) ? data.decisionMakers.join(', ') : data.decisionMakers }
+                    ],
+                    'Project Context': [
+                        { label: 'Timeline', value: data.timeline }
+                    ],
+                    'Pain Points': (data.painPoints || []).map(p => ({ label: 'Pain Point', value: p })),
+                    'Process Flow': (data.processSteps || []).map(p => ({ label: 'Process Step', value: p }))
+                };
+
+                // Add research data if available
+                if (data.researchData) {
+                    categories['Research Data'] = [
+                        { label: 'Description', value: data.researchData.description },
+                        { label: 'Industry', value: data.researchData.industry },
+                        { label: 'Employee Count', value: data.researchData.employeeCount },
+                        { label: 'Location', value: data.researchData.location },
+                        { label: 'Website', value: data.researchData.website },
+                        { label: 'Founded', value: data.researchData.founded },
+                        { label: 'Confidence Score', value: data.researchData.confidence ? `${data.researchData.confidence}%` : null }
+                    ];
+                }
+                
+                Object.keys(categories).forEach(category => {
+                    categories[category] = categories[category].filter(item => item.value && item.value.length > 0);
+                    if (categories[category].length === 0) delete categories[category];
+                });
+                return categories;
+            }
         }
+
+        // Make the chat instance globally accessible for research buttons
+        let discoveryChat;
 
         // Initialize the chat when the page is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, initializing chat...');
             try {
-                new DiscoveryChat();
+                discoveryChat = new DiscoveryChat();
+                window.discoveryChat = discoveryChat; // Make globally accessible
             } catch (error) {
                 console.error('Error initializing chat:', error);
             }
@@ -925,7 +1116,8 @@
             // Document is already loaded
             console.log('Document already loaded, initializing chat immediately...');
             try {
-                new DiscoveryChat();
+                discoveryChat = new DiscoveryChat();
+                window.discoveryChat = discoveryChat;
             } catch (error) {
                 console.error('Error initializing chat:', error);
             }
