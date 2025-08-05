@@ -226,46 +226,59 @@
             }
 
             startNewSession() {
+                console.log('Starting session...');
+                
                 // Try to restore existing session first
                 const savedSession = this.loadSessionFromStorage();
+                console.log('Loaded session:', savedSession);
                 
-                if (savedSession) {
+                if (savedSession && savedSession.sessionId) {
+                    console.log('Restoring previous session:', savedSession.sessionId);
+                    
                     // Restore previous session
                     this.sessionId = savedSession.sessionId;
                     this.conversationHistory = savedSession.conversationHistory || [];
                     this.collectedData = savedSession.collectedData || {};
                     
-                    // Clear and restore chat messages to UI
+                    // Clear chat messages
                     this.ui.chatMessages.innerHTML = '';
-                    this.conversationHistory.forEach(msg => {
-                        if (msg.sender !== 'system') { // Don't restore system messages
-                            this.addMessage(msg.text, msg.sender, false); // false = don't add to history again
-                        }
-                    });
                     
-                    // Show session restored indicator
-                    this.ui.sessionStatus.classList.add('restored');
-                    setTimeout(() => {
-                        this.ui.sessionStatus.classList.remove('restored');
-                    }, 3000);
-                    
-                    // If no conversation history, show welcome message
-                    if (this.conversationHistory.length === 0) {
-                        this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
-                    } else {
+                    // Restore conversation history to UI
+                    if (this.conversationHistory.length > 0) {
+                        this.conversationHistory.forEach(msg => {
+                            if (msg.sender !== 'system') { // Don't restore system messages
+                                this.addMessage(msg.text, msg.sender, false); // false = don't add to history again
+                            }
+                        });
+                        
+                        // Show session restored indicator
+                        this.ui.sessionStatus.classList.add('restored');
+                        setTimeout(() => {
+                            this.ui.sessionStatus.classList.remove('restored');
+                        }, 3000);
+                        
                         // Add a welcome back message
-                        this.addMessage("Welcome back! I've restored your previous conversation. Feel free to continue where we left off.", "system");
+                        this.addMessage("Welcome back! I've restored your previous conversation. Feel free to continue where we left off.", "system", false);
+                    } else {
+                        // Session exists but no conversation yet
+                        this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
                     }
                 } else {
+                    console.log('Creating new session');
+                    
                     // Create new session
                     this.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     this.conversationHistory = [];
                     this.collectedData = {};
                     this.ui.chatMessages.innerHTML = '';
                     this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot");
+                    
+                    // Save the new session immediately
+                    this.saveSessionToStorage();
                 }
                 
                 this.updateProgressBar();
+                console.log('Session started. ID:', this.sessionId);
             }
 
             // Save session to localStorage
@@ -343,8 +356,8 @@
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
 
-                // Add to conversation history (except for system messages when restoring)
-                if (addToHistory && sender !== 'system') {
+                // Add to conversation history (except system messages or when explicitly told not to)
+                if (addToHistory) {
                     this.conversationHistory.push({ 
                         text, 
                         sender, 
