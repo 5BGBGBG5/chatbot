@@ -151,8 +151,17 @@
             border: 1px solid transparent; 
             cursor: pointer;
             position: relative;
+            user-select: none;
         }
-        .area-tag:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .area-tag:hover { 
+            transform: translateY(-1px); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+            filter: brightness(1.1);
+        }
+        .area-tag:active { 
+            transform: translateY(0px); 
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3); 
+        }
         .area-tag.completed { background: #28a745; color: white; border-color: #1e7e34; }
         .area-tag.partial { background: #ffc107; color: #212529; border-color: #d39e00; }
         .area-tag.incomplete { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
@@ -314,12 +323,23 @@
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
                 this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
                 
-                // Add click listeners to progress area tags
-                this.ui.progressAreas.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('area-tag')) {
-                        this.toggleProgressDetails(e.target.dataset.area);
-                    }
-                });
+                // Add click listeners to progress area tags with debugging
+                if (this.ui.progressAreas) {
+                    this.ui.progressAreas.addEventListener('click', (e) => {
+                        console.log('Progress area clicked:', e.target);
+                        console.log('Has area-tag class:', e.target.classList.contains('area-tag'));
+                        console.log('Dataset area:', e.target.dataset.area);
+                        
+                        if (e.target.classList.contains('area-tag')) {
+                            const areaName = e.target.dataset.area;
+                            console.log('Toggling details for:', areaName);
+                            this.toggleProgressDetails(areaName);
+                        }
+                    });
+                    console.log('Progress area click listener attached');
+                } else {
+                    console.error('progressAreas element not found!');
+                }
             }
 
             startNewSession() {
