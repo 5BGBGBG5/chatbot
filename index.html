@@ -143,9 +143,86 @@
         .progress-container { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; display: none; }
         .progress-label { text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
         .progress-areas { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .area-tag { font-size: 11px; padding: 6px 12px; border-radius: 15px; transition: all 0.3s ease; border: 1px solid transparent; }
+        .area-tag { 
+            font-size: 11px; 
+            padding: 6px 12px; 
+            border-radius: 15px; 
+            transition: all 0.3s ease; 
+            border: 1px solid transparent; 
+            cursor: pointer;
+            position: relative;
+        }
+        .area-tag:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .area-tag.completed { background: #28a745; color: white; border-color: #1e7e34; }
+        .area-tag.partial { background: #ffc107; color: #212529; border-color: #d39e00; }
         .area-tag.incomplete { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
+        
+        /* Expandable Details */
+        .progress-details { 
+            margin-top: 15px; 
+            background: rgba(255,255,255,0.95); 
+            border-radius: 10px; 
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        .progress-details.show { display: block; }
+        
+        .detail-section { 
+            margin-bottom: 15px; 
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .detail-section:last-child { margin-bottom: 0; }
+        
+        .section-header { 
+            background: #2c3e50; 
+            color: white; 
+            padding: 10px 15px; 
+            font-weight: 600; 
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-content { 
+            padding: 15px; 
+            background: white;
+        }
+        
+        .data-item { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 6px 0; 
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+        .data-item:last-child { border-bottom: none; }
+        .data-label { font-weight: 600; color: #495057; }
+        .data-value { color: #28a745; font-weight: 500; }
+        .data-empty { color: #6c757d; font-style: italic; }
+        
+        .close-details { 
+            background: none; 
+            border: none; 
+            color: white; 
+            cursor: pointer; 
+            font-size: 16px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-details:hover { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); max-height: 0; }
+            to { opacity: 1; transform: translateY(0); max-height: 200px; }
+        }
     </style>
 </head>
 <body>
@@ -167,6 +244,10 @@
                   <span class="area-tag incomplete" data-area="operationalScale">Operations Scale</span>
                   <span class="area-tag incomplete" data-area="painPoints">Pain Points</span>
                   <span class="area-tag incomplete" data-area="timeline">Timeline</span>
+                </div>
+                <!-- Expandable Details Panel -->
+                <div class="progress-details" id="progressDetails">
+                    <div id="detailsContent"></div>
                 </div>
             </div>
         </div>
@@ -203,6 +284,8 @@
                     typingIndicator: document.getElementById('typingIndicator'),
                     progressContainer: document.getElementById('progressContainer'),
                     progressAreas: document.getElementById('progressAreas'),
+                    progressDetails: document.getElementById('progressDetails'),
+                    detailsContent: document.getElementById('detailsContent'),
                     sessionStatus: document.getElementById('sessionStatus'),
                     startOverButton: document.getElementById('startOverButton'),
                 };
@@ -230,6 +313,13 @@
                 });
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
                 this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
+                
+                // Add click listeners to progress area tags
+                this.ui.progressAreas.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('area-tag')) {
+                        this.toggleProgressDetails(e.target.dataset.area);
+                    }
+                });
             }
 
             startNewSession() {
@@ -443,23 +533,64 @@
                 }
 
                 const areas = {
-                    companyProfile: !!(data.companyName && data.contactName && data.contactEmail && data.foodVertical && data.businessModel),
-                    processFlow: !!(data.processSteps && Array.isArray(data.processSteps) && data.processSteps.length > 0),
-                    systemsAndDecisions: !!(data.currentERP && data.decisionMakers && Array.isArray(data.decisionMakers) && data.decisionMakers.length > 0),
-                    operationalScale: !!(data.facilities && data.skuCount && data.customerCount),
-                    painPoints: !!(data.painPoints && Array.isArray(data.painPoints) && data.painPoints.length > 0),
-                    timeline: !!(data.timeline),
+                    companyProfile: {
+                        name: 'Company Profile',
+                        fields: ['companyName', 'contactName', 'contactEmail', 'foodVertical', 'businessModel'],
+                        required: ['companyName', 'contactName', 'contactEmail', 'foodVertical', 'businessModel']
+                    },
+                    processFlow: {
+                        name: 'Process Flow',
+                        fields: ['processSteps'],
+                        required: ['processSteps']
+                    },
+                    systemsAndDecisions: {
+                        name: 'Systems & Decisions',
+                        fields: ['currentERP', 'decisionMakers'],
+                        required: ['currentERP', 'decisionMakers']
+                    },
+                    operationalScale: {
+                        name: 'Operations Scale',
+                        fields: ['facilities', 'skuCount', 'customerCount'],
+                        required: ['facilities', 'skuCount', 'customerCount']
+                    },
+                    painPoints: {
+                        name: 'Pain Points',
+                        fields: ['painPoints'],
+                        required: ['painPoints']
+                    },
+                    timeline: {
+                        name: 'Timeline',
+                        fields: ['timeline'],
+                        required: ['timeline']
+                    }
                 };
 
                 let completedCount = 0;
+                
                 for (const areaName in areas) {
-                    const isCompleted = areas[areaName];
+                    const area = areas[areaName];
                     const tag = this.ui.progressAreas.querySelector(`[data-area="${areaName}"]`);
+                    
                     if (tag) {
-                        tag.className = `area-tag ${isCompleted ? 'completed' : 'incomplete'}`;
-                    }
-                    if (isCompleted) {
-                        completedCount++;
+                        // Count completed and partial fields
+                        const completedFields = area.required.filter(field => {
+                            const value = data[field];
+                            return value && (typeof value === 'string' ? value.trim() : true) && 
+                                   (Array.isArray(value) ? value.length > 0 : true);
+                        });
+                        
+                        const isCompleted = completedFields.length === area.required.length;
+                        const isPartial = completedFields.length > 0 && completedFields.length < area.required.length;
+                        
+                        // Update tag class
+                        if (isCompleted) {
+                            tag.className = 'area-tag completed';
+                            completedCount++;
+                        } else if (isPartial) {
+                            tag.className = 'area-tag partial';
+                        } else {
+                            tag.className = 'area-tag incomplete';
+                        }
                     }
                 }
 
