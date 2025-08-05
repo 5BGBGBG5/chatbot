@@ -219,7 +219,6 @@
                     }
                 });
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
-                this.ui.copyUrlButton.addEventListener('click', () => this.copySessionUrl());
                 this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
             }
 
@@ -289,7 +288,9 @@
                 };
                 
                 try {
-                    localStorage.setItem('discovery_session', JSON.stringify(sessionData));
+                    const dataToSave = JSON.stringify(sessionData);
+                    localStorage.setItem('discovery_session', dataToSave);
+                    console.log('Session saved to localStorage:', sessionData);
                 } catch (error) {
                     console.error('Error saving session to storage:', error);
                 }
@@ -299,15 +300,23 @@
             loadSessionFromStorage() {
                 try {
                     const saved = localStorage.getItem('discovery_session');
-                    if (!saved) return null;
+                    console.log('Raw localStorage data:', saved);
+                    
+                    if (!saved) {
+                        console.log('No saved session found');
+                        return null;
+                    }
                     
                     const sessionData = JSON.parse(saved);
+                    console.log('Parsed session data:', sessionData);
                     
                     // Check if session is too old (older than 7 days)
                     const lastUpdated = new Date(sessionData.lastUpdated);
                     const daysSinceUpdate = (new Date() - lastUpdated) / (1000 * 60 * 60 * 24);
+                    console.log('Days since last update:', daysSinceUpdate);
                     
                     if (daysSinceUpdate > 7) {
+                        console.log('Session expired, removing...');
                         localStorage.removeItem('discovery_session');
                         return null;
                     }
