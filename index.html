@@ -616,30 +616,56 @@
                 }
             }
 
-            async sendMessage() {
+           async sendMessage() {
                 const messageText = this.ui.chatInput.value.trim();
                 if (!messageText) return;
 
                 this.addMessage(messageText, 'user');
                 this.ui.chatInput.value = '';
-                this.showTypingIndicator();
+                
+
+                // ADDED: Check if this is the first real user interaction.
+                // The history will have the bot's greeting and the user's first message.
+                const isFirstMessage = this.conversationHistory.filter(m => m.sender === 'user').length === 1;
+
+                // CHANGED: Show the correct indicator based on the action
+                if (isFirstMessage) {
+                    this.showResearchIndicator();
+                } else {
+                    this.showTypingIndicator();
+                }
 
                 try {
-                    const payload = {
-                        type: 'user_message',
-                        message: messageText,
-                        sessionId: this.sessionId,
-                        conversationHistory: this.conversationHistory,
-                        collectedData: this.collectedData
-                    };
-
-                    console.log('Sending payload:', JSON.stringify(payload, null, 2));
+                    let payload;
+                    
+                    // ADDED: Logic to create the correct payload
+                    if (isFirstMessage) {
+                        // This is the first message, so treat it as a company research request.
+                        payload = {
+                            type: 'company_research', // CHANGED: Set type to trigger research
+                            companyName: messageText,   // CHANGED: Use a specific key for the company name
+                            sessionId: this.sessionId,
+                            conversationHistory: this.conversationHistory,
+                            collectedData: this.collectedData
+                        };
+                        console.log('Sending payload for company research:', JSON.stringify(payload, null, 2));
+                    } else {
+                        // This is a subsequent message, so treat it as a standard user message.
+                        payload = {
+                            type: 'user_message',
+                            message: messageText,
+                            sessionId: this.sessionId,
+                            conversationHistory: this.conversationHistory,
+                            collectedData: this.collectedData
+                        };
+                        console.log('Sending payload for user message:', JSON.stringify(payload, null, 2));
+                    }
 
                     const response = await this.callN8nWebhook(payload);
 
                     if (response && response.botResponse) {
-                        // Handle research responses
-                        if (response.researchPresented) {
+                        // Handle both research and standard chat responses
+                        if (response.researchPresented || isFirstMessage) {
                             this.addMessage(response.botResponse, 'research');
                         } else {
                             this.addMessage(response.botResponse, 'bot');
@@ -657,7 +683,6 @@
                     console.error("Detailed error during sendMessage:", error);
                     console.error("Error stack:", error.stack);
                     
-                    // More specific error messages
                     if (error.message.includes('JSON')) {
                         this.addMessage("I'm having trouble processing the server response. Please try again.", "bot");
                     } else if (error.message.includes('fetch')) {
@@ -666,9 +691,11 @@
                         this.addMessage("I'm having trouble connecting to the server. Please try again later.", "bot");
                     }
                 } finally {
+                    // CHANGED: Hide all indicators
                     this.hideTypingIndicator();
+                    this.hideResearchIndicator();
                 }
-            }
+            },
 
             async callN8nWebhook(payload) {
                 try {
