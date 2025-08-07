@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inecta Food ERP - Discovery Chat</title>
     <style>
-        /* General Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -14,13 +13,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #333;
         }
         .chat-container {
             width: 90%;
             max-width: 800px;
             height: 85vh;
-            max-height: 900px;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
@@ -33,23 +30,69 @@
             color: white;
             padding: 20px;
             text-align: center;
-            border-bottom: 4px solid #667eea;
             position: relative;
         }
-        .chat-header h2 { font-weight: 600; }
+        .chat-header h2 { font-weight: 600; margin-bottom: 5px; }
         .chat-header p { font-weight: 300; opacity: 0.9; font-size: 0.9em; }
+        
+        /* Progress indicator */
+        .progress-bar {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+        }
+        .progress-text {
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .step.completed {
+            background: #4CAF50;
+            color: white;
+        }
+        .step.current {
+            background: #FFA726;
+            color: white;
+            transform: scale(1.2);
+        }
+        .step-line {
+            height: 2px;
+            background: rgba(255,255,255,0.2);
+            flex: 1;
+            margin: 0 5px;
+        }
+        .step-line.completed {
+            background: #4CAF50;
+        }
+        
         .session-controls {
             position: absolute;
             top: 15px;
             right: 15px;
-            display: flex;
-            gap: 10px;
         }
         .control-button {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
             color: white;
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 15px;
             font-size: 12px;
             cursor: pointer;
@@ -58,98 +101,66 @@
         .control-button:hover {
             background: rgba(255,255,255,0.2);
         }
-        .session-status {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 12px;
-            opacity: 0.8;
-            display: none;
-        }
-        .session-status.restored {
-            display: block;
-            color: #4CAF50;
-        }
+        
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             background: #f8f9fa;
         }
-        .message { margin-bottom: 15px; display: flex; animation: fadeIn 0.3s ease-in; }
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            animation: fadeIn 0.3s ease-in;
+        }
         .message.bot { justify-content: flex-start; }
         .message.user { justify-content: flex-end; }
         .message.system { justify-content: center; }
         .message.research { justify-content: flex-start; }
+        
         .message-content {
-            max-width: 85%;
+            max-width: 80%;
             padding: 12px 18px;
             border-radius: 18px;
             word-wrap: break-word;
             white-space: pre-wrap;
             line-height: 1.5;
         }
-        .message.bot .message-content { background: #e9ecef; color: #212529; border-bottom-left-radius: 4px; }
-        .message.user .message-content { background: #667eea; color: white; border-bottom-right-radius: 4px; }
-        .message.system .message-content { 
-            background: #fff3cd; 
-            color: #856404; 
-            border: 1px solid #ffeaa7; 
-            font-size: 14px; 
-            max-width: 95%;
+        .message.bot .message-content {
+            background: #e9ecef;
+            color: #212529;
+            border-bottom-left-radius: 4px;
+        }
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.system .message-content {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            font-size: 14px;
             text-align: center;
+            max-width: 90%;
         }
         .message.research .message-content {
             background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
             color: #2d5a2d;
             border: 2px solid #4CAF50;
             border-bottom-left-radius: 4px;
-            position: relative;
         }
-        .research-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #1b5e20;
+        
+        .chat-input-container {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            background: #f1f3f5;
         }
-        .research-icon {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-        .research-content {
-            margin-bottom: 15px;
-        }
-        .research-actions {
+        .input-wrapper {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            align-items: flex-end;
         }
-        .research-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .research-btn.confirm {
-            background: #4CAF50;
-            color: white;
-        }
-        .research-btn.confirm:hover {
-            background: #45a049;
-        }
-        .research-btn.correct {
-            background: #ff9800;
-            color: white;
-        }
-        .research-btn.correct:hover {
-            background: #f57c00;
-        }
-        .chat-input-container { padding: 15px 20px; border-top: 1px solid #e0e0e0; background: #f1f3f5; }
-        .input-wrapper { display: flex; gap: 10px; align-items: flex-end; }
         .chat-input {
             flex: 1;
             border: 2px solid #ddd;
@@ -163,6 +174,7 @@
             transition: border-color 0.2s;
         }
         .chat-input:focus { border-color: #667eea; }
+        
         .chat-button {
             background: #667eea;
             color: white;
@@ -174,171 +186,93 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.2s;
             flex-shrink: 0;
         }
         .chat-button:hover { background: #5a6fd8; }
-        .chat-button:active { transform: scale(0.9); }
-        .download-button { background: #fd7e14; }
-        .download-button:hover { background: #e8590c; }
-        .research-button { background: #4CAF50; }
-        .research-button:hover { background: #45a049; }
-        .file-upload { display: none; }
-        .typing-indicator { display: none; padding: 10px 16px; background: #e9ecef; border-radius: 18px; max-width: 70%; margin-bottom: 15px; }
-        .research-indicator { 
-            display: none; 
-            padding: 10px 16px; 
-            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
-            border: 2px solid #4CAF50;
-            border-radius: 18px; 
-            max-width: 70%; 
-            margin-bottom: 15px; 
-            color: #2d5a2d;
-            font-weight: 600;
+        .chat-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
-        .typing-dots { display: flex; gap: 4px; }
-        .typing-dots span { width: 8px; height: 8px; border-radius: 50%; background: #868e96; animation: typing 1.4s infinite ease-in-out both; }
+        
+        .download-button {
+            background: #28a745;
+            display: none;
+        }
+        .download-button:hover {
+            background: #218838;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 16px;
+            background: #e9ecef;
+            border-radius: 18px;
+            max-width: 70%;
+            margin-bottom: 15px;
+        }
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #868e96;
+            animation: typing 1.4s infinite ease-in-out both;
+        }
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Progress Bar Styles */
-        .progress-container { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; display: none; }
-        .progress-label { text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
-        .progress-areas { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .area-tag { 
-            font-size: 11px; 
-            padding: 6px 12px; 
-            border-radius: 15px; 
-            transition: all 0.3s ease; 
-            border: 1px solid transparent; 
-            cursor: pointer;
-            position: relative;
-            user-select: none;
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
         }
-        .area-tag:hover { 
-            transform: translateY(-1px); 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
-            filter: brightness(1.1);
-        }
-        .area-tag:active { 
-            transform: translateY(0px); 
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3); 
-        }
-        .area-tag.completed { background: #28a745; color: white; border-color: #1e7e34; }
-        .area-tag.partial { background: #ffc107; color: #212529; border-color: #d39e00; }
-        .area-tag.incomplete { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
-        .area-tag.researched { background: #17a2b8; color: white; border-color: #138496; }
-        
-        /* Expandable Details */
-        .progress-details { 
-            margin-top: 15px; 
-            background: rgba(255,255,255,0.95); 
-            border-radius: 10px; 
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-        .progress-details.show { display: block; }
-        
-        .detail-section { 
-            margin-bottom: 15px; 
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .detail-section:last-child { margin-bottom: 0; }
-        
-        .section-header { 
-            background: #2c3e50; 
-            color: white; 
-            padding: 10px 15px; 
-            font-weight: 600; 
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .section-content { 
-            padding: 15px; 
-            background: white;
-        }
-        
-        .data-item { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 6px 0; 
-            border-bottom: 1px solid #eee;
-            font-size: 12px;
-        }
-        .data-item:last-child { border-bottom: none; }
-        .data-label { font-weight: 600; color: #495057; }
-        .data-value { color: #28a745; font-weight: 500; }
-        .data-researched { color: #17a2b8; font-weight: 500; }
-        .data-empty { color: #6c757d; font-style: italic; }
-        
-        .close-details { 
-            background: none; 
-            border: none; 
-            color: white; 
-            cursor: pointer; 
-            font-size: 16px;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .close-details:hover { background: rgba(255,255,255,0.1); border-radius: 3px; }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); max-height: 0; }
-            to { opacity: 1; transform: translateY(0); max-height: 200px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <div class="session-status" id="sessionStatus">Session restored</div>
             <div class="session-controls">
-                <button class="control-button" id="researchButton" title="Research my company">🔍 Research</button>
-                <button class="control-button" id="startOverButton" title="Start new conversation">🔄 Start Over</button>
+                <button class="control-button" id="startOverButton">🔄 Start Over</button>
             </div>
             <h2>Inecta Food ERP Discovery</h2>
             <p>Let's learn about your food business needs</p>
-            <!-- Progress Bar HTML -->
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-label">Discovery Progress</div>
-                <div class="progress-areas" id="progressAreas">
-                  <span class="area-tag incomplete" data-area="companyProfile">Company Profile</span>
-                  <span class="area-tag incomplete" data-area="processFlow">Process Flow</span>
-                  <span class="area-tag incomplete" data-area="systemsAndDecisions">Systems & Decisions</span>
-                  <span class="area-tag incomplete" data-area="operationalScale">Operations Scale</span>
-                  <span class="area-tag incomplete" data-area="painPoints">Pain Points</span>
-                  <span class="area-tag incomplete" data-area="timeline">Timeline</span>
-                </div>
-                <!-- Expandable Details Panel -->
-                <div class="progress-details" id="progressDetails">
-                    <div id="detailsContent"></div>
+            
+            <!-- Simplified Progress Bar -->
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-text">Discovery Progress</div>
+                <div class="progress-steps">
+                    <div class="step current" id="step1">1</div>
+                    <div class="step-line" id="line1"></div>
+                    <div class="step" id="step2">2</div>
+                    <div class="step-line" id="line2"></div>
+                    <div class="step" id="step3">3</div>
+                    <div class="step-line" id="line3"></div>
+                    <div class="step" id="step4">4</div>
+                    <div class="step-line" id="line4"></div>
+                    <div class="step" id="step5">✓</div>
                 </div>
             </div>
         </div>
+        
         <div class="chat-messages" id="chatMessages"></div>
+        
         <div class="typing-indicator" id="typingIndicator">
-            <div class="typing-dots"><span></span><span></span><span></span></div>
+            <div class="typing-dots">
+                <span></span><span></span><span></span>
+            </div>
         </div>
-        <div class="research-indicator" id="researchIndicator">
-            🔍 Researching your company...
-        </div>
+        
         <div class="chat-input-container">
             <div class="input-wrapper">
                 <textarea id="chatInput" class="chat-input" placeholder="Type your response..." rows="1"></textarea>
-                <button class="chat-button download-button" id="downloadButton" title="Download Report" style="display: none;">📄</button>
-                <button class="chat-button research-button" id="manualResearchButton" title="Research Company" style="display: none;">🔍</button>
+                <button class="chat-button download-button" id="downloadButton" title="Download Report">📄</button>
                 <button class="chat-button" id="sendButton" title="Send message">➤</button>
             </div>
         </div>
@@ -347,45 +281,31 @@
     <script>
         class DiscoveryChat {
             constructor() {
-                console.log('DiscoveryChat constructor called');
-                
                 // Core properties
-                this.sessionId = null;
+                this.sessionId = this.generateSessionId();
                 this.conversationHistory = [];
-                this.collectedData = {};
+                this.collectedData = { currentPhase: 'greeting' };
                 this.n8nWebhookUrl = 'https://inecta.app.n8n.cloud/webhook/discovery-chat';
-
+                
                 // UI Elements
                 this.ui = {
                     chatMessages: document.getElementById('chatMessages'),
                     chatInput: document.getElementById('chatInput'),
                     sendButton: document.getElementById('sendButton'),
                     downloadButton: document.getElementById('downloadButton'),
-                    manualResearchButton: document.getElementById('manualResearchButton'),
-                    researchButton: document.getElementById('researchButton'),
                     typingIndicator: document.getElementById('typingIndicator'),
-                    researchIndicator: document.getElementById('researchIndicator'),
-                    progressContainer: document.getElementById('progressContainer'),
-                    progressAreas: document.getElementById('progressAreas'),
-                    progressDetails: document.getElementById('progressDetails'),
-                    detailsContent: document.getElementById('detailsContent'),
-                    sessionStatus: document.getElementById('sessionStatus'),
-                    startOverButton: document.getElementById('startOverButton'),
+                    progressBar: document.getElementById('progressBar'),
+                    startOverButton: document.getElementById('startOverButton')
                 };
-
-                // Check if all UI elements were found
-                console.log('UI Elements found:', this.ui);
-                Object.entries(this.ui).forEach(([key, element]) => {
-                    if (!element) {
-                        console.error(`UI element not found: ${key}`);
-                    }
-                });
-
-                // Initialization
+                
                 this.initializeEventListeners();
-                this.startNewSession();
+                this.startChat();
             }
-
+            
+            generateSessionId() {
+                return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
             initializeEventListeners() {
                 this.ui.sendButton.addEventListener('click', () => this.sendMessage());
                 this.ui.chatInput.addEventListener('keypress', (e) => {
@@ -394,646 +314,158 @@
                         this.sendMessage();
                     }
                 });
+                this.ui.startOverButton.addEventListener('click', () => this.startOver());
                 this.ui.downloadButton.addEventListener('click', () => this.downloadReport());
-                this.ui.startOverButton.addEventListener('click', () => this.startOverSession());
-                this.ui.researchButton.addEventListener('click', () => this.triggerManualResearch());
-                this.ui.manualResearchButton.addEventListener('click', () => this.triggerManualResearch());
-                
-                // Progress area click listener
-                if (this.ui.progressAreas) {
-                    this.ui.progressAreas.addEventListener('click', this.handleProgressAreaClick.bind(this));
-                    console.log('Progress area click listener attached');
-                } else {
-                    console.error('progressAreas element not found!');
-                }
             }
-
-            handleProgressAreaClick(e) {
-                console.log('Progress area clicked:', e.target);
-                if (e.target.classList.contains('area-tag')) {
-                    const areaName = e.target.dataset.area;
-                    console.log('Toggling details for:', areaName);
-                    this.toggleProgressDetails(areaName);
-                }
+            
+            startChat() {
+                this.addMessage("Hi! I'm here to learn about your food business and help you understand how Inecta Food ERP might help. Let's start simple - what's your company name?", "bot");
+                this.updateProgress();
             }
-
-            startNewSession() {
-                console.log('Starting session...');
-                
-                const savedSession = this.loadSessionFromStorage();
-                console.log('Loaded session:', savedSession);
-                
-                if (savedSession && savedSession.sessionId) {
-                    console.log('Restoring previous session:', savedSession.sessionId);
-                    
-                    this.sessionId = savedSession.sessionId;
-                    this.conversationHistory = savedSession.conversationHistory || [];
-                    this.collectedData = savedSession.collectedData || {};
-                    
-                    this.ui.chatMessages.innerHTML = '';
-                    
-                    if (this.conversationHistory.length > 0) {
-                        this.conversationHistory.forEach(msg => {
-                            if (msg.sender !== 'system') {
-                                this.addMessage(msg.text, msg.sender, false);
-                            }
-                        });
-                        
-                        this.ui.sessionStatus.classList.add('restored');
-                        setTimeout(() => {
-                            this.ui.sessionStatus.classList.remove('restored');
-                        }, 3000);
-                        
-                        this.addMessage("Welcome back! I've restored your previous conversation. Feel free to continue where we left off.", "system", false);
-                    } else {
-                        this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company website?", "bot", true);
-                    }
-                } else {
-                    console.log('Creating new session');
-                    
-                    this.sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            startOver() {
+                if (confirm('Start a new conversation? This will clear your current progress.')) {
+                    this.sessionId = this.generateSessionId();
                     this.conversationHistory = [];
-                    this.collectedData = {};
+                    this.collectedData = { currentPhase: 'greeting' };
                     this.ui.chatMessages.innerHTML = '';
-                    this.addMessage("Hi! I'm here to learn about your food business and see how Inecta Food ERP might help. Let's start with the basics - what's your company name?", "bot", true);
-                    
-                    this.saveSessionToStorage();
-                }
-                
-                this.updateProgressBar();
-                this.updateResearchButton();
-                console.log('Session started. ID:', this.sessionId);
-            }
-
-            saveSessionToStorage() {
-                const sessionData = {
-                    sessionId: this.sessionId,
-                    conversationHistory: this.conversationHistory,
-                    collectedData: this.collectedData,
-                    lastUpdated: new Date().toISOString()
-                };
-                
-                try {
-                    const dataToSave = JSON.stringify(sessionData);
-                    localStorage.setItem('discovery_session', dataToSave);
-                    console.log('Session saved to localStorage:', sessionData);
-                } catch (error) {
-                    console.error('Error saving session to storage:', error);
+                    this.startChat();
                 }
             }
-
-            loadSessionFromStorage() {
-                try {
-                    const saved = localStorage.getItem('discovery_session');
-                    console.log('Raw localStorage data:', saved);
-                    
-                    if (!saved) {
-                        console.log('No saved session found');
-                        return null;
-                    }
-                    
-                    const sessionData = JSON.parse(saved);
-                    console.log('Parsed session data:', sessionData);
-                    
-                    const lastUpdated = new Date(sessionData.lastUpdated);
-                    const daysSinceUpdate = (new Date() - lastUpdated) / (1000 * 60 * 60 * 24);
-                    console.log('Days since last update:', daysSinceUpdate);
-                    
-                    if (daysSinceUpdate > 7) {
-                        console.log('Session expired, removing...');
-                        localStorage.removeItem('discovery_session');
-                        return null;
-                    }
-                    
-                    return sessionData;
-                } catch (error) {
-                    console.error('Error loading session from storage:', error);
-                    localStorage.removeItem('discovery_session');
-                    return null;
-                }
-            }
-
-            startOverSession() {
-                if (confirm('Are you sure you want to start a new conversation? This will clear your current progress.')) {
-                    localStorage.removeItem('discovery_session');
-                    this.startNewSession();
-                    this.addMessage("Started a new conversation. Let's begin fresh!", "system");
-                }
-            }
-
-            addMessage(text, sender, addToHistory = true) {
-                if (!text) return;
-                
+            
+            addMessage(text, sender) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${sender}`;
                 
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
-                
-                // Handle research messages differently
-                if (sender === 'research') {
-                    contentDiv.innerHTML = this.formatResearchMessage(text);
-                } else {
-                    contentDiv.innerHTML = text;
-                }
+                contentDiv.textContent = text;
                 
                 messageDiv.appendChild(contentDiv);
                 this.ui.chatMessages.appendChild(messageDiv);
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
-
-                if (addToHistory) {
-                    this.conversationHistory.push({ 
-                        text, 
-                        sender, 
-                        timestamp: new Date().toISOString() 
-                    });
-                }
             }
-
-            formatResearchMessage(researchData) {
-                if (typeof researchData === 'string') {
-                    return `
-                        <div class="research-header">
-                            <span class="research-icon">🔍</span>
-                            Company Research Results
-                        </div>
-                        <div class="research-content">${researchData}</div>
-                        <div class="research-actions">
-                            <button class="research-btn confirm" onclick="window.discoveryChat.confirmResearch()">✓ Confirm</button>
-                            <button class="research-btn correct" onclick="window.discoveryChat.correctResearch()">✏️ Make Corrections</button>
-                        </div>
-                    `;
-                }
-                return researchData;
-            }
-
-            async confirmResearch() {
-                this.addMessage("Thanks for confirming! I'll use this information as we continue.", "bot");
-                // Mark research as confirmed
-                if (this.collectedData.researchData) {
-                    this.collectedData.researchData.confirmed = true;
-                    this.saveSessionToStorage();
-                    this.updateProgressBar();
-                }
-            }
-
-            async correctResearch() {
-                this.addMessage("No problem! Please tell me what information needs to be corrected.", "bot");
-            }
-
-            async triggerManualResearch() {
-                const companyName = this.collectedData.companyName || 
-                                  prompt("What's your company name?");
-                
-                if (!companyName) return;
-                
-                this.showResearchIndicator();
-                
-                try {
-                    const payload = {
-                        type: 'company_research',
-                        companyName: companyName,
-                        sessionId: this.sessionId,
-                        conversationHistory: this.conversationHistory,
-                        collectedData: this.collectedData
-                    };
-
-                    const response = await this.callN8nWebhook(payload);
-                    
-                    if (response && response.researchData) {
-                        this.collectedData = response.collectedData || this.collectedData;
-                        this.addMessage(response.researchMessage || "Research completed!", "research");
-                        this.updateProgressBar();
-                        this.saveSessionToStorage();
-                    } else {
-                        this.addMessage("I couldn't find detailed information about that company. Let's continue with manual discovery.", "bot");
-                    }
-                } catch (error) {
-                    console.error("Error during manual research:", error);
-                    this.addMessage("I had trouble researching that company. Let's continue with our conversation.", "bot");
-                } finally {
-                    this.hideResearchIndicator();
-                }
-            }
-
+            
             async sendMessage() {
                 const messageText = this.ui.chatInput.value.trim();
                 if (!messageText) return;
-
+                
+                // Disable input while processing
+                this.ui.sendButton.disabled = true;
+                this.ui.chatInput.disabled = true;
+                
                 this.addMessage(messageText, 'user');
                 this.ui.chatInput.value = '';
                 this.showTypingIndicator();
-
+                
                 try {
                     const payload = {
-                        type: 'user_message',
-                        message: messageText,
                         sessionId: this.sessionId,
+                        message: messageText,
                         conversationHistory: this.conversationHistory,
                         collectedData: this.collectedData
                     };
-
-                    console.log('Sending payload:', JSON.stringify(payload, null, 2));
-
-                    const response = await this.callN8nWebhook(payload);
-
-                    if (response && response.botResponse) {
-                        // Handle research responses
-                        if (response.researchPresented) {
-                            this.addMessage(response.botResponse, 'research');
-                        } else {
-                            this.addMessage(response.botResponse, 'bot');
-                        }
-                        
-                        this.collectedData = response.collectedData || this.collectedData;
-                        this.updateProgressBar();
-                        this.updateResearchButton();
-                        this.saveSessionToStorage();
-                    } else {
-                        console.error('Invalid response structure:', response);
-                        this.addMessage("Sorry, I received an unexpected response. Please try again.", "bot");
-                    }
-                } catch (error) {
-                    console.error("Detailed error during sendMessage:", error);
-                    console.error("Error stack:", error.stack);
                     
-                    // More specific error messages
-                    if (error.message.includes('JSON')) {
-                        this.addMessage("I'm having trouble processing the server response. Please try again.", "bot");
-                    } else if (error.message.includes('fetch')) {
-                        this.addMessage("I'm having trouble connecting to the server. Please check your internet connection.", "bot");
+                    const response = await this.callWebhook(payload);
+                    
+                    if (response && response.botResponse) {
+                        this.addMessage(response.botResponse, response.botResponse.includes('I found some information') ? 'research' : 'bot');
+                        
+                        // Update state
+                        this.conversationHistory = response.conversationHistory || this.conversationHistory;
+                        this.collectedData = response.collectedData || this.collectedData;
+                        
+                        // Update UI
+                        this.updateProgress();
+                        
+                        if (response.discoveryComplete) {
+                            this.ui.downloadButton.style.display = 'flex';
+                            this.addMessage("🎉 Discovery complete! Click the download button to get your personalized ERP requirements report.", "system");
+                        }
                     } else {
-                        this.addMessage("I'm having trouble connecting to the server. Please try again later.", "bot");
+                        this.addMessage("I'm having trouble connecting. Please try again.", "bot");
                     }
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.addMessage("I'm having trouble connecting to the server. Please try again.", "bot");
                 } finally {
                     this.hideTypingIndicator();
+                    this.ui.sendButton.disabled = false;
+                    this.ui.chatInput.disabled = false;
+                    this.ui.chatInput.focus();
                 }
             }
-
-            async callN8nWebhook(payload) {
-                try {
-                    console.log('Sending payload to webhook:', payload);
-                    
-                    const response = await fetch(this.n8nWebhookUrl, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    console.log('Response status:', response.status);
-                    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error(`Webhook failed with status: ${response.status}`, errorText);
-                        throw new Error(`Webhook failed with status: ${response.status} - ${errorText}`);
-                    }
-                    
-                    const responseText = await response.text();
-                    console.log('Raw response text:', responseText);
-                    
-                    // Check if response is empty
-                    if (!responseText || responseText.trim() === '') {
-                        console.error('Empty response from webhook');
-                        throw new Error('Empty response from webhook');
-                    }
-                    
-                    // Try to parse JSON
-                    try {
-                        const jsonResponse = JSON.parse(responseText);
-                        console.log('Parsed JSON response:', jsonResponse);
-                        return jsonResponse;
-                    } catch (parseError) {
-                        console.error('Failed to parse JSON response:', parseError);
-                        console.error('Response text that failed to parse:', responseText);
-                        throw new Error(`Invalid JSON response: ${parseError.message}`);
-                    }
-                    
-                } catch (error) {
-                    console.error('Error in callN8nWebhook:', error);
-                    throw error;
-                }
-            }
-
-            updateResearchButton() {
-                const hasCompanyName = this.collectedData.companyName;
-                const hasResearch = this.collectedData.researchData;
+            
+            async callWebhook(payload) {
+                const response = await fetch(this.n8nWebhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
                 
-                if (hasCompanyName && !hasResearch) {
-                    this.ui.manualResearchButton.style.display = 'flex';
-                } else {
-                    this.ui.manualResearchButton.style.display = 'none';
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
-            }
-
-            updateProgressBar() {
-                const data = this.collectedData;
-                if (Object.keys(data).length > 0) {
-                    this.ui.progressContainer.style.display = 'block';
-                }
-
-                const areas = {
-                    companyProfile: {
-                        name: 'Company Profile',
-                        fields: ['companyName', 'contactName', 'contactEmail', 'foodVertical', 'businessModel'],
-                        required: ['companyName', 'contactName', 'contactEmail', 'foodVertical', 'businessModel']
-                    },
-                    processFlow: {
-                        name: 'Process Flow',
-                        fields: ['processSteps'],
-                        required: ['processSteps']
-                    },
-                    systemsAndDecisions: {
-                        name: 'Systems & Decisions',
-                        fields: ['currentERP', 'decisionMakers'],
-                        required: ['currentERP', 'decisionMakers']
-                    },
-                    operationalScale: {
-                        name: 'Operations Scale',
-                        fields: ['facilities', 'skuCount', 'customerCount'],
-                        required: ['facilities', 'skuCount', 'customerCount']
-                    },
-                    painPoints: {
-                        name: 'Pain Points',
-                        fields: ['painPoints'],
-                        required: ['painPoints']
-                    },
-                    timeline: {
-                        name: 'Timeline',
-                        fields: ['timeline'],
-                        required: ['timeline']
-                    }
-                };
-
-                let completedCount = 0;
                 
-                for (const areaName in areas) {
-                    const area = areas[areaName];
-                    const tag = this.ui.progressAreas.querySelector(`[data-area="${areaName}"]`);
+                return response.json();
+            }
+            
+            updateProgress() {
+                const phase = this.collectedData.currentPhase;
+                const phases = ['greeting', 'research', 'research_confirm', 'industry_questions', 'pain_points', 'timeline', 'complete'];
+                const currentIndex = phases.indexOf(phase);
+                
+                if (currentIndex >= 0) {
+                    this.ui.progressBar.style.display = 'block';
                     
-                    if (tag) {
-                        const completedFields = area.required.filter(field => {
-                            const value = data[field];
-                            return value && (typeof value === 'string' ? value.trim() : true) && 
-                                   (Array.isArray(value) ? value.length > 0 : true);
-                        });
+                    // Update steps
+                    for (let i = 1; i <= 5; i++) {
+                        const step = document.getElementById(`step${i}`);
+                        const line = document.getElementById(`line${i}`);
                         
-                        const isCompleted = completedFields.length === area.required.length;
-                        const isPartial = completedFields.length > 0 && completedFields.length < area.required.length;
-                        const hasResearch = data.researchData && areaName === 'companyProfile';
-                        
-                        if (isCompleted) {
-                            tag.className = 'area-tag completed';
-                            completedCount++;
-                        } else if (hasResearch) {
-                            tag.className = 'area-tag researched';
-                        } else if (isPartial) {
-                            tag.className = 'area-tag partial';
+                        if (i <= currentIndex) {
+                            step.className = 'step completed';
+                            if (line) line.className = 'step-line completed';
+                        } else if (i === currentIndex + 1) {
+                            step.className = 'step current';
                         } else {
-                            tag.className = 'area-tag incomplete';
+                            step.className = 'step';
+                            if (line) line.className = 'step-line';
                         }
                     }
                 }
-
-                if (completedCount >= 4) {
-                    this.ui.downloadButton.style.display = 'flex';
-                } else {
-                    this.ui.downloadButton.style.display = 'none';
-                }
             }
-
+            
             showTypingIndicator() {
                 this.ui.typingIndicator.style.display = 'flex';
                 this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
             }
-
+            
             hideTypingIndicator() {
                 this.ui.typingIndicator.style.display = 'none';
             }
-
-            showResearchIndicator() {
-                this.ui.researchIndicator.style.display = 'flex';
-                this.ui.chatMessages.scrollTop = this.ui.chatMessages.scrollHeight;
-            }
-
-            hideResearchIndicator() {
-                this.ui.researchIndicator.style.display = 'none';
-            }
-
-            toggleProgressDetails(areaName = null) {
-                console.log('toggleProgressDetails called with:', areaName);
-                const isCurrentlyOpen = this.ui.progressDetails.classList.contains('show');
-                console.log('Panel currently open:', isCurrentlyOpen);
-                
-                if (isCurrentlyOpen) {
-                    this.ui.progressDetails.classList.remove('show');
-                    console.log('Closing panel');
-                } else {
-                    console.log('Opening panel and generating details');
-                    this.generateProgressDetails(areaName);
-                    this.ui.progressDetails.classList.add('show');
-                    console.log('Panel should now be visible');
-                }
-            }
-
-            generateProgressDetails(focusArea = null) {
-                console.log('generateProgressDetails called with:', focusArea);
-                const data = this.collectedData;
-                console.log('Current collected data:', data);
-                
-                const sections = [
-                    {
-                        id: 'companyProfile',
-                        name: 'Company Profile',
-                        icon: '🏢',
-                        fields: [
-                            { key: 'companyName', label: 'Company Name' },
-                            { key: 'contactName', label: 'Contact Name' },
-                            { key: 'contactEmail', label: 'Contact Email' },
-                            { key: 'foodVertical', label: 'Food Vertical' },
-                            { key: 'businessModel', label: 'Business Model' }
-                        ]
-                    },
-                    {
-                        id: 'processFlow',
-                        name: 'Process Flow',
-                        icon: '🔄',
-                        fields: [
-                            { key: 'processSteps', label: 'Process Steps', isArray: true }
-                        ]
-                    },
-                    {
-                        id: 'systemsAndDecisions',
-                        name: 'Systems & Decisions',
-                        icon: '⚙️',
-                        fields: [
-                            { key: 'currentERP', label: 'Current ERP System' },
-                            { key: 'decisionMakers', label: 'Decision Makers', isArray: true }
-                        ]
-                    },
-                    {
-                        id: 'operationalScale',
-                        name: 'Operations Scale',
-                        icon: '📊',
-                        fields: [
-                            { key: 'facilities', label: 'Facilities' },
-                            { key: 'skuCount', label: 'SKU Count' },
-                            { key: 'customerCount', label: 'Customer Count' }
-                        ]
-                    },
-                    {
-                        id: 'painPoints',
-                        name: 'Pain Points',
-                        icon: '⚠️',
-                        fields: [
-                            { key: 'painPoints', label: 'Pain Points', isArray: true }
-                        ]
-                    },
-                    {
-                        id: 'timeline',
-                        name: 'Timeline',
-                        icon: '⏰',
-                        fields: [
-                            { key: 'timeline', label: 'Implementation Timeline' }
-                        ]
-                    }
-                ];
-
-                // Add research data section if available
-                if (data.researchData) {
-                    sections.unshift({
-                        id: 'researchData',
-                        name: 'Research Data',
-                        icon: '🔍',
-                        fields: [
-                            { key: 'researchData.description', label: 'What they do' },
-                            { key: 'researchData.industry', label: 'Industry' },
-                            { key: 'researchData.employeeCount', label: 'Employee Count' },
-                            { key: 'researchData.location', label: 'Location' },
-                            { key: 'researchData.website', label: 'Website' }
-                        ]
-                    });
-                }
-
-                const sectionsToShow = focusArea ? sections.filter(s => s.id === focusArea) : sections;
-                console.log('Sections to show:', sectionsToShow.map(s => s.name));
-                
-                let html = '';
-                
-                sectionsToShow.forEach(section => {
-                    const hasData = section.fields.some(field => {
-                        const value = this.getNestedValue(data, field.key);
-                        return value && (typeof value === 'string' ? value.trim() : true) && 
-                               (Array.isArray(value) ? value.length > 0 : true);
-                    });
-                    
-                    if (hasData || Object.keys(data).length === 0) {
-                        html += `
-                            <div class="detail-section">
-                                <div class="section-header">
-                                    <span>${section.icon} ${section.name}</span>
-                                    <button class="close-details" onclick="document.getElementById('progressDetails').classList.remove('show')">×</button>
-                                </div>
-                                <div class="section-content">
-                        `;
-                        
-                        section.fields.forEach(field => {
-                            const value = this.getNestedValue(data, field.key);
-                            let displayValue = '';
-                            let valueClass = 'data-empty';
-                            
-                            if (value) {
-                                if (field.isArray && Array.isArray(value)) {
-                                    displayValue = value.join(', ');
-                                } else if (Array.isArray(value)) {
-                                    displayValue = value.join(', ');
-                                } else {
-                                    displayValue = value.toString();
-                                }
-                                
-                                // Mark research data differently
-                                valueClass = field.key.startsWith('researchData.') ? 'data-researched' : 'data-value';
-                            }
-                            
-                            html += `
-                                <div class="data-item">
-                                    <span class="data-label">${field.label}:</span>
-                                    <span class="${valueClass}">
-                                        ${displayValue || 'Not collected yet'}
-                                    </span>
-                                </div>
-                            `;
-                        });
-                        
-                        html += `
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                
-                if (html === '') {
-                    html = `
-                        <div class="detail-section">
-                            <div class="section-header">
-                                <span>📋 Discovery Progress</span>
-                                <button class="close-details" onclick="document.getElementById('progressDetails').classList.remove('show')">×</button>
-                            </div>
-                            <div class="section-content">
-                                <div class="data-item">
-                                    <span class="data-empty">Start chatting to see your information appear here!</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                console.log('Generated HTML length:', html.length);
-                this.ui.detailsContent.innerHTML = html;
-                console.log('Details content updated');
-            }
-
-            getNestedValue(obj, path) {
-                return path.split('.').reduce((current, key) => current && current[key], obj);
-            }
-
+            
             downloadReport() {
-                const reportContent = this.generateReportContent();
-                const blob = new Blob([reportContent], { type: 'text/html' });
+                const reportHtml = this.generateReport();
+                const blob = new Blob([reportHtml], { type: 'text/html' });
                 const url = URL.createObjectURL(blob);
                 
-                const companyName = this.collectedData.companyName || 'Discovery-Report';
-                const sanitizedCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '-');
-                const timestamp = new Date().toISOString().split('T')[0];
+                const companyName = (this.collectedData.companyName || 'Discovery-Report').replace(/[^a-zA-Z0-9]/g, '-');
+                const date = new Date().toISOString().split('T')[0];
                 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `${sanitizedCompanyName}-ERP-Discovery-${timestamp}.html`;
+                a.download = `${companyName}-ERP-Discovery-${date}.html`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                
-                this.addMessage('📄 Your discovery report has been downloaded!', 'system');
             }
-
-            generateReportContent() {
-                const companyName = this.collectedData.companyName || 'Unknown Company';
-                const currentDate = new Date().toLocaleDateString();
-                
-                const dataCategories = this.organizeDataByCategory();
-                
-                const meaningfulConversation = this.conversationHistory
-                    .filter(msg => msg.sender !== 'system')
-                    .map(msg => `
-                        <div class="conversation-item">
-                            <div class="speaker">${msg.sender === 'user' ? '👤 Client' : msg.sender === 'research' ? '🔍 Research' : '🤖 Discovery Bot'}</div>
-                            <div class="message-text">${msg.text}</div>
-                        </div>
-                    `).join('');
+            
+            generateReport() {
+                const data = this.collectedData;
+                const companyName = data.companyName || 'Unknown Company';
                 
                 return `
                     <!DOCTYPE html>
@@ -1041,133 +473,71 @@
                     <head>
                         <title>ERP Discovery Report - ${companyName}</title>
                         <style>
-                            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f8f9fa; padding: 20px; }
-                            .report-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
-                            .report-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; text-align: center; }
-                            .report-header h1 { font-size: 32px; margin-bottom: 10px; }
-                            .report-header h2 { font-size: 24px; margin-bottom: 5px; }
-                            .report-meta { background: #2c3e50; color: #ecf0f1; padding: 15px 40px; display: flex; justify-content: space-between; font-size: 14px; }
-                            .section { padding: 40px; border-bottom: 1px solid #eee; }
-                            .section h2 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
-                            .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-                            .data-category { background: #f8f9fa; border-radius: 8px; padding: 20px; }
-                            .data-category h4 { color: #2c3e50; margin-bottom: 15px; font-size: 16px; }
-                            .data-list { list-style: none; padding: 0; }
-                            .data-list li { padding: 8px 0; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; }
+                            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; margin: 40px; }
+                            .header { background: #2c3e50; color: white; padding: 30px; text-align: center; border-radius: 10px; margin-bottom: 30px; }
+                            .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                            .section h2 { color: #2c3e50; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+                            .data-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
                             .data-label { font-weight: 600; }
-                            .conversation-log { margin-top: 20px; }
-                            .conversation-item { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #667eea; }
-                            .speaker { font-weight: bold; }
-                            .research-data { background: #e8f5e8; border: 1px solid #4CAF50; }
+                            .conversation { background: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 5px; }
                         </style>
                     </head>
                     <body>
-                        <div class="report-container">
-                            <div class="report-header">
-                                <h1>ERP Discovery Report</h1>
-                                <h2>${companyName}</h2>
-                            </div>
-                            <div class="report-meta">
-                                <div><strong>Report Generated:</strong> ${currentDate}</div>
-                                <div><strong>Session ID:</strong> ${this.sessionId}</div>
-                            </div>
-                            <div class="section">
-                                <h2>🏢 Business Information</h2>
-                                <div class="data-grid">
-                                    ${Object.entries(dataCategories).map(([category, items]) => `
-                                        <div class="data-category ${category === 'Research Data' ? 'research-data' : ''}">
-                                            <h4>${category}</h4>
-                                            <ul class="data-list">
-                                                ${items.map(item => `<li><span class="data-label">${item.label}:</span> <span>${item.value}</span></li>`).join('')}
-                                            </ul>
-                                        </div>
-                                    `).join('')}
+                        <div class="header">
+                            <h1>ERP Discovery Report</h1>
+                            <h2>${companyName}</h2>
+                            <p>Generated on ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h2>Company Information</h2>
+                            <div class="data-item"><span class="data-label">Company Name:</span> <span>${data.companyName || 'N/A'}</span></div>
+                            <div class="data-item"><span class="data-label">Industry:</span> <span>${data.detectedIndustry || 'N/A'}</span></div>
+                            ${data.researchData ? `<div class="data-item"><span class="data-label">Business Description:</span> <span>${data.researchData.description || 'N/A'}</span></div>` : ''}
+                        </div>
+                        
+                        ${data.painPoints ? `
+                        <div class="section">
+                            <h2>Pain Points & Challenges</h2>
+                            ${data.painPoints.map(pain => `<div class="conversation">${pain}</div>`).join('')}
+                        </div>
+                        ` : ''}
+                        
+                        ${data.industryResponses ? `
+                        <div class="section">
+                            <h2>Business Process Information</h2>
+                            ${data.industryResponses.map(resp => `
+                                <div class="conversation">
+                                    <strong>Q:</strong> ${resp.question}<br>
+                                    <strong>A:</strong> ${resp.answer}
                                 </div>
-                            </div>
-                            <div class="section">
-                                <h2>💬 Discovery Conversation Log</h2>
-                                <div class="conversation-log">${meaningfulConversation}</div>
-                            </div>
+                            `).join('')}
+                        </div>
+                        ` : ''}
+                        
+                        <div class="section">
+                            <h2>Project Timeline</h2>
+                            <div class="data-item"><span class="data-label">Desired Implementation:</span> <span>${data.timeline || 'To be determined'}</span></div>
+                        </div>
+                        
+                        <div class="section">
+                            <h2>Conversation Summary</h2>
+                            ${this.conversationHistory.filter(msg => msg.sender !== 'system').map(msg => `
+                                <div class="conversation">
+                                    <strong>${msg.sender === 'user' ? 'Client' : 'Discovery Bot'}:</strong> ${msg.text}
+                                </div>
+                            `).join('')}
                         </div>
                     </body>
                     </html>
                 `;
             }
-
-            organizeDataByCategory() {
-                const data = this.collectedData;
-                const categories = {
-                    'Company Profile': [
-                        { label: 'Contact Name', value: data.contactName },
-                        { label: 'Contact Email', value: data.contactEmail },
-                        { label: 'Company Name', value: data.companyName },
-                        { label: 'Food Vertical', value: data.foodVertical },
-                        { label: 'Business Model', value: data.businessModel }
-                    ],
-                    'Operational Scale': [
-                        { label: 'Facilities', value: data.facilities },
-                        { label: 'SKU Count', value: data.skuCount },
-                        { label: 'Customer Count', value: data.customerCount }
-                    ],
-                    'Systems & Decisions': [
-                        { label: 'Current ERP', value: data.currentERP },
-                        { label: 'Decision Makers', value: Array.isArray(data.decisionMakers) ? data.decisionMakers.join(', ') : data.decisionMakers }
-                    ],
-                    'Project Context': [
-                        { label: 'Timeline', value: data.timeline }
-                    ],
-                    'Pain Points': (data.painPoints || []).map(p => ({ label: 'Pain Point', value: p })),
-                    'Process Flow': (data.processSteps || []).map(p => ({ label: 'Process Step', value: p }))
-                };
-
-                // Add research data if available
-                if (data.researchData) {
-                    categories['Research Data'] = [
-                        { label: 'Description', value: data.researchData.description },
-                        { label: 'Industry', value: data.researchData.industry },
-                        { label: 'Employee Count', value: data.researchData.employeeCount },
-                        { label: 'Location', value: data.researchData.location },
-                        { label: 'Website', value: data.researchData.website },
-                        { label: 'Founded', value: data.researchData.founded },
-                        { label: 'Confidence Score', value: data.researchData.confidence ? `${data.researchData.confidence}%` : null }
-                    ];
-                }
-                
-                Object.keys(categories).forEach(category => {
-                    categories[category] = categories[category].filter(item => item.value && item.value.length > 0);
-                    if (categories[category].length === 0) delete categories[category];
-                });
-                return categories;
-            }
         }
-
-        // Make the chat instance globally accessible for research buttons
-        let discoveryChat;
-
-        // Initialize the chat when the page is fully loaded
+        
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, initializing chat...');
-            try {
-                discoveryChat = new DiscoveryChat();
-                window.discoveryChat = discoveryChat; // Make globally accessible
-            } catch (error) {
-                console.error('Error initializing chat:', error);
-            }
+            window.discoveryChat = new DiscoveryChat();
         });
-
-        // Fallback initialization
-        if (document.readyState === 'loading') {
-            // Document is still loading, wait for DOMContentLoaded
-        } else {
-            // Document is already loaded
-            console.log('Document already loaded, initializing chat immediately...');
-            try {
-                discoveryChat = new DiscoveryChat();
-                window.discoveryChat = discoveryChat;
-            } catch (error) {
-                console.error('Error initializing chat:', error);
-            }
-        }
     </script>
 </body>
 </html>
