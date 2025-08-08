@@ -547,7 +547,7 @@
         // Configuration
         const CONFIG = {
             webhookUrl: 'https://inecta.app.n8n.cloud/webhook/discovery-chat-v1',
-            debug: new URLSearchParams(window.location.search).has('DEBUG'),
+            debug: true, // Force debug mode on for testing
             maxFileSize: 10 * 1024 * 1024 // 10MB
         };
 
@@ -681,34 +681,50 @@
 
         // Call n8n webhook
         async function callWebhook(payload) {
+            console.log('Calling webhook with URL:', CONFIG.webhookUrl);
             if (CONFIG.debug) {
                 console.log('Webhook payload:', payload);
             }
 
             // Simulate response in debug mode if webhook not configured
             if (CONFIG.webhookUrl.includes('YOUR-N8N-INSTANCE')) {
+                console.error('Webhook URL not configured! Please update CONFIG.webhookUrl');
                 return simulateResponse(payload);
             }
 
-            const response = await fetch(CONFIG.webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
+            try {
+                console.log('Sending request to n8n...');
+                const response = await fetch(CONFIG.webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Response error text:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
+                const data = await response.json();
+                
+                if (CONFIG.debug) {
+                    console.log('Webhook response data:', data);
+                }
+
+                return data;
+            } catch (error) {
+                console.error('Fetch error details:', error);
+                if (error.message.includes('Failed to fetch')) {
+                    console.error('This might be a CORS issue. Check n8n webhook CORS settings.');
+                }
+                throw error;
             }
-
-            const data = await response.json();
-            
-            if (CONFIG.debug) {
-                console.log('Webhook response:', data);
-            }
-
-            return data;
         }
 
         // Simulate webhook response for testing
