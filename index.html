@@ -550,7 +550,7 @@
         // Configuration
         const CONFIG = {
             webhookUrl: 'https://inecta.app.n8n.cloud/webhook/discovery-chat-v1',
-            debug: true, // Force debug mode on for testing
+            debug: true, // Keep debug on to see what's happening
             maxFileSize: 10 * 1024 * 1024 // 10MB
         };
 
@@ -623,6 +623,8 @@
             const message = userInput.value.trim();
             if (!message) return;
 
+            console.log('Sending message:', message);
+
             // Add user message to UI
             addMessage(message, 'user');
             userInput.value = '';
@@ -640,40 +642,52 @@
             });
 
             try {
+                console.log('Calling webhook with session:', session);
                 const response = await callWebhook({
                     action: 'chat',
                     message: message,
                     session: session
                 });
 
+                console.log('Got response:', response);
                 hideTypingIndicator();
 
-                if (response.success) {
-                    // Add bot response
-                    addMessage(response.botMessage, 'bot');
-                    
-                    // Update session data
-                    if (response.updatedData) {
-                        Object.assign(session.collectedData, response.updatedData);
-                    }
-                    
-                    // Update progress
-                    if (response.progress) {
-                        updateProgress(response.progress);
-                    }
-
-                    // Add to history
-                    session.conversationHistory.push({
-                        role: 'assistant',
-                        content: response.botMessage,
-                        timestamp: new Date().toISOString()
-                    });
-                } else {
-                    throw new Error(response.error || 'Unknown error');
+                // The response is an array with one object, so get the first element
+                const responseData = Array.isArray(response) ? response[0] : response;
+                
+                // Check if response is valid
+                if (!responseData) {
+                    throw new Error('No response received from webhook');
                 }
+
+                // Get the bot message
+                const botMessage = responseData.botMessage || responseData.message || 'I received your message but had trouble processing it.';
+                
+                console.log('Bot message:', botMessage);
+                
+                // Add bot response
+                addMessage(botMessage, 'bot');
+                
+                // Update session data if provided
+                if (responseData.updatedData) {
+                    Object.assign(session.collectedData, responseData.updatedData);
+                }
+                
+                // Update progress if provided
+                if (responseData.progress) {
+                    updateProgress(responseData.progress);
+                }
+
+                // Add to history
+                session.conversationHistory.push({
+                    role: 'assistant',
+                    content: botMessage,
+                    timestamp: new Date().toISOString()
+                });
+                
             } catch (error) {
                 hideTypingIndicator();
-                console.error('Error:', error);
+                console.error('Error in sendMessage:', error);
                 addMessage('I apologize, but I encountered an issue. Please try again or contact support if the problem persists.', 'bot');
             } finally {
                 userInput.disabled = false;
@@ -714,13 +728,22 @@
                     throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
                 }
 
-                const data = await response.json();
+                const text = await response.text();
+                console.log('Raw response text:', text);
                 
-                if (CONFIG.debug) {
-                    console.log('Webhook response data:', data);
-                }
+                try {
+                    const data = JSON.parse(text);
+                    
+                    if (CONFIG.debug) {
+                        console.log('Webhook response data:', data);
+                    }
 
-                return data;
+                    return data;
+                } catch (parseError) {
+                    console.error('Failed to parse JSON:', parseError);
+                    console.error('Response was:', text);
+                    throw new Error('Invalid JSON response from webhook');
+                }
             } catch (error) {
                 console.error('Fetch error details:', error);
                 if (error.message.includes('Failed to fetch')) {
