@@ -453,6 +453,9 @@
     </style>
 </head>
 <body>
+    <!-- Test Button for Debugging -->
+    <button onclick="testWebhook()" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: #ef4444; color: white; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">Test Webhook</button>
+    
     <div class="container">
         <div class="header">
             <h1>🍴 inecta food erp Discovery</h1>
@@ -984,6 +987,66 @@
 
         // Initialize on load
         init();
+
+        // Test webhook function
+        async function testWebhook() {
+            console.log('=== WEBHOOK TEST STARTED ===');
+            console.log('Webhook URL:', CONFIG.webhookUrl);
+            
+            const testPayload = {
+                action: 'chat',
+                message: 'test message from browser',
+                session: {
+                    id: 'test_' + Date.now(),
+                    currentStep: 1,
+                    coverage: 5,
+                    collectedData: {},
+                    conversationHistory: []
+                }
+            };
+            
+            console.log('Test payload:', testPayload);
+            
+            try {
+                console.log('Sending test request...');
+                const response = await fetch(CONFIG.webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testPayload)
+                });
+                
+                console.log('Response received!');
+                console.log('Status:', response.status);
+                console.log('Headers:', [...response.headers.entries()]);
+                
+                const responseText = await response.text();
+                console.log('Response body (raw):', responseText);
+                
+                try {
+                    const data = JSON.parse(responseText);
+                    console.log('Response data (parsed):', data);
+                    alert('✅ Webhook test successful! Check console for details.');
+                } catch (parseError) {
+                    console.error('Failed to parse response as JSON:', parseError);
+                    alert('⚠️ Webhook responded but with non-JSON data. Check console.');
+                }
+            } catch (error) {
+                console.error('=== WEBHOOK TEST FAILED ===');
+                console.error('Error type:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Full error:', error);
+                
+                if (error.message.includes('Failed to fetch')) {
+                    alert('❌ CORS Error: Cannot connect to webhook. Check n8n CORS settings.');
+                } else {
+                    alert('❌ Webhook test failed! Error: ' + error.message);
+                }
+            }
+            
+            console.log('=== WEBHOOK TEST COMPLETED ===');
+        }
     </script>
 </body>
 </html>
