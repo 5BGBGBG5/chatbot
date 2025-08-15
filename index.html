@@ -1,1075 +1,447 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>inecta food erp - Discovery Assistant</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inecta Discovery Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&family=Verdana&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Official Inecta Brand Colors */
+      --inecta-green: #124030;
+      --inecta-teal: #00CCCC;
+      --inecta-yellow: #FFD44D;
+      --inecta-tan: #DECF9E;
+      --dark-grey: #575763;
+      --light-grey: #999999;
+      
+      /* UI Theme Colors */
+      --background-light: #F8F8F8;
+      --border-color: #EAEAEA;
+      --body-text-color: #293036;
+      --bot-bubble-bg: #FFFFFF;
+      --user-bubble-bg: var(--inecta-green);
 
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #3b82f6;
-            --accent-color: #60a5fa;
-            --bg-color: #f8fafc;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            color: var(--text-primary);
-        }
-
-        .container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 900px;
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-
-        .progress-container {
-            padding: 20px 30px;
-            background: var(--bg-color);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .progress-steps {
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-        }
-
-        .progress-step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .progress-step::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            right: -50%;
-            height: 2px;
-            background: var(--border-color);
-            z-index: -1;
-        }
-
-        .progress-step:last-child::before {
-            display: none;
-        }
-
-        .progress-step.completed::before {
-            background: var(--success-color);
-        }
-
-        .progress-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid var(--border-color);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-
-        .progress-step.active .progress-circle {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: scale(1.1);
-        }
-
-        .progress-step.completed .progress-circle {
-            background: var(--success-color);
-            border-color: var(--success-color);
-            color: white;
-        }
-
-        .progress-label {
-            margin-top: 8px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .chat-container {
-            height: 400px;
-            overflow-y: auto;
-            padding: 30px;
-            background: white;
-        }
-
-        .message {
-            margin-bottom: 20px;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.bot {
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .message.user {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .message.user .message-avatar {
-            margin-right: 0;
-            margin-left: 12px;
-            background: var(--accent-color);
-        }
-
-        .message-content {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            background: var(--bg-color);
-            line-height: 1.5;
-        }
-
-        .message.user .message-content {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .typing-indicator {
-            display: inline-flex;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--bg-color);
-            border-radius: 12px;
-        }
-
-        .typing-indicator span {
-            height: 8px;
-            width: 8px;
-            background: var(--text-secondary);
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 2px;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-                opacity: 0.5;
-            }
-            30% {
-                transform: translateY(-10px);
-                opacity: 1;
-            }
-        }
-
-        .input-container {
-            padding: 20px 30px;
-            background: var(--bg-color);
-            border-top: 1px solid var(--border-color);
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 12px;
-        }
-
-        .input-field {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            background: var(--secondary-color);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .file-upload-wrapper {
-            margin-top: 12px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .file-upload-label {
-            padding: 8px 16px;
-            background: white;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .file-upload-label:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .file-upload-input {
-            display: none;
-        }
-
-        .uploaded-files {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .uploaded-file {
-            padding: 6px 12px;
-            background: var(--accent-color);
-            color: white;
-            border-radius: 6px;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .uploaded-file .remove {
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .action-buttons {
-            padding: 20px 30px;
-            background: white;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .coverage-indicator {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .coverage-bar {
-            width: 150px;
-            height: 8px;
-            background: var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .coverage-fill {
-            height: 100%;
-            background: var(--success-color);
-            transition: width 0.5s ease;
-        }
-
-        .coverage-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-header {
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            font-size: 24px;
-            color: var(--text-primary);
-        }
-
-        .modal-body {
-            margin-bottom: 24px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .modal-footer {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                border-radius: 0;
-                height: 100vh;
-                max-width: 100%;
-            }
-
-            .chat-container {
-                height: calc(100vh - 400px);
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-
-            .progress-label {
-                display: none;
-            }
-        }
-    </style>
+      /* Typography from Brand Guide */
+      --font-heading: 'Open Sans', sans-serif;
+      --font-body: 'Verdana', sans-serif;
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--background-light);
+      color: var(--body-text-color);
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+    .header {
+      padding: 15px 20px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-color);
+      text-align: center;
+    }
+    .header img {
+      height: 28px;
+      width: auto;
+    }
+    .topic-tracker { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 8px; 
+      padding: 15px 20px;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .topic-item { 
+      padding: 6px 12px; 
+      border-radius: 15px; 
+      font-size: 12px; 
+      font-family: var(--font-heading);
+      font-weight: 700;
+      transition: all 0.3s ease; 
+      border: 1px solid transparent; 
+    }
+    .status-not-started { background-color: #E0E0E0; color: #616161; }
+    .status-in-progress { background-color: var(--inecta-tan); color: var(--inecta-green); animation: pulse-tan 2s infinite; }
+    .status-completed { background-color: var(--inecta-green); color: #FFFFFF; }
+    @keyframes pulse-tan {
+      0% { box-shadow: 0 0 0 0 rgba(222, 207, 158, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(222, 207, 158, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(222, 207, 158, 0); }
+    }
+    .chat {
+      padding: 30px;
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background-color: var(--background-light);
+    }
+    .chat::-webkit-scrollbar { width: 8px; }
+    .chat::-webkit-scrollbar-track { background: var(--background-light); border-radius: 4px; }
+    .chat::-webkit-scrollbar-thumb { background-color: #d4d4d4; border-radius: 4px; }
+    .chat::-webkit-scrollbar-thumb:hover { background-color: var(--dark-grey); }
+    .msg {
+      padding: 12px 18px;
+      border-radius: 20px;
+      line-height: 1.6;
+      max-width: 80%;
+      white-space: pre-wrap;
+    }
+    .user {
+      background-color: var(--user-bubble-bg);
+      color: #FFFFFF;
+      border-bottom-right-radius: 5px;
+      align-self: flex-end;
+    }
+    .bot {
+      background-color: var(--bot-bubble-bg);
+      color: var(--body-text-color);
+      border: 1px solid var(--border-color);
+      border-bottom-left-radius: 5px;
+      align-self: flex-start;
+    }
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      padding: 12px 18px;
+    }
+    .typing-indicator span {
+      height: 8px; width: 8px; background-color: #BDBDBD;
+      border-radius: 50%; display: inline-block; margin: 0 2px;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .typing-indicator span:nth-of-type(2) { animation-delay: -0.2s; }
+    .typing-indicator span:nth-of-type(3) { animation-delay: -0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1.0); }
+    }
+    .input-area {
+      display: flex;
+      gap: 10px;
+      padding: 20px;
+      border-top: 1px solid var(--border-color);
+      background: #FFFFFF;
+      align-items: center;
+    }
+    #messageInput {
+      flex-grow: 1;
+      padding: 12px 18px;
+      border-radius: 22px;
+      border: 1px solid var(--border-color);
+      background: var(--background-light);
+      color: var(--body-text-color);
+      font-size: 16px;
+      font-family: var(--font-body);
+    }
+    #messageInput:focus {
+        outline: none;
+        border-color: var(--inecta-teal);
+        box-shadow: 0 0 0 2px rgba(0, 204, 204, 0.2);
+    }
+    #sendButton, #uploadButton {
+      background-color: var(--inecta-teal);
+      color: #000000;
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    #reportButton, #scheduleButton {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      font-size: 16px;
+      white-space: nowrap;
+      background-color: var(--inecta-green);
+      color: #FFFFFF;
+      display: none; /* Hidden by default */
+      flex-grow: 1;
+    }
+    #sendButton:disabled, #uploadButton:disabled {
+      background-color: #BDBDBD;
+      cursor: not-allowed;
+    }
+    #sendButton:hover:not(:disabled), #uploadButton:hover:not(:disabled), #reportButton:hover:not(:disabled), #scheduleButton:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
 <body>
-    <!-- Test Button for Debugging -->
-    <button onclick="testWebhook()" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: #ef4444; color: white; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">Test Webhook</button>
+
+  <div class="container">
+    <div class="header">
+      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcyIgogICB3aWR0aD0iNjM1Ljc5OTk5IgogICBoZWlnaHQ9IjE0MC4yOTMzMyIKICAgdmlld0JveD0iMCAwIDYzNS43OTk5OSAxNDAuMjkzMzMiCiAgIHNvZGlwb2RpOmRvY25hbWU9IklORUNUQV9MT0dPX1BSSU1BUlkuZXBzIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnM2IiAvPgogIDxzb2RpcGzpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NCIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIiAvPgogIDxnCiAgICAgaWQ9Imc4IgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaW5rc2NhcGU6bGFiZWw9Imlua19leHRfWFhYWFhYIgogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuMzMzMzMzMywwLDAsLTEuMzMzMzMzMywwLDE0MC4yOTMzMykiPgogICAgPGcKICAgICAgIGlkPSJnMTAiCiAgICAgICB0cmFuc2Zvcm09InNjYWxlKDAuMSkiPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDk4OS41OTgsNzcyLjY2NCBIIDExOTIuNTUgViAyMi44Nzg5IEggOTg5LjU5OCBWIDc3My42NjQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTQ5MC4xMiwyMi44NzExIEggMTI4Ny4xNyBWIDc3My42NTYgaCAxOTYuODQgdiAtOTMuMDkzIGMgNDUuNzcsNzcuODUxIDEzNS44MiwxMTIuOTI5IDIxNi43LDExMi45MjkgMTg2LjE2LDAgMjcxLjYxLC0xMzIuNzYyIDI3MS42MSwtMjk3LjU2MiBWIDIyLjg3MTEgSCAxNzY5LjM4IFYgNDYwLjg1MiBjIDAsODMuOTE4IC00MS4yMSwxNDkuNTQzIC0xMzguODcsMTQ5LjU0MyAtODguNSwwIC0xNDAuMzksLTY4LjY3MiAtMTQwLjM5LC0xNTUuNjc2IFYgMjIuODcxMSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgxNCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAyNzU5Ljc3LDIzOC4wMiBDIDI3MjEuNjMsMTA4LjMzMiAyNjAyLjU5LDAgMjQxNy45NiwwIGMgLTIwNi4wMiwwIC0zODcuNTksMTQ4IC0zODcuNTksNDAxLjMyIDAsMjM5LjU5IDE3NywzOTUuMjM1IDM2OS4yOCwzOTUuMjM1IDIyMS45NCwwIDM3MC44LC0xNDguMDIgMzcwLjgsLTM4OS4xMjkgMCwtMjguOTg1IC0zLjA0LC01OS41MjQgLTMuMDQsLTYyLjU3MSBoIC01MzcuMTYgYyA0LjU5LC05OS4xNzkgODguNTEsLTE3MC44ODYgMTg5LjIzLC0xNzAuODg2IDk0LjYyLDAgMTQ2LjUsNDcuMjg1IDE3MC45LDExNC40NDAgeiBtIC0xODkuMjIsMjQ1LjcwMyBjIC0zLjA1LDc0Ljc4OSAtNTEuODcsMTQ4LjAyMyAtMTY3Ljg2LDE0OC4wMjMgLTEwNS4zMSwwIC0xNjMuMjgsLTc5LjM0IC0xNjcuODUsLTE0OC4wMjMgaCAzMzUuNzEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzA0Ni42OSwzOTguMjczIGMgMCwtMTM1LjgxOCA4OC41LC0yMTIuMTI4IDE5Mi4yNywtMjEyLjEyOCAxMDMuNzcsMCAxNTUuNjYsNjguNjcxIDE3Mi40NCwxMjYuNjYgbCAxNzguNTQsLTU5LjUxMiBDIDM1NTYuMzksMTI4LjE3NiAzNDM4Ljg3LDAgMzIzOC45NiwwIDMwMTcuNywwIDI4NDMuNzQsMTY3Ljg0NCAyODQzLjc0LDM5OC4yNzMgYyAwLDIzMS45MzggMTcwLjksMzk4LjI2NiAzODkuMTEsMzk4LjI2NiAyMDQuNDgsMCAzMjAuNDcsLTEyNi42NDggMzUyLjUyLC0yNTMuMjg5IGwgLTE4MS41OSwtNjEuMDM5IGMgLTE4LjMzLDYyLjU1OSAtNjUuNjQsMTI2LjY0NCAtMTY2LjM2LDEyNi42NDQgLTEwMy43NSwwIC0xOTAuNzMsLTc0Ljc2OSAtMTkwLjczLC0yMTAuNTgyIgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDE4IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDM2NzIuODIsMTA1Mi4xNiBoIDIwMS40MyBWIDc3My42NDUgaCAxNTEuMDYgViA1OTMuNjE3IEggMzg3NC4yNSBWIDI3OS4yNDIgYyAwLC02NS42MzcgMzAuNTIsLTg2Ljk2NSA4OC41LC04Ni45NjUgMjQuNDIsMCA1MS44OSwzLjAyOCA2Mi41Niw2LjA4NiBWIDMwLjUxMTcgYyAtMTguMjksLTcuNjQwNiAtNTQuOTMsLTE4LjMzMiAtMTE0LjQ0LC0xOC4zMzIgLTE0Ni40OSwwIC0yMzguMDUsODYuOTg0NCAtMjM4LjA1LDIzMS45NjUzIHYgODA4LjAxNSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgyMCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA0MzE5LjgyLDQ1NC43MyAxODQuNjUsMjcuNDY5IGMgNDIuNzMsNi4xMDYgNTYuNDcsMjcuNDgxIDU2LjQ3LDUzLjQwMyAwLDUzLjQwNiAtNDEuMjEsOTcuNjc1IC0xMjYuNjcsOTcuNjc1IC04OC40OCwwIC0xMzcuMzIsLTU2LjQ3MiAtMTQzLjQxLC0xMjIuMDkzIGwgLTE4MC4xLDM4LjE1NiBjIDEyLjIzLDExNy41MTkgMTIwLjU5LDI0Ny4yMDcgMzIxLjk5LDI0Ny4yMDcgMjM4LjA3LDAgMzI2LjU3LC0xMzQuMjg1IDMyNi41NywtMjg1LjM2MyBWIDE0MS44OTggYyAwLC0zOS42ODcgNC41NywtOTMuMDg5NCA5LjE2LC0xMTkuMDE5MSBoIC0xODYuMTkgYyAtNC41NywxOS44NTE2IC03LjYxLDYxLjA1MDggLTcuNjEsOTAuMDM1MSBDIDQ1MzYuNTEsNTMuMzkwNiA0NDY0LjgsMS41MTE3MiA0MzUzLjQsMS41MTE3MiBjIC0xNjAuMjMsMCAtMjU3Ljg4LDEwOC4zMzYyOCAtMjU3Ljg4LDIyNS44NDMyOCAwLDEzNC4yOSA5OS4xOSwyMDkuMDYzIDIyNC4zLDIyNy4zNzUgbSAyNDEuMTIsLTEyOC4xNzUgdiAzMy41NTQgbCAtMTY5LjM4LC0yNS45MTggYyAtNTEuODgsLTcuNjM2IC05My4wOCwtMzYuNjQgLTkzLjA4LC05NC42MTcgMCwtNDQuMjY5IDMyLjA1LC04Ni45ODQgOTcuNjcsLTg2Ljk4NCA4NS40NCwwIDE2NC43OSw0MS4xOTEgMTY0Ljc5LDE3My45NjUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMTE5MS44Miw5NTEuNDAyIGMgMCw1NS42NTggLTQ1LjExLDEwMC43NjggLTEwMC43NSwxMDAuNzY4IC01NS42NSwwIC0xMDAuNzc3LC00NS4xMSAtMTAwLjc3NywtMTAwLjc2OCAwLC01NS42NDggNDUuMTI3LC0xMDAuNzU0IDEwMC43NzcsLTEwMC43NTQgNTUuNjQsMCAxMDAuNzUsNDUuMTA2IDEwMC43NSwxMDAuNzU0IgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDI0IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDIxMy4zOTgsMzg1LjM1NSBjIC02LjE4NywwLjY4NCAtMTIuNDY4LDEuMDYzIC0xOC44NDMsMS4wNjMgSCAwIFYgMTkxLjg2NyBDIDAsOTguNTM5MSA3NS42NTYzLDIyLjg3ODkgMTY4Ljk4OCwyMi44Nzg5IEggMzYzLjUzNSBMIDIyNS45NjksMTYwLjQ0OSBjIC02MS40ODksNjEuNDk2IC02NS42NTMsMTU4LjU1OSAtMTIuNTcxLDIyNC45MDYiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gNTMyLjUyMywzODYuNDE4IGMgLTYuMzc4LDAgLTEyLjY1NiwtMC4zNzkgLTE4Ljg0MywtMS4wNjMgNTMuMDgyLC02Ni4zNDcgNDguOTE4LC0xNjMuNDEgLTEyLjU3NSwtMjI0LjkwNiBMIDM2My41MzksMjIuODc4OSBIIDU1OC4wOSBjIDkzLjMyNCwwIDE2OC45ODgsNzUuNjYwMiAxNjguOTg4LDE2OC45ODgxIFYgMzg2LjQxOCBIIDUzMi41MjMiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM2ZTk0ODY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzYzLjUzOSwyMTcuNDM0IGMgMCw4Ni45NTMgNjUuNjg0LDE1OC41NDYgMTUwLjE0MSwxNjcuOTEgLTMuOTAzLDQuODc1IC04LjA2Nyw5LjU4MiAtMTIuNTc1LDE0LjA5NCBMIDM2My41MzksNTM3LjAwNCBMIDIyNS45NjksMzk5LjQzOCBjIC00LjUxMiwtNC41MTIgLTguNjc2LC05LjIxOSAtMTIuNTY3LC0xNC4wOTQgODQuNDUsLTkuMzY0IDE1MC4xMzcsLTgwLjk1NyAxNTAuMTM3LC0xNjcuOTEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzAiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMjEzLjM5OCwzODUuMzU1IEwgMTYwLjMxNiwzMTkuMDA4IDE2NC40OCwyMjEuOTQ1IDIyNS45NjksMTYwLjQ0OSBMIDM2My41MzUsMjIuODc4OSBWIDIxNy40MzQgYyAwLDg2Ljk1MyAtNjUuNjgsMTU4LjUzNSAtMTUwLjEzNywxNjcuOTIxIgogICAgICAgICBzdHlsZT0iZmlsbDojNTBjNGJmO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDMyIiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDUxMy42NzYsMzg1LjM1NSBDIDQyOS4yMjMsMzc1Ljk2OSAzNjMuNTM1LDMwNC4zODcgMzYzLjUzNSwyMTcuNDM0IFYgMjIuODc4OSBsIDEzNy41NywxMzcuNTcwMSBjIDYxLjQ4NSw2MS40OTYgNjUuNjU3LDE1OC41NTkgMTIuNTcxLDIyNC45MDYiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzQiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMjEzLjM5OCw5MDAuNTA0IGMgLTYuMTg3LDAuNjkxIC0xMi40NjgsMS4wNyAtMTguODQzLDEuMDcgTCAwLDkwMS41NzQgViA3MDcuMDI3IEMgMCw2MTMuNjk5IDc1LjY1NjMsNTM4LjAzNSAxNjguOTg4LDUzOC4wMzUgSCAzNjMuNTM1IEwgMjI1Ljk2OSw2NzUuNjA5IGMgLTYxLjQ4OSw2MS40ODkgLTY1LjY1MywxNTguNTQ3IC0xMi41NzEsMjI0Ljg5NSIKICAgICAgICAgc3R5bGU9ImZpbGw6I2E3ZTFkZTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgzNiIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA1MzIuNTIzLDkwMS41NzQgYyAtNi4zNzgsMCAtMTIuNjU2LC0wLjM3OSAtMTguODQzLC0xLjA3IDUzLjA4MiwtNjYuMzQ4IDQ4LjkxOCwtMTYzLjQwNiAtMTIuNTc1LC0yMjQuODk1IEwgMzYzLjUzOSw1MzguMDM1IEggNTU4LjA5IGMgOTMuMzI0LDAgMTY4Ljk4OCw3NS42NjQgMTY4Ljk4OCwxNjguOTkyIFYgOTAxLjU3NCBIIDUzMi41MjMiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM2ZTk0ODY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzYzLjUzOSw3MzIuNTkgYyAwLDg2Ljk1MyA2NS42ODQsMTU4LjUzNSAxNTAuMTQxLDE2Ny45MSAtMy45MDMsNC44NjcgLTguMDY3LDkuNTgyIC0xMi41NzUsMTQuMDgyIEwgMzYzLjUzOSwxMDUyLjE2IEwgMjI1Ljk2OSw5MTQuNTgyIGMgLTQuNTEyLC00LjUgLTguNjc2LC05LjIxNSAtMTIuNTY3LC0xNC4wODIgODQuNDUsLTkuMzc1IDE1MC4xMzcsLTgwLjk1NyAxNTAuMTM3LC0xNjcuOTEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDAiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMjEzLjM5OCw5MDAuNTA0IEMgMTYwLjMxNiw4MzQuMTU2IDE2NC40OCw3MzcuMDk4IDIyNS45NjksNjc1LjYwOSBMIDM2My41MzUsNTM4LjAzNSBWIDczMi41OSBjIDAsODYuOTQ5IC02NS42OCwxNTguNTM1IC0xNTAuMTM3LDE2Ny45MTQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM1MGM0YmY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNTEzLjY3Niw5MDAuNTA0IEMgNDI5LjIyMyw4OTEuMTI1IDM2My41MzUsODE5LjUzOSAzNjMuNTM1LDczMi41OSBWIDUzOC4wMzUgbCAxMzcuNTcsMTM3LjU3NCBjIDYxLjQ4NSw2MS40ODkgNjUuNjU3LDE1OC41NDcgMTIuNTcxLDIyNC44OTUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDQiIC8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K" alt="Inecta Logo">
+    </div>
+    <div id="topicTracker" class="topic-tracker"></div>
+    <div id="chat" class="chat"></div>
+    <div class="input-area">
+      <input id="messageInput" type="text" placeholder="Type your message..." autofocus/>
+      
+      <!-- File Upload Elements -->
+      <input type="file" id="fileUploader" style="display: none;" accept=".txt,.md,.pdf,.doc,.docx"/>
+      <button id="uploadButton" title="Upload a document">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+      </button>
+
+      <button id="sendButton" title="Send message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+
+      <!-- Buttons that appear at the end -->
+      <button id="reportButton">VIEW REPORT</button>
+      <button id="scheduleButton">SCHEDULE A CALL</button>
+    </div>
+  </div>
+
+  <script>
+    // --- CONFIGURATION ---
+    const config = {
+      chatWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/inectaQ',
+      reportWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/generate-pdf',
+      scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
+    };
+    const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
     
-    <div class="container">
-        <div class="header">
-            <h1>🍴 inecta food erp Discovery</h1>
-            <p>Let's understand your food business needs together</p>
-        </div>
+    // --- DOM ELEMENTS ---
+    const elements = {
+      chat: document.getElementById('chat'),
+      input: document.getElementById('messageInput'),
+      sendButton: document.getElementById('sendButton'),
+      reportButton: document.getElementById('reportButton'),
+      scheduleButton: document.getElementById('scheduleButton'),
+      topicTracker: document.getElementById('topicTracker'),
+      uploadButton: document.getElementById('uploadButton'),
+      fileUploader: document.getElementById('fileUploader'),
+    };
+    
+    // --- STATE MANAGEMENT ---
+    let chatHistory = [];
+    let sessionId = null;
+    let topics = [];
+    let fileContent = null; // Holds the content of the uploaded file
 
-        <div class="progress-container">
-            <div class="progress-steps">
-                <div class="progress-step active" data-step="1">
-                    <div class="progress-circle">1</div>
-                    <div class="progress-label">Company Profile</div>
-                </div>
-                <div class="progress-step" data-step="2">
-                    <div class="progress-circle">2</div>
-                    <div class="progress-label">Business Processes</div>
-                </div>
-                <div class="progress-step" data-step="3">
-                    <div class="progress-circle">3</div>
-                    <div class="progress-label">Current Systems</div>
-                </div>
-                <div class="progress-step" data-step="4">
-                    <div class="progress-circle">4</div>
-                    <div class="progress-label">Requirements</div>
-                </div>
-                <div class="progress-step" data-step="5">
-                    <div class="progress-circle">5</div>
-                    <div class="progress-label">Summary</div>
-                </div>
-            </div>
-        </div>
+    // --- FUNCTIONS ---
+    function generateUUID() {
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    }
 
-        <div class="chat-container" id="chatContainer">
-            <div class="message bot">
-                <div class="message-avatar">i</div>
-                <div class="message-content">
-                    Welcome! I'm your inecta discovery assistant. I'll help you explore how our food ERP solution can transform your operations. Let's start with your company name and what type of food business you run.
-                </div>
-            </div>
-        </div>
+    function updateTopicTracker(newTopics = []) {
+      topics = newTopics;
+      localStorage.setItem(`topics_${sessionId}`, JSON.stringify(topics));
+      
+      elements.topicTracker.innerHTML = '';
+      if (!topics || topics.length === 0) return;
+      
+      topics.forEach(topic => {
+        const topicDiv = document.createElement('div');
+        topicDiv.className = 'topic-item';
+        const statusClass = `status-${topic.status.toLowerCase().replace(/\s+/g, '-')}`;
+        topicDiv.classList.add(statusClass);
+        topicDiv.textContent = topic.status === 'Completed' ? `✓ ${topic.name}` : topic.name;
+        elements.topicTracker.appendChild(topicDiv);
+      });
+    }
 
-        <div class="input-container">
-            <div class="input-wrapper">
-                <input type="text" class="input-field" id="userInput" placeholder="Type your response here..." autocomplete="off">
-                <button class="btn" id="sendButton">
-                    Send →
-                </button>
-            </div>
-            <div class="file-upload-wrapper">
-                <label class="file-upload-label" for="fileUpload">
-                    📎 Upload Documents (PDF/DOCX)
-                </label>
-                <input type="file" class="file-upload-input" id="fileUpload" accept=".pdf,.doc,.docx" multiple>
-                <div class="uploaded-files" id="uploadedFiles"></div>
-            </div>
-        </div>
+    function renderMessage(role, content, save = true) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg ${role}`;
+      // Basic markdown for bold and links
+      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      content = content.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+      msgDiv.innerHTML = content.trim(); 
+      elements.chat.appendChild(msgDiv);
+      elements.chat.scrollTop = elements.chat.scrollHeight;
+      if (save) {
+        chatHistory.push({ role, content });
+        localStorage.setItem(`chatHistory_${sessionId}`, JSON.stringify(chatHistory));
+      }
+    }
+    
+    function loadState() {
+      sessionId = localStorage.getItem('sessionId');
+      const savedTopics = localStorage.getItem(`topics_${sessionId}`);
 
-        <div class="action-buttons">
-            <div class="coverage-indicator">
-                <span class="coverage-text">Discovery Progress:</span>
-                <div class="coverage-bar">
-                    <div class="coverage-fill" id="coverageFill" style="width: 5%"></div>
-                </div>
-                <span class="coverage-text" id="coveragePercent">5%</span>
-            </div>
-            <div>
-                <button class="btn btn-secondary" id="skipButton">Skip Section</button>
-                <button class="btn" id="generateReport" disabled>
-                    📄 Generate Report
-                </button>
-            </div>
-        </div>
-    </div>
+      if (!sessionId || !savedTopics) {
+        sessionId = generateUUID();
+        localStorage.setItem('sessionId', sessionId);
+        const initialTopics = [
+          // This can be dynamically updated by the bot's first message
+        ];
+        updateTopicTracker(initialTopics);
+      } else {
+        const savedHistory = localStorage.getItem(`chatHistory_${sessionId}`);
+        if (savedHistory) {
+          chatHistory = JSON.parse(savedHistory);
+          chatHistory.forEach(msg => renderMessage(msg.role, msg.content, false));
+        }
+        if (savedTopics) {
+          topics = JSON.parse(savedTopics);
+          updateTopicTracker(topics);
+        }
+      }
+      
+      if (chatHistory.length === 0) {
+        renderMessage('bot', INTRO_MESSAGE, true);
+      }
+    }
 
-    <div class="modal" id="reportModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Discovery Report Ready</h2>
-            </div>
-            <div class="modal-body">
-                Your personalized inecta food ERP discovery report has been generated. It includes all collected information, recommended modules, and next steps for your implementation journey.
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
-                <button class="btn" id="downloadReport">
-                    📥 Download Report
-                </button>
-            </div>
-        </div>
-    </div>
+    async function handleSend() {
+      const userContent = elements.input.value.trim();
+      if (!userContent && !fileContent) return; // Prevent sending empty messages
 
-    <script>
-        // Configuration
-        const CONFIG = {
-            webhookUrl: 'https://inecta.app.n8n.cloud/webhook/discovery-chat-v1',
-            debug: true, // Keep debug on to see what's happening
-            maxFileSize: 10 * 1024 * 1024 // 10MB
+      if (userContent) {
+        renderMessage('user', userContent);
+      }
+      if (fileContent) {
+        renderMessage('user', `<em>[Document uploaded. The assistant will now analyze it.]</em>`, false);
+      }
+
+      elements.input.value = '';
+      elements.sendButton.disabled = true;
+      elements.uploadButton.disabled = true;
+
+      const indicator = document.createElement('div');
+      indicator.className = 'msg bot typing-indicator';
+      indicator.innerHTML = '<span></span><span></span><span></span>';
+      elements.chat.appendChild(indicator);
+      elements.chat.scrollTop = elements.chat.scrollHeight;
+      
+      try {
+        const payload = { 
+          session_id: sessionId,
+          history: chatHistory,
+          document_content: fileContent // Send file content if it exists
         };
+        
+        const response = await fetch(config.chatWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
 
-        // Session management
-        const session = {
-            id: generateSessionId(),
-            conversationHistory: [],
-            collectedData: {
-                companyProfile: {},
-                businessProcesses: {},
-                currentSystems: {},
-                requirements: {},
-                painPoints: []
-            },
-            currentStep: 1,
-            coverage: 5,
-            uploadedFiles: []
-        };
-
-        // Questionnaire mapping (simplified - in production, load from n8n)
-        const questionnaireMap = {
-            bakery: ['production_planning', 'batch_tracking', 'recipe_management'],
-            dairy: ['milk_reception', 'quality_testing', 'pasteurization'],
-            meat: ['carcass_tracking', 'cutting_patterns', 'cold_chain'],
-            seafood: ['catch_tracking', 'freshness_monitoring', 'sustainability'],
-            beverage: ['blending', 'bottling', 'carbonation'],
-            general: ['inventory', 'procurement', 'sales', 'compliance']
-        };
-
-        // DOM elements
-        const chatContainer = document.getElementById('chatContainer');
-        const userInput = document.getElementById('userInput');
-        const sendButton = document.getElementById('sendButton');
-        const fileUpload = document.getElementById('fileUpload');
-        const uploadedFiles = document.getElementById('uploadedFiles');
-        const generateReportBtn = document.getElementById('generateReport');
-        const downloadReportBtn = document.getElementById('downloadReport');
-        const skipButton = document.getElementById('skipButton');
-        const coverageFill = document.getElementById('coverageFill');
-        const coveragePercent = document.getElementById('coveragePercent');
-
-        // Initialize
-        function init() {
-            sendButton.addEventListener('click', sendMessage);
-            userInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            fileUpload.addEventListener('change', handleFileUpload);
-            generateReportBtn.addEventListener('click', generateReport);
-            downloadReportBtn.addEventListener('click', downloadReport);
-            skipButton.addEventListener('click', skipSection);
-
-            if (CONFIG.debug) {
-                console.log('Debug mode enabled');
-                console.log('Session:', session);
-            }
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
         }
 
-        // Generate unique session ID
-        function generateSessionId() {
-            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        indicator.remove();
+        
+        const responseData = await response.json(); 
+        renderMessage('bot', responseData.reply);
+        
+        if (responseData.topics) {
+          updateTopicTracker(responseData.topics);
         }
 
-        // Send message to n8n webhook
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            console.log('Sending message:', message);
-
-            // Add user message to UI
-            addMessage(message, 'user');
-            userInput.value = '';
-            userInput.disabled = true;
-            sendButton.disabled = true;
-
-            // Show typing indicator
-            showTypingIndicator();
-
-            // Add to conversation history
-            session.conversationHistory.push({
-                role: 'user',
-                content: message,
-                timestamp: new Date().toISOString()
-            });
-
-            try {
-                console.log('Calling webhook with session:', session);
-                const response = await callWebhook({
-                    action: 'chat',
-                    message: message,
-                    session: session
-                });
-
-                console.log('Got response:', response);
-                hideTypingIndicator();
-
-                // The response is an array with one object, so get the first element
-                const responseData = Array.isArray(response) ? response[0] : response;
-                
-                // Check if response is valid
-                if (!responseData) {
-                    throw new Error('No response received from webhook');
-                }
-
-                // Get the bot message
-                const botMessage = responseData.botMessage || responseData.message || 'I received your message but had trouble processing it.';
-                
-                console.log('Bot message:', botMessage);
-                
-                // Add bot response
-                addMessage(botMessage, 'bot');
-                
-                // Update session data if provided
-                if (responseData.updatedData) {
-                    Object.assign(session.collectedData, responseData.updatedData);
-                }
-                
-                // Update progress if provided
-                if (responseData.progress) {
-                    updateProgress(responseData.progress);
-                }
-
-                // Add to history
-                session.conversationHistory.push({
-                    role: 'assistant',
-                    content: botMessage,
-                    timestamp: new Date().toISOString()
-                });
-                
-            } catch (error) {
-                hideTypingIndicator();
-                console.error('Error in sendMessage:', error);
-                addMessage('I apologize, but I encountered an issue. Please try again or contact support if the problem persists.', 'bot');
-            } finally {
-                userInput.disabled = false;
-                sendButton.disabled = false;
-                userInput.focus();
-            }
+        if (responseData.isDiscoveryComplete === true) {
+          elements.reportButton.style.display = 'inline-block';
+          elements.scheduleButton.style.display = 'inline-block';
+          elements.sendButton.style.display = 'none';
+          elements.uploadButton.style.display = 'none';
+          elements.input.style.display = 'none';
         }
+        
+      } catch (error) {
+        indicator.remove();
+        console.error('Chat Fetch error:', error);
+        renderMessage('bot', 'Sorry, there was an error connecting to the backend. Please try again.');
+      } finally {
+        elements.sendButton.disabled = false;
+        elements.uploadButton.disabled = false;
+        elements.input.focus();
+        // Clear file state after sending
+        fileContent = null;
+        elements.fileUploader.value = '';
+      }
+    }
 
-        // Call n8n webhook
-        async function callWebhook(payload) {
-            console.log('Calling webhook with URL:', CONFIG.webhookUrl);
-            if (CONFIG.debug) {
-                console.log('Webhook payload:', payload);
-            }
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-            // Simulate response in debug mode if webhook not configured
-            if (CONFIG.webhookUrl.includes('YOUR-N8N-INSTANCE')) {
-                console.error('Webhook URL not configured! Please update CONFIG.webhookUrl');
-                return simulateResponse(payload);
-            }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        fileContent = e.target.result;
+        renderMessage('bot', `<em>File "${file.name}" is attached. Add an optional message and press send.</em>`, false);
+      };
+      reader.onerror = () => {
+        renderMessage('bot', `<em>Error reading file. Please try again.</em>`, false);
+      };
+      reader.readAsText(file); // Reads the file as a plain text string
+    }
 
-            try {
-                console.log('Sending request to n8n...');
-                const response = await fetch(CONFIG.webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Response error text:', errorText);
-                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                }
-
-                const text = await response.text();
-                console.log('Raw response text:', text);
-                
-                try {
-                    const data = JSON.parse(text);
-                    
-                    if (CONFIG.debug) {
-                        console.log('Webhook response data:', data);
-                    }
-
-                    return data;
-                } catch (parseError) {
-                    console.error('Failed to parse JSON:', parseError);
-                    console.error('Response was:', text);
-                    throw new Error('Invalid JSON response from webhook');
-                }
-            } catch (error) {
-                console.error('Fetch error details:', error);
-                if (error.message.includes('Failed to fetch')) {
-                    console.error('This might be a CORS issue. Check n8n webhook CORS settings.');
-                }
-                throw error;
-            }
+    async function handleViewReport() {
+      elements.reportButton.textContent = 'GENERATING...';
+      try {
+        const response = await fetch(config.reportWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ history: chatHistory })
+        });
+        if (!response.ok) throw new Error(`Report Error: ${response.statusText}`);
+        const reportHtml = await response.text();
+        const reportWindow = window.open();
+        if (reportWindow) {
+          reportWindow.document.write(reportHtml);
+          reportWindow.document.close();
+        } else {
+          alert('Please allow pop-ups to view the report.');
         }
+      } catch (error) {
+        console.error('Report Fetch error:', error);
+        alert('Could not generate the report.');
+      } finally {
+        elements.reportButton.textContent = 'VIEW REPORT';
+      }
+    }
 
-        // Simulate webhook response for testing
-        function simulateResponse(payload) {
-            const responses = {
-                chat: {
-                    success: true,
-                    botMessage: "Thank you for that information! Now, let me understand your production processes better. Do you handle batch production, continuous flow, or both?",
-                    updatedData: {
-                        companyProfile: { name: payload.message }
-                    },
-                    progress: { step: 1, coverage: 15 }
-                },
-                generateReport: {
-                    success: true,
-                    reportUrl: 'data:text/html,<h1>Sample Report</h1>',
-                    reportData: btoa('<h1>Discovery Report</h1><p>Your report content here...</p>')
-                }
-            };
+    function handleSchedule() {
+        window.open(config.scheduleUrl, '_blank');
+    }
 
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(responses[payload.action] || { success: false, error: 'Unknown action' });
-                }, 1000);
-            });
-        }
+    // --- EVENT LISTENERS ---
+    elements.sendButton.addEventListener('click', handleSend);
+    elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) { handleSend(); } });
+    elements.reportButton.addEventListener('click', handleViewReport);
+    elements.scheduleButton.addEventListener('click', handleSchedule);
+    elements.uploadButton.addEventListener('click', () => elements.fileUploader.click());
+    elements.fileUploader.addEventListener('change', handleFileUpload);
 
-        // Add message to chat
-        function addMessage(content, type) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = type === 'bot' ? 'i' : 'U';
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.innerHTML = content; // Allow HTML for formatting
-            
-            if (type === 'bot') {
-                messageDiv.appendChild(avatar);
-                messageDiv.appendChild(contentDiv);
-            } else {
-                messageDiv.appendChild(contentDiv);
-                messageDiv.appendChild(avatar);
-            }
-            
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        // Show typing indicator
-        function showTypingIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'message bot';
-            indicator.id = 'typingIndicator';
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = 'i';
-            
-            const typing = document.createElement('div');
-            typing.className = 'typing-indicator';
-            typing.innerHTML = '<span></span><span></span><span></span>';
-            
-            indicator.appendChild(avatar);
-            indicator.appendChild(typing);
-            chatContainer.appendChild(indicator);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        // Hide typing indicator
-        function hideTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) {
-                indicator.remove();
-            }
-        }
-
-        // Handle file upload
-        async function handleFileUpload(event) {
-            const files = Array.from(event.target.files);
-            
-            for (const file of files) {
-                if (file.size > CONFIG.maxFileSize) {
-                    alert(`File ${file.name} exceeds 10MB limit`);
-                    continue;
-                }
-
-                // Add to UI
-                const fileTag = document.createElement('div');
-                fileTag.className = 'uploaded-file';
-                fileTag.innerHTML = `
-                    ${file.name}
-                    <span class="remove" onclick="removeFile('${file.name}')">×</span>
-                `;
-                uploadedFiles.appendChild(fileTag);
-
-                // Convert to base64
-                const base64 = await fileToBase64(file);
-                session.uploadedFiles.push({
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
-                    data: base64
-                });
-
-                // Process with webhook
-                try {
-                    const response = await callWebhook({
-                        action: 'processDocument',
-                        file: {
-                            name: file.name,
-                            type: file.type,
-                            data: base64
-                        },
-                        session: session
-                    });
-
-                    if (response.success && response.extractedInfo) {
-                        addMessage(`I've processed ${file.name} and extracted relevant information. ${response.summary}`, 'bot');
-                        Object.assign(session.collectedData, response.extractedInfo);
-                        updateProgress(response.progress);
-                    }
-                } catch (error) {
-                    console.error('Error processing file:', error);
-                    addMessage(`I couldn't process ${file.name}. Please continue with the conversation.`, 'bot');
-                }
-            }
-
-            event.target.value = '';
-        }
-
-        // Convert file to base64
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        // Remove uploaded file
-        function removeFile(fileName) {
-            session.uploadedFiles = session.uploadedFiles.filter(f => f.name !== fileName);
-            const fileElements = uploadedFiles.querySelectorAll('.uploaded-file');
-            fileElements.forEach(el => {
-                if (el.textContent.includes(fileName)) {
-                    el.remove();
-                }
-            });
-        }
-
-        // Update progress
-        function updateProgress(progress) {
-            if (progress.step) {
-                session.currentStep = progress.step;
-                updateProgressSteps();
-            }
-
-            if (progress.coverage) {
-                session.coverage = progress.coverage;
-                coverageFill.style.width = `${progress.coverage}%`;
-                coveragePercent.textContent = `${progress.coverage}%`;
-
-                // Enable report generation at 90% coverage
-                if (progress.coverage >= 90) {
-                    generateReportBtn.disabled = false;
-                }
-            }
-        }
-
-        // Update progress steps UI
-        function updateProgressSteps() {
-            const steps = document.querySelectorAll('.progress-step');
-            steps.forEach((step, index) => {
-                const stepNum = index + 1;
-                step.classList.remove('active', 'completed');
-                
-                if (stepNum < session.currentStep) {
-                    step.classList.add('completed');
-                } else if (stepNum === session.currentStep) {
-                    step.classList.add('active');
-                }
-            });
-        }
-
-        // Skip current section
-        async function skipSection() {
-            addMessage('Skipping to next section...', 'user');
-            showTypingIndicator();
-
-            try {
-                const response = await callWebhook({
-                    action: 'skipSection',
-                    session: session
-                });
-
-                hideTypingIndicator();
-
-                if (response.success) {
-                    addMessage(response.botMessage, 'bot');
-                    updateProgress(response.progress);
-                }
-            } catch (error) {
-                hideTypingIndicator();
-                console.error('Error:', error);
-            }
-        }
-
-        // Generate report
-        async function generateReport() {
-            generateReportBtn.disabled = true;
-            generateReportBtn.textContent = 'Generating...';
-
-            try {
-                const response = await callWebhook({
-                    action: 'generateReport',
-                    session: session
-                });
-
-                if (response.success) {
-                    session.reportData = response.reportData;
-                    session.reportUrl = response.reportUrl;
-                    document.getElementById('reportModal').classList.add('active');
-                }
-            } catch (error) {
-                console.error('Error generating report:', error);
-                alert('Failed to generate report. Please try again.');
-            } finally {
-                generateReportBtn.disabled = false;
-                generateReportBtn.textContent = '📄 Generate Report';
-            }
-        }
-
-        // Download report
-        function downloadReport() {
-            if (!session.reportData) return;
-
-            const blob = new Blob([atob(session.reportData)], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `inecta_discovery_${session.collectedData.companyProfile.name || 'report'}_${new Date().toISOString().split('T')[0]}.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('reportModal').classList.remove('active');
-        }
-
-        // Initialize on load
-        init();
-
-        // Test webhook function
-        async function testWebhook() {
-            console.log('=== WEBHOOK TEST STARTED ===');
-            console.log('Webhook URL:', CONFIG.webhookUrl);
-            
-            const testPayload = {
-                action: 'chat',
-                message: 'test message from browser',
-                session: {
-                    id: 'test_' + Date.now(),
-                    currentStep: 1,
-                    coverage: 5,
-                    collectedData: {},
-                    conversationHistory: []
-                }
-            };
-            
-            console.log('Test payload:', testPayload);
-            
-            try {
-                console.log('Sending test request...');
-                const response = await fetch(CONFIG.webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(testPayload)
-                });
-                
-                console.log('Response received!');
-                console.log('Status:', response.status);
-                console.log('Headers:', [...response.headers.entries()]);
-                
-                const responseText = await response.text();
-                console.log('Response body (raw):', responseText);
-                
-                try {
-                    const data = JSON.parse(responseText);
-                    console.log('Response data (parsed):', data);
-                    alert('✅ Webhook test successful! Check console for details.');
-                } catch (parseError) {
-                    console.error('Failed to parse response as JSON:', parseError);
-                    alert('⚠️ Webhook responded but with non-JSON data. Check console.');
-                }
-            } catch (error) {
-                console.error('=== WEBHOOK TEST FAILED ===');
-                console.error('Error type:', error.name);
-                console.error('Error message:', error.message);
-                console.error('Full error:', error);
-                
-                if (error.message.includes('Failed to fetch')) {
-                    alert('❌ CORS Error: Cannot connect to webhook. Check n8n CORS settings.');
-                } else {
-                    alert('❌ Webhook test failed! Error: ' + error.message);
-                }
-            }
-            
-            console.log('=== WEBHOOK TEST COMPLETED ===');
-        }
-    </script>
+    // --- INITIALIZATION ---
+    loadState();
+  </script>
 </body>
 </html>
