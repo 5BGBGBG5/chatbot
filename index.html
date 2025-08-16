@@ -245,9 +245,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // --- CONFIGURATION ---
+      // IMPORTANT: Replace these with your actual n8n webhook URLs
       const config = {
-        chatWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/inectaQ',
-        reportWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/generate-pdf',
+        chatWebhookUrl: 'YOUR_CHAT_HANDLER_WEBHOOK_URL',
+        fileWebhookUrl: 'YOUR_DOCUMENT_PROCESSOR_WEBHOOK_URL',
+        reportWebhookUrl: 'YOUR_REPORT_GENERATOR_WEBHOOK_URL',
         scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
       };
       const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
@@ -266,67 +268,67 @@
       };
       
       // --- STATE MANAGEMENT ---
-      let chatHistory = [];
       let sessionId = null;
-      let topics = [];
-      let uploadedFile = null;
 
-      // --- SMART SESSION MANAGEMENT ---
-      function initializeSession() {
-        const storedSessionId = localStorage.getItem('inecta_chat_session_id');
+      // --- CORE FUNCTIONS ---
 
-        if (storedSessionId) {
-          sessionId = storedSessionId;
-          console.log("Returning user. Resuming session:", sessionId);
-          loadChatHistory();
+      function getSessionId() {
+        if (sessionId) return sessionId;
+        let storedId = localStorage.getItem('inecta_chat_session_id');
+        if (!storedId) {
+          storedId = crypto.randomUUID();
+          localStorage.setItem('inecta_chat_session_id', storedId);
+          console.log("New user. Started new session:", storedId);
+          // Add the intro message for brand new sessions
+          renderMessage('bot', INTRO_MESSAGE, false);
         } else {
-          sessionId = crypto.randomUUID();
-          localStorage.setItem('inecta_chat_session_id', sessionId);
-          console.log("New user. Started new session:", sessionId);
+          console.log("Returning user. Resuming session:", storedId);
         }
-        
-        if (chatHistory.length === 0) {
-          renderMessage('bot', INTRO_MESSAGE, true);
-        }
-      }
-
-      function loadChatHistory() {
-        const savedHistory = localStorage.getItem(`chatHistory_${sessionId}`);
-        const savedTopics = localStorage.getItem(`topics_${sessionId}`);
-
-        if (savedHistory) {
-          chatHistory = JSON.parse(savedHistory);
-          chatHistory.forEach(msg => renderMessage(msg.role, msg.content, false));
-        }
-        if (savedTopics) {
-          topics = JSON.parse(savedTopics);
-          updateTopicTracker(topics);
-        }
+        sessionId = storedId;
+        return sessionId;
       }
 
       function startNewChat() {
-        console.log("Starting new chat. Resetting session ID.");
-        if (sessionId) {
-            localStorage.removeItem(`chatHistory_${sessionId}`);
-            localStorage.removeItem(`topics_${sessionId}`);
-        }
+        const currentSessionId = getSessionId();
+        console.log("Starting new chat. Clearing local storage for session:", currentSessionId);
+        localStorage.removeItem(`chatHistory_${currentSessionId}`);
+        localStorage.removeItem(`topics_${currentSessionId}`);
+        localStorage.removeItem('inecta_chat_session_id');
         
-        const newSessionId = crypto.randomUUID();
-        localStorage.setItem('inecta_chat_session_id', newSessionId);
-        window.location.reload();
+        // Clear UI
+        elements.chat.innerHTML = '';
+        elements.topicTracker.innerHTML = '';
+        sessionId = null; // Force re-initialization
+        
+        // Re-initialize
+        initializeSession();
       }
 
-      // --- CORE FUNCTIONS ---
-      function updateTopicTracker(newTopics = []) {
-        topics = newTopics;
-        if (sessionId) {
-            localStorage.setItem(`topics_${sessionId}`, JSON.stringify(topics));
+      function renderMessage(role, content, save = true) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${role}`;
+        
+        // Basic Markdown-like replacements
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        content = content.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+        msgDiv.innerHTML = content.trim(); 
+        
+        elements.chat.appendChild(msgDiv);
+        scrollToBottom();
+
+        if (save) {
+          const history = getChatHistory();
+          history.push({ role, content });
+          saveChatHistory(history);
         }
+      }
+
+      function updateTopicTracker(newTopics = []) {
+        if (!newTopics || newTopics.length === 0) return;
+        localStorage.setItem(`topics_${getSessionId()}`, JSON.stringify(newTopics));
         
         elements.topicTracker.innerHTML = '';
-        if (!topics || topics.length === 0) return;
-        
-        topics.forEach(topic => {
+        newTopics.forEach(topic => {
           const topicDiv = document.createElement('div');
           topicDiv.className = 'topic-item';
           const statusClass = `status-${topic.status.toLowerCase().replace(/\s+/g, '-')}`;
@@ -335,71 +337,71 @@
           elements.topicTracker.appendChild(topicDiv);
         });
       }
-
-      function renderMessage(role, content, save = true) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `msg ${role}`;
-        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        content = content.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
-        msgDiv.innerHTML = content.trim(); 
-        elements.chat.appendChild(msgDiv);
-        elements.chat.scrollTop = elements.chat.scrollHeight;
-
-        if (save) {
-          chatHistory.push({ role, content });
-          if (sessionId) {
-              localStorage.setItem(`chatHistory_${sessionId}`, JSON.stringify(chatHistory));
-          }
+      
+      function setUiLoadingState(isLoading) {
+        if (isLoading) {
+            elements.sendButton.disabled = true;
+            elements.uploadButton.disabled = true;
+            const indicator = document.createElement('div');
+            indicator.id = 'typingIndicator';
+            indicator.className = 'msg bot typing-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            elements.chat.appendChild(indicator);
+            scrollToBottom();
+        } else {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+            elements.sendButton.disabled = false;
+            elements.uploadButton.disabled = false;
+            elements.input.focus();
         }
       }
 
-      // --- MODIFIED handleSend function ---
+      function scrollToBottom() {
+        elements.chat.scrollTop = elements.chat.scrollHeight;
+      }
+
+      // --- LOCAL STORAGE HELPERS ---
+      function getChatHistory() {
+        const saved = localStorage.getItem(`chatHistory_${getSessionId()}`);
+        return saved ? JSON.parse(saved) : [];
+      }
+
+      function saveChatHistory(history) {
+        localStorage.setItem(`chatHistory_${getSessionId()}`, JSON.stringify(history));
+      }
+
+      function loadSessionState() {
+        const history = getChatHistory();
+        const topics = JSON.parse(localStorage.getItem(`topics_${getSessionId()}`) || '[]');
+        
+        elements.chat.innerHTML = ''; // Clear chat
+        history.forEach(msg => renderMessage(msg.role, msg.content, false));
+        updateTopicTracker(topics);
+      }
+
+      // --- ASYNC HANDLERS ---
       async function handleSend() {
         const userContent = elements.input.value.trim();
-        if (!userContent && !uploadedFile) return;
+        if (!userContent) return;
 
-        if (userContent) {
-          renderMessage('user', userContent);
-        }
-        if (uploadedFile) {
-          renderMessage('user', `<em>[Document uploaded: ${uploadedFile.name}]</em>`, false);
-        }
-
+        renderMessage('user', userContent);
         elements.input.value = '';
-        elements.sendButton.disabled = true;
-        elements.uploadButton.disabled = true;
-
-        const indicator = document.createElement('div');
-        indicator.className = 'msg bot typing-indicator';
-        indicator.innerHTML = '<span></span><span></span><span></span>';
-        elements.chat.appendChild(indicator);
-        elements.chat.scrollTop = elements.chat.scrollHeight;
+        setUiLoadingState(true);
 
         try {
-          // Use FormData to send the file and other data
-          const formData = new FormData();
-          formData.append('session_id', sessionId);
-          formData.append('history', JSON.stringify(chatHistory)); // Send history as a JSON string
-
-// +++ ADD THIS BLOCK +++
-if (uploadedFile) {
-  // Append the actual file object. The key 'fileUploader' MUST match
-  // the 'Binary Property' name in your n8n webhook node's options.
-  formData.append('fileUploader', uploadedFile, uploadedFile.name);
-}
-          
           const response = await fetch(config.chatWebhookUrl, {
             method: 'POST',
-            body: formData // No 'Content-Type' header needed, browser sets it
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              session_id: getSessionId(),
+              message: userContent
+            })
           });
 
-          if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-          }
-
-          indicator.remove();
+          if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
           
-          const responseData = await response.json(); 
+          const responseData = await response.json();
           renderMessage('bot', responseData.reply);
           
           if (responseData.topics) {
@@ -407,75 +409,107 @@ if (uploadedFile) {
           }
 
           if (responseData.isDiscoveryComplete === true) {
-            elements.reportButton.style.display = 'inline-block';
-            elements.scheduleButton.style.display = 'inline-block';
-            elements.sendButton.style.display = 'none';
-            elements.uploadButton.style.display = 'none';
-            elements.input.style.display = 'none';
+            showCompletionControls(true);
           }
           
         } catch (error) {
-          indicator.remove();
           console.error('Chat Fetch error:', error);
-          renderMessage('bot', 'Sorry, there was an error connecting to the backend. Please try again.');
+          renderMessage('bot', 'Sorry, there was an error connecting. Please try again.', false);
         } finally {
-          elements.sendButton.disabled = false;
-          elements.uploadButton.disabled = false;
-          elements.input.focus();
-          uploadedFile = null; // Clear the file after sending
-          elements.fileUploader.value = '';
+          setUiLoadingState(false);
         }
       }
 
-      function handleFileUpload(event) {
+      async function handleFileUpload(event) {
         const file = event.target.files[0];
-        if (!file) {
-          uploadedFile = null;
-          return;
+        if (!file) return;
+
+        setUiLoadingState(true);
+        renderMessage('bot', `<em>Uploading "${file.name}" for analysis. This may take a moment...</em>`, false);
+        
+        const formData = new FormData();
+        formData.append('session_id', getSessionId());
+        formData.append('fileUploader', file, file.name);
+
+        try {
+          const response = await fetch(config.fileWebhookUrl, {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) throw new Error(`File Upload HTTP Error: ${response.status}`);
+
+          const result = await response.json();
+          renderMessage('bot', result.message, false); // e.g., "I've received the document..."
+        
+        } catch (error) {
+          console.error('File Upload Error:', error);
+          renderMessage('bot', '<em>There was an error uploading the file. Please try again.</em>', false);
+        } finally {
+          setUiLoadingState(false);
+          elements.fileUploader.value = ''; // Clear the input for next upload
         }
-        uploadedFile = file;
-        renderMessage('bot', `<em>File "${file.name}" is attached. Add an optional message and press send.</em>`, false);
       }
 
       async function handleViewReport() {
         elements.reportButton.textContent = 'GENERATING...';
+        elements.reportButton.disabled = true;
         try {
           const response = await fetch(config.reportWebhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ history: chatHistory })
+            body: JSON.stringify({ session_id: getSessionId() })
           });
           if (!response.ok) throw new Error(`Report Error: ${response.statusText}`);
+          
           const reportHtml = await response.text();
           const reportWindow = window.open();
           if (reportWindow) {
             reportWindow.document.write(reportHtml);
             reportWindow.document.close();
           } else {
-            alert('Please allow pop-ups to view the report.');
+            renderMessage('bot', '<em>Please allow pop-ups to view the report.</em>', false);
           }
         } catch (error) {
           console.error('Report Fetch error:', error);
-          alert('Could not generate the report.');
+          renderMessage('bot', '<em>Could not generate the report at this time.</em>', false);
         } finally {
           elements.reportButton.textContent = 'VIEW REPORT';
+          elements.reportButton.disabled = false;
         }
       }
 
-      function handleSchedule() {
-          window.open(config.scheduleUrl, '_blank');
+      function showCompletionControls(isComplete) {
+        if (isComplete) {
+            elements.reportButton.style.display = 'inline-block';
+            elements.scheduleButton.style.display = 'inline-block';
+            elements.sendButton.style.display = 'none';
+            elements.uploadButton.style.display = 'none';
+            elements.input.style.display = 'none';
+        } else {
+            elements.reportButton.style.display = 'none';
+            elements.scheduleButton.style.display = 'none';
+            elements.sendButton.style.display = 'inline-flex';
+            elements.uploadButton.style.display = 'inline-flex';
+            elements.input.style.display = 'block';
+        }
       }
 
-      // --- EVENT LISTENERS ---
+      // --- INITIALIZATION & EVENT LISTENERS ---
+      function initializeSession() {
+        getSessionId(); // This ensures a session ID exists
+        loadSessionState();
+        showCompletionControls(false); // Ensure normal controls are visible on load
+      }
+
       elements.sendButton.addEventListener('click', handleSend);
-      elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) { handleSend(); } });
+      elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) handleSend(); });
       elements.reportButton.addEventListener('click', handleViewReport);
-      elements.scheduleButton.addEventListener('click', handleSchedule);
+      elements.scheduleButton.addEventListener('click', () => window.open(config.scheduleUrl, '_blank'));
       elements.uploadButton.addEventListener('click', () => elements.fileUploader.click());
       elements.fileUploader.addEventListener('change', handleFileUpload);
       elements.newChatButton.addEventListener('click', startNewChat);
 
-      // --- INITIALIZATION ---
       initializeSession();
     });
   </script>
