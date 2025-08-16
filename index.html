@@ -381,11 +381,12 @@
           formData.append('session_id', sessionId);
           formData.append('history', JSON.stringify(chatHistory)); // Send history as a JSON string
 
-          if (uploadedFile) {
-            // Read the file content as text before sending
-            const fileContent = await uploadedFile.text();
-            formData.append('document_content', fileContent); 
-          }
+// +++ ADD THIS BLOCK +++
+if (uploadedFile) {
+  // Append the actual file object. The key 'fileUploader' MUST match
+  // the 'Binary Property' name in your n8n webhook node's options.
+  formData.append('fileUploader', uploadedFile, uploadedFile.name);
+}
           
           const response = await fetch(config.chatWebhookUrl, {
             method: 'POST',
