@@ -309,14 +309,21 @@
         }
       }
 
-      function startNewChat() {
-        console.log("Starting new chat. Clearing localStorage.");
-        localStorage.removeItem('inecta_chat_session_id');
-        // Also clear the history and topics for the old session ID
+function startNewChat() {
+        console.log("Starting new chat. Resetting session ID.");
+        // First, clear the chat history for the CURRENT session from storage
         if (sessionId) {
             localStorage.removeItem(`chatHistory_${sessionId}`);
             localStorage.removeItem(`topics_${sessionId}`);
         }
+        
+        // Next, generate a NEW session ID immediately
+        const newSessionId = crypto.randomUUID();
+
+        // Then, save this NEW ID to localStorage, overwriting the old one
+        localStorage.setItem('inecta_chat_session_id', newSessionId);
+
+        // Finally, reload the page. It will now start fresh with the new session.
         window.location.reload();
       }
 
