@@ -433,15 +433,17 @@ function startNewChat() {
         }
       }
 
-      function handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+let uploadedFile = null; // Add this line near the top with your other state variables
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          fileContent = e.target.result;
-          renderMessage('bot', `<em>File "${file.name}" is attached. Add an optional message and press send.</em>`, false);
-        };
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) {
+    uploadedFile = null;
+    return;
+  }
+  uploadedFile = file;
+  renderMessage('bot', `<em>File "${file.name}" is attached. Add an optional message and press send.</em>`, false);
+}
         reader.onerror = () => {
           renderMessage('bot', `<em>Error reading file. Please try again.</em>`, false);
         };
