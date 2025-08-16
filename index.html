@@ -55,11 +55,28 @@
       padding: 15px 20px;
       background: #FFFFFF;
       border-bottom: 1px solid var(--border-color);
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .header img {
       height: 28px;
       width: auto;
+    }
+    #newChatBtn {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      background-color: var(--light-grey);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    #newChatBtn:hover {
+      background-color: var(--dark-grey);
     }
     .topic-tracker { 
       display: flex; 
@@ -105,6 +122,7 @@
       line-height: 1.6;
       max-width: 80%;
       white-space: pre-wrap;
+      word-wrap: break-word;
     }
     .user {
       background-color: var(--user-bubble-bg);
@@ -202,7 +220,8 @@
 
   <div class="container">
     <div class="header">
-      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcyIgogICB3aWR0aD0iNjM1Ljc5OTk5IgogICBoZWlnaHQ9IjE0MC4yOTMzMyIKICAgdmlld0JveD0iMCAwIDYzNS43OTk5OSAxNDAuMjkzMzMiCiAgIHNvZGlwb2RpOmRvY25hbWU9IklORUNUQV9MT0dPX1BSSU1BUlkuZXBzIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnM2IiAvPgogIDxzb2RpcGzpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NCIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIiAvPgogIDxnCiAgICAgaWQ9Imc4IgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaW5rc2NhcGU6bGFiZWw9Imlua19leHRfWFhYWFhYIgogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuMzMzMzMzMywwLDAsLTEuMzMzMzMzMywwLDE0MC4yOTMzMykiPgogICAgPGcKICAgICAgIGlkPSJnMTAiCiAgICAgICB0cmFuc2Zvcm09InNjYWxlKDAuMSkiPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDk4OS41OTgsNzcyLjY2NCBIIDExOTIuNTUgViAyMi44Nzg5IEggOTg5LjU5OCBWIDc3My42NjQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTQ5MC4xMiwyMi44NzExIEggMTI4Ny4xNyBWIDc3My42NTYgaCAxOTYuODQgdiAtOTMuMDkzIGMgNDUuNzcsNzcuODUxIDEzNS44MiwxMTIuOTI5IDIxNi43LDExMi45MjkgMTg2LjE2LDAgMjcxLjYxLC0xMzIuNzYyIDI3MS42MSwtMjk3LjU2MiBWIDIyLjg3MTEgSCAxNzY5LjM4IFYgNDYwLjg1MiBjIDAsODMuOTE4IC00MS4yMSwxNDkuNTQzIC0xMzguODcsMTQ5LjU0MyAtODguNSwwIC0xNDAuMzksLTY4LjY3MiAtMTQwLjM5LC0xNTUuNjc2IFYgMjIuODcxMSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgxNCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAyNzU5Ljc3LDIzOC4wMiBDIDI3MjEuNjMsMTA4LjMzMiAyNjAyLjU5LDAgMjQxNy45NiwwIGMgLTIwNi4wMiwwIC0zODcuNTksMTQ4IC0zODcuNTksNDAxLjMyIDAsMjM5LjU5IDE3NywzOTUuMjM1IDM2OS4yOCwzOTUuMjM1IDIyMS45NCwwIDM3MC44LC0xNDguMDIgMzcwLjgsLTM4OS4xMjkgMCwtMjguOTg1IC0zLjA0LC01OS41MjQgLTMuMDQsLTYyLjU3MSBoIC01MzcuMTYgYyA0LjU5LC05OS4xNzkgODguNTEsLTE3MC44ODYgMTg5LjIzLC0xNzAuODg2IDk0LjYyLDAgMTQ2LjUsNDcuMjg1IDE3MC45LDExNC40NDAgeiBtIC0xODkuMjIsMjQ1LjcwMyBjIC0zLjA1LDc0Ljc4OSAtNTEuODcsMTQ4LjAyMyAtMTY3Ljg2LDE0OC4wMjMgLTEwNS4zMSwwIC0xNjMuMjgsLTc5LjM0IC0xNjcuODUsLTE0OC4wMjMgaCAzMzUuNzEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzA0Ni42OSwzOTguMjczIGMgMCwtMTM1LjgxOCA4OC41LC0yMTIuMTI4IDE5Mi4yNywtMjEyLjEyOCAxMDMuNzcsMCAxNTUuNjYsNjguNjcxIDE3Mi40NCwxMjYuNjYgbCAxNzguNTQsLTU5LjUxMiBDIDM1NTYuMzksMTI4LjE3NiAzNDM4Ljg3LDAgMzIzOC45NiwwIDMwMTcuNywwIDI4NDMuNzQsMTY3Ljg0NCAyODQzLjc0LDM5OC4yNzMgYyAwLDIzMS45MzggMTcwLjksMzk4LjI2NiAzODkuMTEsMzk4LjI2NiAyMDQuNDgsMCAzMjAuNDcsLTEyNi42NDggMzUyLjUyLC0yNTMuMjg5IGwgLTE4MS41OSwtNjEuMDM5IGMgLTE4LjMzLDYyLjU1OSAtNjUuNjQsMTI2LjY0NCAtMTY2LjM2LDEyNi42NDQgLTEwMy43NSwwIC0xOTAuNzMsLTc0Ljc2OSAtMTkwLjczLC0yMTAuNTgyIgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDE4IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDM2NzIuODIsMTA1Mi4xNiBoIDIwMS40MyBWIDc3My42NDUgaCAxNTEuMDYgViA1OTMuNjE3IEggMzg3NC4yNSBWIDI3OS4yNDIgYyAwLC02NS42MzcgMzAuNTIsLTg2Ljk2NSA4OC41LC04Ni45NjUgMjQuNDIsMCA1MS44OSwzLjAyOCA2Mi41Niw2LjA4NiBWIDMwLjUxMTcgYyAtMTguMjksLTcuNjQwNiAtNTQuOTMsLTE4LjMzMiAtMTE0LjQ0LC0xOC4zMzIgLTE0Ni40OSwwIC0yMzguMDUsODYuOTg0NCAtMjM4LjA1LDIzMS45NjUzIHYgODA4LjAxNSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgyMCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA0MzE5LjgyLDQ1NC43MyAxODQuNjUsMjcuNDY5IGMgNDIuNzMsNi4xMDYgNTYuNDcsMjcuNDgxIDU2LjQ3LDUzLjQwMyAwLDUzLjQwNiAtNDEuMjEsOTcuNjc1IC0xMjYuNjcsOTcuNjc1IC04OC40OCwwIC0xMzcuMzIsLTU2LjQ3MiAtMTQzLjQxLC0xMjIuMDkzIGwgLTE4MC4xLDM4LjE1NiBjIDEyLjIzLDExNy41MTkgMTIwLjU5LDI0Ny4yMDcgMzIxLjk5LDI0Ny4yMDcgMjM4LjA3LDAgMzI2LjU3LC0xMzQuMjg1IDMyNi41NywtMjg1LjM2MyBWIDE0MS44OTggYyAwLC0zOS42ODcgNC41NywtOTMuMDg5NCA5LjE2LC0xMTkuMDE5MSBoIC0xODYuMTkgYyAtNC41NywxOS44NTE2IC03LjYxLDYxLjA1MDggLTcuNjEsOTAuMDM1MSBDIDQ1MzYuNTEsNTMuMzkwNiA0NDY0LjgsMS41MTE3MiA0MzUzLjQsMS41MTE3MiBjIC0xNjAuMjMsMCAtMjU3Ljg4LDEwOC4zMzYyOCAtMjU3Ljg4LDIyNS44NDMyOCAwLDEzNC4yOSA5OS4xOSwyMDkuMDYzIDIyNC4zLDIyNy4zNzUgbSAyNDEuMTIsLTEyOC4xNzUgdiAzMy41NTQgbCAtMTY5LjM4LC0yNS45MTggYyAtNTEuODgsLTcuNjM2IC05My4wOCwtMzYuNjQgLTkzLjA4LC05NC42MTcgMCwtNDQuMjY5IDMyLjA1LC04Ni45ODQgOTcuNjcsLTg2Ljk4NCA4NS40NCwwIDE2NC43OSw0MS4xOTEgMTY0Ljc5LDE3My45NjUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMTE5MS44Miw5NTEuNDAyIGMgMCw1NS42NTggLTQ1LjExLDEwMC43NjggLTEwMC43NSwxMDAuNzY4IC01NS42NSwwIC0xMDAuNzc3LC00NS4xMSAtMTAwLjc3NywtMTAwLjc2OCAwLC01NS42NDggNDUuMTI3LC0xMDAuNzU0IDEwMC43NzcsLTEwMC43NTQgNTUuNjQsMCAxMDAuNzUsNDUuMTA2IDEwMC43NSwxMDAuNzU0IgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDI0IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDIxMy4zOTgsMzg1LjM1NSBjIC02LjE4NywwLjY4NCAtMTIuNDY4LDEuMDYzIC0xOC44NDMsMS4wNjMgSCAwIFYgMTkxLjg2NyBDIDAsOTguNTM5MSA3NS42NTYzLDIyLjg3ODkgMTY4Ljk4OCwyMi44Nzg5IEggMzYzLjUzNSBMIDIyNS45NjksMTYwLjQ0OSBjIC02MS40ODksNjEuNDk2IC02NS42NTMsMTU4LjU1OSAtMTIuNTcxLDIyNC45MDYiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gNTMyLjUyMywzODYuNDE4IGMgLTYuMzc4LDAgLTEyLjY1NiwtMC4zNzkgLTE4Ljg0MywtMS4wNjMgNTMuMDgyLC02Ni4zNDcgNDguOTE4LC0xNjMuNDEgLTEyLjU3NSwtMjI0LjkwNiBMIDM2My41MzksMjIuODc4OSBIIDU1OC4wOSBjIDkzLjMyNCwwIDE2OC45ODgsNzUuNjYwMiAxNjguOTg4LDE2OC45ODgxIFYgMzg2LjQxOCBIIDUzMi41MjMiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM2ZTk0ODY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzYzLjUzOSwyMTcuNDM0IGMgMCw4Ni45NTMgNjUuNjg0LDE1OC41NDYgMTUwLjE0MSwxNjcuOTEgLTMuOTAzLDQuODc1IC04LjA2Nyw5LjU4MiAtMTIuNTc1LDE0LjA5NCBMIDM2My41MzksNTM3LjAwNCBMIDIyNS45NjksMzk5LjQzOCBjIC00LjUxMiwtNC41MTIgLTguNjc2LC05LjIxOSAtMTIuNTY3LC0xNC4wOTQgODQuNDUsLTkuMzY0IDE1MC4xMzcsLTgwLjk1NyAxNTAuMTM3LC0xNjcuOTEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzAiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMjEzLjM5OCwzODUuMzU1IEwgMTYwLjMxNiwzMTkuMDA4IDE2NC40OCwyMjEuOTQ1IDIyNS45NjksMTYwLjQ0OSBMIDM2My41MzUsMjIuODc4OSBWIDIxNy40MzQgYyAwLDg2Ljk1MyAtNjUuNjgsMTU4LjUzNSAtMTUwLjEzNywxNjcuOTIxIgogICAgICAgICBzdHlsZT0iZmlsbDojNTBjNGJmO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDMyIiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDUxMy42NzYsMzg1LjM1NSBDIDQyOS4yMjMsMzc1Ljk2OSAzNjMuNTM1LDMwNC4zODcgMzYzLjUzNSwyMTcuNDM0IFYgMjIuODc4OSBsIDEzNy41NywxMzcuNTcwMSBjIDYxLjQ4NSw2MS40OTYgNjUuNjU3LDE1OC41NTkgMTIuNTcxLDIyNC45MDYiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzQiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMjEzLjM5OCw5MDAuNTA0IGMgLTYuMTg3LDAuNjkxIC0xMi40NjgsMS4wNyAtMTguODQzLDEuMDcgTCAwLDkwMS41NzQgViA3MDcuMDI3IEMgMCw2MTMuNjk5IDc1LjY1NjMsNTM4LjAzNSAxNjguOTg4LDUzOC4wMzUgSCAzNjMuNTM1IEwgMjI1Ljk2OSw2NzUuNjA5IGMgLTYxLjQ4OSw2MS40ODkgLTY1LjY1MywxNTguNTQ3IC0xMi41NzEsMjI0Ljg5NSIKICAgICAgICAgc3R5bGU9ImZpbGw6I2E3ZTFkZTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgzNiIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA1MzIuNTIzLDkwMS41NzQgYyAtNi4zNzgsMCAtMTIuNjU2LC0wLjM3OSAtMTguODQzLC0xLjA3IDUzLjA4MiwtNjYuMzQ4IDQ4LjkxOCwtMTYzLjQwNiAtMTIuNTc1LC0yMjQuODk1IEwgMzYzLjUzOSw1MzguMDM1IEggNTU4LjA5IGMgOTMuMzI0LDAgMTY4Ljk4OCw3NS42NjQgMTY4Ljk4OCwxNjguOTkyIFYgOTAxLjU3NCBIIDUzMi41MjMiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM2ZTk0ODY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzYzLjUzOSw3MzIuNTkgYyAwLDg2Ljk1MyA2NS42ODQsMTU4LjUzNSAxNTAuMTQxLDE2Ny45MSAtMy45MDMsNC44NjcgLTguMDY3LDkuNTgyIC0xMi41NzUsMTQuMDgyIEwgMzYzLjUzOSwxMDUyLjE2IEwgMjI1Ljk2OSw5MTQuNTgyIGMgLTQuNTEyLC00LjUgLTguNjc2LC05LjIxNSAtMTIuNTY3LC0xNC4wODIgODQuNDUsLTkuMzc1IDE1MC4xMzcsLTgwLjk1NyAxNTAuMTM3LC0xNjcuOTEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDAiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMjEzLjM5OCw5MDAuNTA0IEMgMTYwLjMxNiw4MzQuMTU2IDE2NC40OCw3MzcuMDk4IDIyNS45NjksNjc1LjYwOSBMIDM2My41MzUsNTM4LjAzNSBWIDczMi41OSBjIDAsODYuOTQ5IC02NS42OCwxNTguNTM1IC0xNTAuMTM3LDE2Ny45MTQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM1MGM0YmY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNTEzLjY3Niw5MDAuNTA0IEMgNDI5LjIyMyw4OTEuMTI1IDM2My41MzUsODE5LjUzOSAzNjMuNTM1LDczMi41OSBWIDUzOC4wMzUgbCAxMzcuNTcsMTM3LjU3NCBjIDYxLjQ4NSw2MS40ODkgNjUuNjU3LDE1OC41NDcgMTIuNTcxLDIyNC44OTUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDQiIC8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K" alt="Inecta Logo">
+      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcyIgogICB3aWR0aD0iNjM1Ljc5OTk5IgogICBoZWlnaHQ9IjE0MC4yOTMzMyIKICAgdmlld0JveD0iMCAwIDYzNS43OTk5OSAxNDAuMjkzMzMiCiAgIHNvZGlwb2RpOmRvY25hbWU9IklORUNUQV9MT0dPX1BSSU1BUlkuZXBzIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnM2IiAvPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NCIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIiAvPgogIDxnCiAgICAgaWQ9Imc4IgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaW5rc2NhcGU6bGFiZWw9Imlua19leHRfWFhYWFhYIgogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuMzMzMzMzMywwLDAsLTEuMzMzMzMzMywwLDE0MC4yOTMzMykiPgogICAgPGcKICAgICAgIGlkPSJnMTAiCiAgICAgICB0cmFuc2Zvcm09InNjYWxlKDAuMSkiPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDk4OS41OTgsNzcyLjY2NCBIIDExOTIuNTUgViAyMi44Nzg5IEggOTg5LjU5OCBWIDc3My42NjQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTQ5MC4xMiwyMi44NzExIEggMTI4Ny4xNyBWIDc3My42NTYgaCAxOTYuODQgdiAtOTMuMDkzIGMgNDUuNzcsNzcuODUxIDEzNS44MiwxMTIuOTI5IDIxNi43LDExMi45MjkgMTg2LjE2LDAgMjcxLjYxLC0xMzIuNzYyIDI3MS42MSwtMjk3LjU2MiBWIDIyLjg3MTEgSCAxNzY5LjM4IFYgNDYwLjg1MiBjIDAsODMuOTE4IC00MS4yMSwxNDkuNTQzIC0xMzguODcsMTQ5LjU0MyAtODguNSwwIC0xNDAuMzksLTY4LjY3MiAtMTQwLjM5LC0xNTUuNjc2IFYgMjIuODcxMSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgxNCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAyNzU5Ljc3LDIzOC4wMiBDIDI3MjEuNjMsMTA4LjMzMiAyNjAyLjU5LDAgMjQxNy45NiwwIGMgLTIwNi4wMiwwIC0zODcuNTksMTQ4IC0zODcuNTksNDAxLjMyIDAsMjM5LjU5IDE3NywzOTUuMjM1IDM2OS4yOCwzOTUuMjM1IDIyMS45NCwwIDM3MC44LC0xNDguMDIgMzcwLjgsLTM4OS4xMjkgMCwtMjguOTg1IC0zLjA0LC01OS41MjQgLTMuMDQsLTYyLjU3MSBoIC01MzcuMTYgYyA0LjU5LC05OS4xNzkgODguNTEsLTE3MC44ODYgMTg5LjIzLC0xNzAuODg2IDk0LjYyLDAgMTQ2LjUsNDcuMjg1IDE3MC45LDExNC40NDAgeiBtIC0xODkuMjIsMjQ1LjcwMyBjIC0zLjA1LDc0Ljc4OSAtNTEuODcsMTQ4LjAyMyAtMTY3Ljg2LDE0OC4wMjMgLTEwNS4zMSwwIC0xNjMuMjgsLTc5LjM0IC0xNjcuODUsLTE0OC4wMjMgaCAzMzUuNzEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzA0Ni42OSwzOTguMjczIGMgMCwtMTM1LjgxOCA4OC41LC0yMTIuMTI4IDE5Mi4yNywtMjEyLjEyOCAxMDMuNzcsMCAxNTUuNjYsNjguNjcxIDE3Mi40NCwxMjYuNjYgbCAxNzguNTQsLTU5LjUxMiBDIDM1NTYuMzksMTI4LjE3NiAzNDM4Ljg3LDAgMzIzOC45NiwwIDMwMTcuNywwIDI4NDMuNzQsMTY3Ljg0NCAyODQzLjc0LDM5OC4yNzMgYyAwLDIzMS45MzggMTcwLjksMzk4LjI2NiAzODkuMTEsMzk4LjI2NiAyMDQuNDgsMCAzMjAuNDcsLTEyNi42NDggMzUyLjUyLC0yNTMuMjg5IGwgLTE4MS41OSwtNjEuMDM5IGMgLTE4LjMzLDYyLjU1OSAtNjUuNjQsMTI2LjY0NCAtMTY2LjM2LDEyNi42NDQgLTEwMy43NSwwIC0xOTAuNzMsLTc0Ljc2OSAtMTkwLjczLC0yMTAuNTgyIgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDE4IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDM2NzIuODIsMTA1Mi4xNiBoIDIwMS44MyBWIDc3My42NDUgaCAxNTEuMDYgViA1OTMuNjE3IEggMzg3NC4yNSBWIDI3OS4yNDIgYyAwLC02NS42MzcgMzAuNTIsLTg2Ljk2NSA4OC41LC04Ni45NjUgMjQuNDIsMCA1MS44OSwzLjAyOCA2Mi41Niw2LjA4NiBWIDMwLjUxMTcgYyAtMTguMjksLTcuNjQwNiAtNTQuOTMsLTE4LjMzMiAtMTE0LjQ0LC0xOC4zMzIgLTE0Ni40OSwwIC0yMzguMDUsODYuOTg0NCAtMjM4LjA1LDIzMS45NjUzIHYgODA4LjAxNSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgyMCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA0MzE5LjgyLDQ1NC43MyAxODQuNjUsMjcuNDY5IGMgNDIuNzMsNi4xMDYgNTYuNDcsMjcuNDgxIDU2LjQ3LDUzLjQwMyAwLDUzLjQwNiAtNDEuMjEsOTcuNjc1IC0xMjYuNjcsOTcuNjc1IC04OC40OCwwIC0xMzcuMzIsLTU2LjQ3MiAtMTQzLjQxLC0xMjIuMDkzIGwgLTE4MC4xLDM4LjE1NiBjIDEyLjIzLDExNy41MTkgMTIwLjU5LDI0Ny4yMDcgMzIxLjk5LDI0Ny4yMDcgMjM4LjA3LDAgMzI2LjU3LC0xMzQuMjg1IDMyNi41NywtMjg1LjM2MyBWIDE0MS44OTggYyAwLC0zOS42ODcgNC41NywtOTMuMDg5NCA5LjE2LC0xMTkuMDE5MSBoIC0xODYuMTkgYyAtNC41NywxOS44NTE2IC03LjYxLDYxLjA1MDggLTcuNjEsOTAuMDM1MSBDIDQ1MzYuNTEsNTMuMzkwNiA0NDY0LjgsMS41MTE3MiA0MzUzLjQsMS41MTE3MiBjIC0xNjAuMjMsMCAtMjU3Ljg4LDEwOC4zMzYyOCAtMjU3Ljg4LDIyNS44NDMyOCAwLDEzNC4yOSA5OS4xOSwyMDkuMDYzIDIyNC4zLDIyNy4zNzUgbSAyNDEuMTIsLTEyOC4xNzUgdiAzMy41NTQgbCAtMTY5LjM4LC0yNS45MTggYyAtNTEuODgsLTcuNjM2IC05My4wOCwtMzYuNjQgLTkzLjA4LC05NC42MTcgMCwtNDQuMjY5IDMyLjA1LC04Ni45ODQgOTcuNjcsLTg2Ljk4NCA4NS40NCwwIDE2NC43OSw0MS4xOTEgMTY0Ljc5LDE3My45NjUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMTE5MS44Miw5NTEuNDAyIGMgMCw1NS42NTggLTQ1LjExLDEwMC43NjggLTEwMC43NSwxMDAuNzY4IC01NS42NSwwIC0xMDAuNzc3LC00NS4xMSAtMTAwLjc3NywtMTAwLjc2OCAwLC01NS42NDggNDUuMTI3LC0xMDAuNzU0IDEwMC43NzcsLTEwMC43NTQgNTUuNjQsMCAxMDAuNzUsNDUuMTA2IDEwMC43NSwxMDAuNzU0IgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDI0IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDIxMy4zOTgsMzg1LjM1NSBjIC02LjE4NywwLjY4NCAtMTIuNDY4LDEuMDYzIC0xOC44NDMsMS4wNjMgSCAwIFYgMTkxLjg2NyBDIDAsOTguNTM5MSA3NS42NTYzLDIyLjg3ODkgMTY4Ljk4OCwyMi44Nzg5IEggMzYzLjUzNSBMIDIyNS45NjksMTYwLjQ0OSBjIC02MS40ODksNjEuNDk2IC02NS42NTMsMTU4LjU1OSAtMTIuNTcxLDIyNC45MDYiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gNTMyLjUyMywzODYuNDE4IGMgLTYuMzc4LDAgLTEyLjY1NiwtMC4zNzkgLTE4Ljg0MywtMS4wNjMgNTMuMDgyLC02Ni4zNDcgNDguOTE4LC0xNjMuNDEgLTEyLjU3NSwtMjI0LjkwNiBMIDM2My41MzksMjIuODc4OSBIIDU1OC4wOSBjIDkzLjMyNCwwIDE2OC45ODgsNzUuNjYwMiAxNjguOTg4LDE2OC45ODgxIFYgMzg2LjQxOCBIIDUzMi41MjMiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM2ZTk0ODY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzYzLjUzOSwyMTcuNDM0IGMgMCw4Ni45NTMgNjUuNjg0LDE1OC41NDYgMTUwLjE0MSwxNjcuOTEgLTMuOTAzLDQuODc1IC04LjA2Nyw5LjU4MiAtMTIuNTc1LDE0LjA5NCBMIDM2My41MzksNTM3LjAwNCBMIDIyNS45NjksMzk5LjQzOCBjIC00LjUxMiwtNC41MTIgLTguNjc2LC05LjIxOSAtMTIuNTY3LC0xNC4wOTQgODQuNDUsLTkuMzY0IDE1MC4xMzcsLTgwLjk1NyAxNTAuMTM3LC0xNjcuOTEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzAiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMjEzLjM5OCwzODUuMzU1IEwgMTYwLjMxNiwzMTkuMDA4IDE2NC40OCwyMjEuOTQ1IDIyNS45NjksMTYwLjQ0OSBMIDM2My41MzUsMjIuODc4OSBWIDIxNy40MzQgYyAwLDg2Ljk1MyAtNjUuNjgsMTU4LjUzNSAtMTUwLjEzNywxNjcuOTIxIgogICAgICAgICBzdHlsZT0iZmlsbDojNTBjNGJmO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDMyIiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDUxMy42NzYsMzg1LjM1NSBDIDQyOS4yMjMsMzc1Ljk2OSAzNjMuNTM1LDMwNC4zODcgMzYzLjUzNSwyMTcuNDM0IFYgMjIuODc4OSBsIDEzNy41NywxMzcuNTcwMSBjIDYxLjQ4NSw2MS40OTYgNjUuNjU3LDE1OC41NTkgMTIuNTcxLDIyNC45MDYiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzQiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMjEzLjM5OCw5MDAuNTA0IGMgLTYuMTg3LDAuNjkxIC0xMi40NjgsMS4wNyAtMTguODQzLDEuMDcgTCAwLDkwMS41NzQgViA3MDcuMDI3IEMgMCw2MTMuNjk5IDc1LjY1NjMsNTM4LjAzNSAxNjguOTg4LDUzOC4wMzUgSCAzNjMuNTM1IEwgMjI1Ljk2OSw2NzUuNjA5IGMgLTYxLjQ4OSw2MS40ODkgLTY1LjY1MywxNTguNTQ3IC0xMi41NzEsMjI0Ljg5NSIKICAgICAgICAgc3R5bGU9ImZpbGw6I2E3ZTFkZTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgzNiIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA1MzIuNTIzLDkwMS41NzQgYyAtNi4zNzgsMCAtMTIuNjU2LC0wLjM3OSAtMTguODQzLC0xLjA3IDUzLjA4MiwtNjYuMzQ4IDQ4LjkxOCwtMTYzLjQwNiAtMTIuNTc1LC0yMjQuODk1IEwgMzYzLjUzOSw1MzguMDM1IEggNTU4LjA5IGMgOTMuMzI0LDAgMTY4Ljk4OCw3NS42NjQgMTY4Ljk4OCwxNjguOTkyIFYgOTAxLjU3NCBIIDUzMi41MjMiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM2ZTk0ODY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMzgiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzYzLjUzOSw3MzIuNTkgYyAwLDg2Ljk1MyA2NS42ODQsMTU4LjUzNSAxNTAuMTQxLDE2Ny45MSAtMy45MDMsNC44NjcgLTguMDY3LDkuNTgyIC0xMi41NzUsMTQuMDgyIEwgMzYzLjUzOSwxMDUyLjE2IEwgMjI1Ljk2OSw5MTQuNTgyIGMgLTQuNTEyLC00LjUgLTguNjc2LC05LjIxNSAtMTIuNTY3LC0xNC4wODIgODQuNDUsLTkuMzc1IDE1MC4xMzcsLTgwLjk1NyAxNTAuMTM3LC0xNjcuOTEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiNhN2UxZGU7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDAiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMjEzLjM5OCw5MDAuNTA0IEMgMTYwLjMxNiw4MzQuMTU2IDE2NC40OCw3MzcuMDk4IDIyNS45NjksNjc1LjYwOSBMIDM2My41MzUsNTM4LjAzNSBWIDczMi41OSBjIDAsODYuOTQ5IC02NS42OCwxNTguNTM1IC0xNTAuMTM3LDE2Ny45MTQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiM1MGM0YmY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gNTEzLjY3Niw5MDAuNTA0IEMgNDI5LjIyMyw4OTEuMTI1IDM2My41MzUsODE5LjUzOSAzNjMuNTM1LDczMi41OSBWIDUzOC4wMzUgbCAxMzcuNTcsMTM3LjU3NCBjIDYxLjQ4NSw2MS40ODkgNjUuNjU3LDE1OC41NDcgMTIuNTcxLDIyNC44OTUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoNDQiIC8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K" alt="Inecta Logo">
+      <button id="newChatBtn" title="Start a new conversation">New Chat</button>
     </div>
     <div id="topicTracker" class="topic-tracker"></div>
     <div id="chat" class="chat"></div>
@@ -226,222 +245,243 @@
   </div>
 
   <script>
-    // --- CONFIGURATION ---
-    const config = {
-      chatWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/inectaQ',
-      reportWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/generate-pdf',
-      scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
-    };
-    const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
-    
-    // --- DOM ELEMENTS ---
-    const elements = {
-      chat: document.getElementById('chat'),
-      input: document.getElementById('messageInput'),
-      sendButton: document.getElementById('sendButton'),
-      reportButton: document.getElementById('reportButton'),
-      scheduleButton: document.getElementById('scheduleButton'),
-      topicTracker: document.getElementById('topicTracker'),
-      uploadButton: document.getElementById('uploadButton'),
-      fileUploader: document.getElementById('fileUploader'),
-    };
-    
-    // --- STATE MANAGEMENT ---
-    let chatHistory = [];
-    let sessionId = null;
-    let topics = [];
-    let fileContent = null; // Holds the content of the uploaded file
-
-    // --- FUNCTIONS ---
-    function generateUUID() {
-      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
-    }
-
-    function updateTopicTracker(newTopics = []) {
-      topics = newTopics;
-      localStorage.setItem(`topics_${sessionId}`, JSON.stringify(topics));
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- CONFIGURATION ---
+      const config = {
+        chatWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/inectaQ',
+        reportWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/generate-pdf',
+        scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
+      };
+      const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
       
-      elements.topicTracker.innerHTML = '';
-      if (!topics || topics.length === 0) return;
+      // --- DOM ELEMENTS ---
+      const elements = {
+        chat: document.getElementById('chat'),
+        input: document.getElementById('messageInput'),
+        sendButton: document.getElementById('sendButton'),
+        reportButton: document.getElementById('reportButton'),
+        scheduleButton: document.getElementById('scheduleButton'),
+        topicTracker: document.getElementById('topicTracker'),
+        uploadButton: document.getElementById('uploadButton'),
+        fileUploader: document.getElementById('fileUploader'),
+        newChatButton: document.getElementById('newChatBtn'),
+      };
       
-      topics.forEach(topic => {
-        const topicDiv = document.createElement('div');
-        topicDiv.className = 'topic-item';
-        const statusClass = `status-${topic.status.toLowerCase().replace(/\s+/g, '-')}`;
-        topicDiv.classList.add(statusClass);
-        topicDiv.textContent = topic.status === 'Completed' ? `✓ ${topic.name}` : topic.name;
-        elements.topicTracker.appendChild(topicDiv);
-      });
-    }
+      // --- STATE MANAGEMENT ---
+      let chatHistory = [];
+      let sessionId = null;
+      let topics = [];
+      let fileContent = null;
 
-    function renderMessage(role, content, save = true) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `msg ${role}`;
-      // Basic markdown for bold and links
-      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      content = content.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
-      msgDiv.innerHTML = content.trim(); 
-      elements.chat.appendChild(msgDiv);
-      elements.chat.scrollTop = elements.chat.scrollHeight;
-      if (save) {
-        chatHistory.push({ role, content });
-        localStorage.setItem(`chatHistory_${sessionId}`, JSON.stringify(chatHistory));
+      // --- NEW: SMART SESSION MANAGEMENT ---
+      function initializeSession() {
+        const storedSessionId = localStorage.getItem('inecta_chat_session_id');
+
+        if (storedSessionId) {
+          // A. User is returning: Use the stored ID
+          sessionId = storedSessionId;
+          console.log("Returning user. Resuming session:", sessionId);
+          loadChatHistory(); // Load history for this session
+        } else {
+          // B. New user: Generate a new ID and save it
+          sessionId = crypto.randomUUID();
+          localStorage.setItem('inecta_chat_session_id', sessionId);
+          console.log("New user. Started new session:", sessionId);
+        }
+        
+        // If the chat is empty after loading, show the intro message
+        if (chatHistory.length === 0) {
+          renderMessage('bot', INTRO_MESSAGE, true);
+        }
       }
-    }
-    
-    function loadState() {
-      sessionId = localStorage.getItem('sessionId');
-      const savedTopics = localStorage.getItem(`topics_${sessionId}`);
 
-      if (!sessionId || !savedTopics) {
-        sessionId = generateUUID();
-        localStorage.setItem('sessionId', sessionId);
-        const initialTopics = [
-          // This can be dynamically updated by the bot's first message
-        ];
-        updateTopicTracker(initialTopics);
-      } else {
+      function loadChatHistory() {
         const savedHistory = localStorage.getItem(`chatHistory_${sessionId}`);
+        const savedTopics = localStorage.getItem(`topics_${sessionId}`);
+
         if (savedHistory) {
           chatHistory = JSON.parse(savedHistory);
-          chatHistory.forEach(msg => renderMessage(msg.role, msg.content, false));
+          chatHistory.forEach(msg => renderMessage(msg.role, msg.content, false)); // Render without re-saving
         }
         if (savedTopics) {
           topics = JSON.parse(savedTopics);
           updateTopicTracker(topics);
         }
       }
-      
-      if (chatHistory.length === 0) {
-        renderMessage('bot', INTRO_MESSAGE, true);
-      }
-    }
 
-    async function handleSend() {
-      const userContent = elements.input.value.trim();
-      if (!userContent && !fileContent) return; // Prevent sending empty messages
-
-      if (userContent) {
-        renderMessage('user', userContent);
-      }
-      if (fileContent) {
-        renderMessage('user', `<em>[Document uploaded. The assistant will now analyze it.]</em>`, false);
+      function startNewChat() {
+        console.log("Starting new chat. Clearing localStorage.");
+        localStorage.removeItem('inecta_chat_session_id');
+        // Also clear the history and topics for the old session ID
+        if (sessionId) {
+            localStorage.removeItem(`chatHistory_${sessionId}`);
+            localStorage.removeItem(`topics_${sessionId}`);
+        }
+        window.location.reload();
       }
 
-      elements.input.value = '';
-      elements.sendButton.disabled = true;
-      elements.uploadButton.disabled = true;
+      // --- CORE FUNCTIONS ---
+      function updateTopicTracker(newTopics = []) {
+        topics = newTopics;
+        if (sessionId) {
+            localStorage.setItem(`topics_${sessionId}`, JSON.stringify(topics));
+        }
+        
+        elements.topicTracker.innerHTML = '';
+        if (!topics || topics.length === 0) return;
+        
+        topics.forEach(topic => {
+          const topicDiv = document.createElement('div');
+          topicDiv.className = 'topic-item';
+          const statusClass = `status-${topic.status.toLowerCase().replace(/\s+/g, '-')}`;
+          topicDiv.classList.add(statusClass);
+          topicDiv.textContent = topic.status === 'Completed' ? `✓ ${topic.name}` : topic.name;
+          elements.topicTracker.appendChild(topicDiv);
+        });
+      }
 
-      const indicator = document.createElement('div');
-      indicator.className = 'msg bot typing-indicator';
-      indicator.innerHTML = '<span></span><span></span><span></span>';
-      elements.chat.appendChild(indicator);
-      elements.chat.scrollTop = elements.chat.scrollHeight;
-      
-      try {
-        const payload = { 
-          session_id: sessionId,
-          history: chatHistory,
-          document_content: fileContent // Send file content if it exists
+      function renderMessage(role, content, save = true) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${role}`;
+        // Basic markdown for bold and links
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        content = content.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+        msgDiv.innerHTML = content.trim(); 
+        elements.chat.appendChild(msgDiv);
+        elements.chat.scrollTop = elements.chat.scrollHeight;
+
+        if (save) {
+          chatHistory.push({ role, content });
+          if (sessionId) {
+              localStorage.setItem(`chatHistory_${sessionId}`, JSON.stringify(chatHistory));
+          }
+        }
+      }
+
+      async function handleSend() {
+        const userContent = elements.input.value.trim();
+        if (!userContent && !fileContent) return;
+
+        if (userContent) {
+          renderMessage('user', userContent);
+        }
+        if (fileContent) {
+          renderMessage('user', `<em>[Document uploaded. The assistant will now analyze it.]</em>`, false);
+        }
+
+        elements.input.value = '';
+        elements.sendButton.disabled = true;
+        elements.uploadButton.disabled = true;
+
+        const indicator = document.createElement('div');
+        indicator.className = 'msg bot typing-indicator';
+        indicator.innerHTML = '<span></span><span></span><span></span>';
+        elements.chat.appendChild(indicator);
+        elements.chat.scrollTop = elements.chat.scrollHeight;
+        
+        try {
+          const payload = { 
+            session_id: sessionId, // Use the managed session ID
+            history: chatHistory,
+            document_content: fileContent
+          };
+          
+          const response = await fetch(config.chatWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+          }
+
+          indicator.remove();
+          
+          const responseData = await response.json(); 
+          renderMessage('bot', responseData.reply);
+          
+          if (responseData.topics) {
+            updateTopicTracker(responseData.topics);
+          }
+
+          if (responseData.isDiscoveryComplete === true) {
+            elements.reportButton.style.display = 'inline-block';
+            elements.scheduleButton.style.display = 'inline-block';
+            elements.sendButton.style.display = 'none';
+            elements.uploadButton.style.display = 'none';
+            elements.input.style.display = 'none';
+          }
+          
+        } catch (error) {
+          indicator.remove();
+          console.error('Chat Fetch error:', error);
+          renderMessage('bot', 'Sorry, there was an error connecting to the backend. Please try again.');
+        } finally {
+          elements.sendButton.disabled = false;
+          elements.uploadButton.disabled = false;
+          elements.input.focus();
+          fileContent = null;
+          elements.fileUploader.value = '';
+        }
+      }
+
+      function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          fileContent = e.target.result;
+          renderMessage('bot', `<em>File "${file.name}" is attached. Add an optional message and press send.</em>`, false);
         };
-        
-        const response = await fetch(config.chatWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-        }
-
-        indicator.remove();
-        
-        const responseData = await response.json(); 
-        renderMessage('bot', responseData.reply);
-        
-        if (responseData.topics) {
-          updateTopicTracker(responseData.topics);
-        }
-
-        if (responseData.isDiscoveryComplete === true) {
-          elements.reportButton.style.display = 'inline-block';
-          elements.scheduleButton.style.display = 'inline-block';
-          elements.sendButton.style.display = 'none';
-          elements.uploadButton.style.display = 'none';
-          elements.input.style.display = 'none';
-        }
-        
-      } catch (error) {
-        indicator.remove();
-        console.error('Chat Fetch error:', error);
-        renderMessage('bot', 'Sorry, there was an error connecting to the backend. Please try again.');
-      } finally {
-        elements.sendButton.disabled = false;
-        elements.uploadButton.disabled = false;
-        elements.input.focus();
-        // Clear file state after sending
-        fileContent = null;
-        elements.fileUploader.value = '';
+        reader.onerror = () => {
+          renderMessage('bot', `<em>Error reading file. Please try again.</em>`, false);
+        };
+        reader.readAsText(file);
       }
-    }
 
-    function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        fileContent = e.target.result;
-        renderMessage('bot', `<em>File "${file.name}" is attached. Add an optional message and press send.</em>`, false);
-      };
-      reader.onerror = () => {
-        renderMessage('bot', `<em>Error reading file. Please try again.</em>`, false);
-      };
-      reader.readAsText(file); // Reads the file as a plain text string
-    }
-
-    async function handleViewReport() {
-      elements.reportButton.textContent = 'GENERATING...';
-      try {
-        const response = await fetch(config.reportWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ history: chatHistory })
-        });
-        if (!response.ok) throw new Error(`Report Error: ${response.statusText}`);
-        const reportHtml = await response.text();
-        const reportWindow = window.open();
-        if (reportWindow) {
-          reportWindow.document.write(reportHtml);
-          reportWindow.document.close();
-        } else {
-          alert('Please allow pop-ups to view the report.');
+      async function handleViewReport() {
+        elements.reportButton.textContent = 'GENERATING...';
+        try {
+          const response = await fetch(config.reportWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ history: chatHistory })
+          });
+          if (!response.ok) throw new Error(`Report Error: ${response.statusText}`);
+          const reportHtml = await response.text();
+          const reportWindow = window.open();
+          if (reportWindow) {
+            reportWindow.document.write(reportHtml);
+            reportWindow.document.close();
+          } else {
+            alert('Please allow pop-ups to view the report.');
+          }
+        } catch (error) {
+          console.error('Report Fetch error:', error);
+          alert('Could not generate the report.');
+        } finally {
+          elements.reportButton.textContent = 'VIEW REPORT';
         }
-      } catch (error) {
-        console.error('Report Fetch error:', error);
-        alert('Could not generate the report.');
-      } finally {
-        elements.reportButton.textContent = 'VIEW REPORT';
       }
-    }
 
-    function handleSchedule() {
-        window.open(config.scheduleUrl, '_blank');
-    }
+      function handleSchedule() {
+          window.open(config.scheduleUrl, '_blank');
+      }
 
-    // --- EVENT LISTENERS ---
-    elements.sendButton.addEventListener('click', handleSend);
-    elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) { handleSend(); } });
-    elements.reportButton.addEventListener('click', handleViewReport);
-    elements.scheduleButton.addEventListener('click', handleSchedule);
-    elements.uploadButton.addEventListener('click', () => elements.fileUploader.click());
-    elements.fileUploader.addEventListener('change', handleFileUpload);
+      // --- EVENT LISTENERS ---
+      elements.sendButton.addEventListener('click', handleSend);
+      elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) { handleSend(); } });
+      elements.reportButton.addEventListener('click', handleViewReport);
+      elements.scheduleButton.addEventListener('click', handleSchedule);
+      elements.uploadButton.addEventListener('click', () => elements.fileUploader.click());
+      elements.fileUploader.addEventListener('change', handleFileUpload);
+      elements.newChatButton.addEventListener('click', startNewChat); // Attach listener for the new button
 
-    // --- INITIALIZATION ---
-    loadState();
+      // --- INITIALIZATION ---
+      initializeSession(); // This function now replaces the old `loadState()`
+    });
   </script>
 </body>
 </html>
