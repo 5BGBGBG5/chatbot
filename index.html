@@ -511,10 +511,19 @@ function loadSessionState() {
       }
 
       // --- INITIALIZATION & EVENT LISTENERS ---
-      function initializeSession() {
-        getSessionId(); // This ensures a session ID exists
-        loadSessionState();
-        showCompletionControls(false); // Ensure normal controls are visible on load
+  function initializeSession() {
+        const sessionInfo = getSessionId();
+
+        if (sessionInfo.isNew) {
+          // For a brand new session, create the initial state
+          elements.chat.innerHTML = ''; 
+          renderMessage('bot', INTRO_MESSAGE, true); // Render and save welcome message
+          updateTopicTracker(INITIAL_TOPICS);      // Render and save initial topics
+        } else {
+          // For a returning user, load their previous state from storage
+          loadSessionState();
+        }
+        showCompletionControls(false);
       }
 
       elements.sendButton.addEventListener('click', handleSend);
