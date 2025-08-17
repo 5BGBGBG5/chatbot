@@ -284,20 +284,22 @@
 
       // --- CORE FUNCTIONS ---
 
-           function getSessionId() {
-        if (sessionId) return sessionId;
+function getSessionId() {
+        if (sessionId) return { id: sessionId, isNew: false };
+
         let storedId = localStorage.getItem('inecta_chat_session_id');
+        let isNewSession = false;
+
         if (!storedId) {
           storedId = crypto.randomUUID();
           localStorage.setItem('inecta_chat_session_id', storedId);
           console.log("New user. Started new session:", storedId);
-          // Add the intro message and SAVE it to history
-          renderMessage('bot', INTRO_MESSAGE, true); // Changed 'false' to 'true'
+          isNewSession = true;
         } else {
           console.log("Returning user. Resuming session:", storedId);
         }
         sessionId = storedId;
-        return sessionId;
+        return { id: sessionId, isNew: isNewSession };
       }
 
       function startNewChat() {
