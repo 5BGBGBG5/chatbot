@@ -385,16 +385,12 @@ function getSessionId() {
         localStorage.setItem(`chatHistory_${getSessionId()}`, JSON.stringify(history));
       }
 
-      function loadSessionState() {
+function loadSessionState() {
         const history = getChatHistory();
-        let topics = JSON.parse(localStorage.getItem(`topics_${getSessionId()}`));
-        
-        // If no topics are saved in local storage, use the initial default set
-        if (!topics || topics.length === 0) {
-          topics = INITIAL_TOPICS;
-        }
-        
-        elements.chat.innerHTML = ''; // Clear chat
+        const topicsRaw = localStorage.getItem(`topics_${sessionId}`);
+        const topics = topicsRaw ? JSON.parse(topicsRaw) : [];
+
+        elements.chat.innerHTML = ''; // Clear chat before rendering
         history.forEach(msg => renderMessage(msg.role, msg.content, false));
         updateTopicTracker(topics);
       }
