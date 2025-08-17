@@ -284,15 +284,15 @@
 
       // --- CORE FUNCTIONS ---
 
-      function getSessionId() {
+           function getSessionId() {
         if (sessionId) return sessionId;
         let storedId = localStorage.getItem('inecta_chat_session_id');
         if (!storedId) {
           storedId = crypto.randomUUID();
           localStorage.setItem('inecta_chat_session_id', storedId);
           console.log("New user. Started new session:", storedId);
-          // Add the intro message for brand new sessions
-          renderMessage('bot', INTRO_MESSAGE, false);
+          // Add the intro message and SAVE it to history
+          renderMessage('bot', INTRO_MESSAGE, true); // Changed 'false' to 'true'
         } else {
           console.log("Returning user. Resuming session:", storedId);
         }
@@ -385,7 +385,12 @@
 
       function loadSessionState() {
         const history = getChatHistory();
-        const topics = JSON.parse(localStorage.getItem(`topics_${getSessionId()}`) || '[]');
+        let topics = JSON.parse(localStorage.getItem(`topics_${getSessionId()}`));
+        
+        // If no topics are saved in local storage, use the initial default set
+        if (!topics || topics.length === 0) {
+          topics = INITIAL_TOPICS;
+        }
         
         elements.chat.innerHTML = ''; // Clear chat
         history.forEach(msg => renderMessage(msg.role, msg.content, false));
