@@ -28,29 +28,36 @@
       --font-heading: 'Open Sans', sans-serif;
       --font-body: 'Verdana', sans-serif;
     }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
       font-family: var(--font-body);
       background: var(--background-light);
       color: var(--body-text-color);
       padding: 20px;
-      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      box-sizing: border-box;
+      min-height: 100vh;
     }
+    
     .container {
       width: 100%;
       max-width: 800px;
+      height: 90vh;
       display: flex;
       flex-direction: column;
-      height: 100%;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
       border-radius: 16px;
       overflow: hidden;
       background: #FFFFFF;
     }
+    
     .header {
       padding: 15px 20px;
       background: #FFFFFF;
@@ -59,10 +66,15 @@
       justify-content: space-between;
       align-items: center;
     }
-    .header img {
-      height: 28px;
-      width: auto;
+    
+    .logo {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--inecta-green);
+      letter-spacing: 2px;
     }
+    
     #newChatBtn {
       padding: 6px 12px;
       font-size: 12px;
@@ -75,9 +87,11 @@
       cursor: pointer;
       transition: background-color 0.2s ease;
     }
+    
     #newChatBtn:hover {
       background-color: var(--dark-grey);
     }
+    
     .topic-tracker { 
       display: flex; 
       flex-wrap: wrap; 
@@ -85,7 +99,9 @@
       padding: 15px 20px;
       justify-content: center;
       border-bottom: 1px solid var(--border-color);
+      background: #FFFFFF;
     }
+    
     .topic-item { 
       padding: 6px 12px; 
       border-radius: 15px; 
@@ -93,16 +109,31 @@
       font-family: var(--font-heading);
       font-weight: 700;
       transition: all 0.3s ease; 
-      border: 1px solid transparent; 
+      cursor: pointer;
     }
-    .status-not-started { background-color: #E0E0E0; color: #616161; }
-    .status-in-progress { background-color: var(--inecta-tan); color: var(--inecta-green); animation: pulse-tan 2s infinite; }
-    .status-completed { background-color: var(--inecta-green); color: #FFFFFF; }
+    
+    .status-not-started { 
+      background-color: #E0E0E0; 
+      color: #616161; 
+    }
+    
+    .status-in-progress { 
+      background-color: var(--inecta-tan); 
+      color: var(--inecta-green); 
+      animation: pulse-tan 2s infinite; 
+    }
+    
+    .status-completed { 
+      background-color: var(--inecta-green); 
+      color: #FFFFFF; 
+    }
+    
     @keyframes pulse-tan {
       0% { box-shadow: 0 0 0 0 rgba(222, 207, 158, 0.7); }
       70% { box-shadow: 0 0 0 8px rgba(222, 207, 158, 0); }
       100% { box-shadow: 0 0 0 0 rgba(222, 207, 158, 0); }
     }
+    
     .chat {
       padding: 30px;
       flex-grow: 1;
@@ -112,10 +143,25 @@
       gap: 15px;
       background-color: var(--background-light);
     }
-    .chat::-webkit-scrollbar { width: 8px; }
-    .chat::-webkit-scrollbar-track { background: var(--background-light); border-radius: 4px; }
-    .chat::-webkit-scrollbar-thumb { background-color: #d4d4d4; border-radius: 4px; }
-    .chat::-webkit-scrollbar-thumb:hover { background-color: var(--dark-grey); }
+    
+    .chat::-webkit-scrollbar { 
+      width: 8px; 
+    }
+    
+    .chat::-webkit-scrollbar-track { 
+      background: var(--background-light); 
+      border-radius: 4px; 
+    }
+    
+    .chat::-webkit-scrollbar-thumb { 
+      background-color: #d4d4d4; 
+      border-radius: 4px; 
+    }
+    
+    .chat::-webkit-scrollbar-thumb:hover { 
+      background-color: var(--dark-grey); 
+    }
+    
     .msg {
       padding: 12px 18px;
       border-radius: 20px;
@@ -123,13 +169,21 @@
       max-width: 80%;
       white-space: pre-wrap;
       word-wrap: break-word;
+      animation: fadeIn 0.3s ease;
     }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
     .user {
       background-color: var(--user-bubble-bg);
       color: #FFFFFF;
       border-bottom-right-radius: 5px;
       align-self: flex-end;
     }
+    
     .bot {
       background-color: var(--bot-bubble-bg);
       color: var(--body-text-color);
@@ -137,41 +191,70 @@
       border-bottom-left-radius: 5px;
       align-self: flex-start;
     }
+    
     .typing-indicator {
-      display: flex;
+      display: none;
       align-items: center;
       padding: 12px 18px;
+      background-color: var(--bot-bubble-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      border-bottom-left-radius: 5px;
+      align-self: flex-start;
+      max-width: 80px;
     }
+    
+    .typing-indicator.active {
+      display: flex;
+    }
+    
     .typing-indicator span {
-      height: 8px; width: 8px; background-color: #BDBDBD;
-      border-radius: 50%; display: inline-block; margin: 0 2px;
+      height: 8px; 
+      width: 8px; 
+      background-color: #BDBDBD;
+      border-radius: 50%; 
+      display: inline-block; 
+      margin: 0 2px;
       animation: bounce 1.4s infinite ease-in-out both;
     }
-    .typing-indicator span:nth-of-type(2) { animation-delay: -0.2s; }
-    .typing-indicator span:nth-of-type(3) { animation-delay: -0.4s; }
+    
+    .typing-indicator span:nth-of-type(2) { 
+      animation-delay: -0.2s; 
+    }
+    
+    .typing-indicator span:nth-of-type(3) { 
+      animation-delay: -0.4s; 
+    }
+    
     @keyframes bounce {
       0%, 80%, 100% { transform: scale(0); }
       40% { transform: scale(1.0); }
     }
+    
     .input-container {
-        padding: 20px;
-        border-top: 1px solid var(--border-color);
-        background: #FFFFFF;
+      padding: 20px;
+      border-top: 1px solid var(--border-color);
+      background: #FFFFFF;
     }
+    
+    #attachmentDisplay {
+      font-size: 12px;
+      font-style: italic;
+      margin-bottom: 8px;
+      color: var(--dark-grey);
+      display: none;
+    }
+    
+    #attachmentDisplay.active {
+      display: block;
+    }
+    
     .input-area {
       display: flex;
       gap: 10px;
       align-items: center;
     }
-     #attachmentDisplay { /* NEW: For showing the attached file */
-      font-size: 12px;
-      font-style: italic;
-      margin-bottom: 8px;
-      padding: 5px 10px;
-      background-color: #f0f0f0;
-      border-radius: 12px;
-      display: none; /* Hidden by default */
-    }
+    
     #messageInput {
       flex-grow: 1;
       padding: 12px 18px;
@@ -181,13 +264,16 @@
       color: var(--body-text-color);
       font-size: 16px;
       font-family: var(--font-body);
+      transition: all 0.2s ease;
     }
+    
     #messageInput:focus {
-        outline: none;
-        border-color: var(--inecta-teal);
-        box-shadow: 0 0 0 2px rgba(0, 204, 204, 0.2);
+      outline: none;
+      border-color: var(--inecta-teal);
+      box-shadow: 0 0 0 2px rgba(0, 204, 204, 0.2);
     }
-    #sendButton, #uploadButton {
+    
+    .action-button {
       background-color: var(--inecta-teal);
       color: #000000;
       border: none;
@@ -201,6 +287,17 @@
       transition: all 0.2s ease;
       flex-shrink: 0;
     }
+    
+    .action-button:disabled {
+      background-color: #BDBDBD;
+      cursor: not-allowed;
+    }
+    
+    .action-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
     #reportButton, #scheduleButton {
       padding: 10px 20px;
       border-radius: 20px;
@@ -210,336 +307,308 @@
       font-weight: 700;
       text-transform: uppercase;
       transition: all 0.2s ease;
-      font-size: 16px;
+      font-size: 14px;
       white-space: nowrap;
       background-color: var(--inecta-green);
       color: #FFFFFF;
-      display: none; /* Hidden by default */
-      flex-grow: 1;
+      display: none;
+      margin-top: 10px;
     }
-    #sendButton:disabled, #uploadButton:disabled {
-      background-color: #BDBDBD;
-      cursor: not-allowed;
+    
+    #reportButton.active, #scheduleButton.active {
+      display: inline-block;
     }
-    #sendButton:hover:not(:disabled), #uploadButton:hover:not(:disabled), #reportButton:hover:not(:disabled), #scheduleButton:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    
+    #reportButton:hover, #scheduleButton:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .action-buttons-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+    
+    #fileInput {
+      display: none;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <div class="header">
-      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcyIgogICB3aWR0aD0iNjM1Ljc5OTk5IgogICBoZWlnaHQ9IjE0MC4yOTMzMyIKICAgdmlld0JveD0iMCAwIDYzNS43OTk5OSAxNDAuMjkzMzMiCiAgIHNvZGlwb2RpOmRvYG5hbWU9IklORUNUQV9MT0dPX1BSSU1BUlkuZXBzIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnM2IiAvPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NCIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIiAvPgogIDxnCiAgICAgaWQ9Imc4IgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaW5rc2NhcGU6bGFiZWw9Imlua19leHRfWFhYWFhYIgogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuMzMzMzMzMywwLDAsLTEuMzMzMzMzMywwLDE0MC4yOTMzMykiPgogICAgPGcKICAgICAgIGlkPSJnMTAiCiAgICAgICB0cmFuc2Zvcm09InNjYWxlKDAuMSkiPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDk4OS41OTgsNzcyLjY2NCBIIDExOTIuNTUgViAyMi44Nzg5IEggOTg5LjU5OCBWIDc3My42NjQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTQ5MC4xMiwyMi44NzExIEggMTI4Ny4xNyBWIDc3My42NTYgaCAxOTYuODQgdiAtOTMuMDkzIGMgNDUuNzcsNzcuODUxIDEzNS44MiwxMTIuOTI5IDIxNi43LDExMi4yMjkgMTg2LjE2LDAgMjcxLjYxLC0xMzIuNzYyIDI3MS42MSwtMjk3LjU2MiBWIDIyLjg3MTEgSCAxNzY5LjM4IFYgNDYwLjg1MiBjIDAsODMuOTE4IC00MS4yMSwxNDkuNTQzIC0xMzguODcsMTQ5LjU0MyAtODguNSwwIC0xNDAuMzksLTY4LjY3MiAtMTQwLjM5LC0xNTUuNjc2IFYgMjIuODcxMSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgxNCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAyNzU5Ljc3LDIzOC4wMiBDIDI3MjEuNjMsMTA4LjMzMiAyNjAyLjU5LDAgMjQxNy45NiwwIGMgLTIwNi4wMiwwIC0zODcuNTksMTQ4IC0zODcuNTksNDAxLjMyIDAsMjM5LjU5IDE3NywzOTUuMjM1IDM2OS4yOCwzOTUuMjM1IDIyMS45NCwwIDM3MC44LC0xNDguMDIgMzcwLjgsLTM4OS4xMjkgMCwtMjguOTg1IC0zLjA0LC01OS41MjQgLTMuMDQsLTYyLjU3MSBoIC01MzcuMTYgYyA0LjU5LC05OS4xNzkgODguNTEsLTE3MC44ODYgMTg5LjIzLC0xNzAuODg2IDk0LjYyLDAgMTQ2LjUsNDcuMjg1IDE3MC45LDExNC40NDAgeiBtIC0xODkuMjIsMjQ1LjcwMyBjIC0zLjA1LDc0Ljc4OSAtNTEuODcsMTQ4LjAyMyAtMTY3Ljg2LDE0OC4wMjMgLTEwNS4zMSwwIC0xNjMuMjgsLTc5LjM0IC0xNjcuODUsLTE0OC4wMjMgaCAzMzUuNzEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzA0Ni42OSwzOTguMjczIGMgMCwtMTM1LjgxOCA4OC41LC0yMTIuMTI4IDE5Mi4yNywtMjEyLjEyOCAxMDMuNzcsMCAxNTUuNjYsNjguNjcxIDE3Mi40NCwxMjYuNjYgbCAxNzguNTQsLTU5LjUxMiBDIDM1NTYuMzksMTI4LjE3NiAzNDM4Ljg3LDAgMzIzOC45NiwwIDMwMTcuNywwIDI4NDMuNzQsMTY3Ljg0NCAyODQzLjc0LDM5OC4yNzMgYyAwLDIzMS45MzggMTcwLjksMzk4LjI2NiAzODkuMTEsMzk4LjI2NiAyMDQuNDgsMCAzMjAuNDcsLTEyNi42NDggMzUyLjUyLC0yNTMuMjg5IGwgLTE4MS41OSwtNjEuMDM5IGMgLTE4LjMzLDYyLjU1OSAtNjUuNjQsMTI2LjY0NCAtMTY2LjM2LDEyNi42NDQgLTEwMy43NSwwIC0xOTAuNzMsLTc0Ljc2OSAtMTkwLjczLC0yMTAuNTgyIgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDE4IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDM2NzIuODIsMTA1Mi4xNiBoIDIwMS44MyBWIDc3My42NDUgaCAxNTEuMDYgViA1OTMuNjE3IEggMzg3NC4yNSBWIDI3OS4yNDIgYyAwLC02NS42MzcgMzAuNTIsLTg2Ljk2NSA4OC41LC04Ni45NjUgMjQuNDIsMCA1MS44OSwzLjAyOCA2Mi41Niw2LjA4NiBWIDMwLjUxMTcgYyAtMTguMjksLTcuNjQwNiAtNTQuOTMsLTE4LjMzMiAtMTE0LjQ0LC0xOC4zMzIgLTE0Ni40OSwwIC0yMzguMDUsODYuOTg0NCAtMjM4LjA1LDIzMS45NjUzIHYgODA4LjAxNSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgyMCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA0MzE5LjgyLDQ1NC43MyAxODQuNjUsMjcuNDY5IGMgNDIuNzMsNi4xMDYgNTYuNDcsMjcuNDgxIDU2LjQ3LDUzLjQwMyAwLDUzLjQwNiAtNDEuMjEsOTcuNjc1IC0xMjYuNjcsOTcuNjc1IC04OC40OCwwIC0xMzcuMzIsLTU2LjQ3MiAtMTQzLjQxLC0xMjIuMDkzIGwgLTE4MC4xLDM4LjE1NiBjIDEyLjIzLDExNy41MTkgMTIwLjU5LDI0Ny4yMDcgMzIxLjk5LDI0Ny4yMDcgMjM4LjA3LDAgMzI2LjU3LC0xMzQuMjg1IDMyNi41NywtMjg1LjM2MyBWIDE0MS44OTggYyAwLC0zOS42ODcgNC41NywtOTMuMDg5NCA5LjE2LC0xMTkuMDE5MSBoIC0xODYuMTkgYyAtNC41NywxOS44NTE2IC03LjYxLDYxLjA1MDggLTcuNjEsOTAuMDM1MSBDIDQ1MzYuNTEsNTMuMzkwNiA0NDY0LjgsMS41MTE3MiA0MzUzLjQsMS41MTE3MiBjIC0xNjAuMjMsMCAtMjU3Ljg4LDEwOC4zMzYyOCAtMjU3Ljg4LDIyNS44NDMyOCAwLDEzNC4yOSA5OS4xOSwyMDkuMDYzIDIyNC4zLDIyNy4zNzUgbSAyNDEuMTIsLTEyOC4xNzUgdiAzMy41NTQgbCAtMTY5LjM4LC0yNS45MTggYyAtNTEuODgsLTcuNjM2IC05My4wOCwtMzYuNjQgLTkzLjA4LC05NC42MTcgMCwtNDQuMjY5IDMyLjA1LC04Ni45ODQgOTcuNjcsLTg2Ljk4NCA4NS40NCwwIDE2NC43OSw0MS4xOTEgMTY0Ljc5LDE3My45NjUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMTE5MS44Miw5NTEuNDAyIGMgMCw1NSA...
-      alt="Inecta Logo">
-      <button id="newChatBtn" title="Start a new conversation">New Chat</button>
+      <div class="logo">INECTA</div>
+      <button id="newChatBtn">NEW CHAT</button>
     </div>
-    <div id="topicTracker" class="topic-tracker"></div>
-    <div id="chat" class="chat"></div>
+    
+    <div class="topic-tracker">
+      <div class="topic-item status-completed">Company Overview</div>
+      <div class="topic-item status-completed">Business Model</div>
+      <div class="topic-item status-in-progress">Key Personnel</div>
+      <div class="topic-item status-not-started">Financials</div>
+      <div class="topic-item status-not-started">Competition</div>
+      <div class="topic-item status-not-started">Risks</div>
+    </div>
+    
+    <div class="chat" id="chatContainer">
+      <div class="msg bot">Welcome to Inecta Discovery Assistant! I'm here to help you explore business opportunities and gather intelligence. What would you like to know about today?</div>
+    </div>
+    
+    <div class="typing-indicator" id="typingIndicator">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    
     <div class="input-container">
-        <div id="attachmentDisplay"></div>
-        <div class="input-area">
-            <input id="messageInput" type="text" placeholder="Type your message..." autofocus/>
-            
-            <input type="file" id="fileUploader" style="display: none;" accept=".txt,.md,.pdf,.doc,.docx, .xlsx, .xls, .csv"/>
-            <button id="uploadButton" title="Upload a document">
-                <svg xmlns="http://www.w.3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-            </button>
-
-            <button id="sendButton" title="Send message">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-            </button>
-
-            <button id="reportButton">VIEW REPORT</button>
-            <button id="scheduleButton">SCHEDULE A CALL</button>
-        </div>
+      <div id="attachmentDisplay"></div>
+      <div class="input-area">
+        <input type="text" id="messageInput" placeholder="Type your message..." />
+        <button class="action-button" id="uploadButton" title="Upload file">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+          </svg>
+        </button>
+        <button class="action-button" id="sendButton" title="Send message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+      <div class="action-buttons-container">
+        <button id="reportButton">Generate Report</button>
+        <button id="scheduleButton">Schedule Meeting</button>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv" />
     </div>
   </div>
 
   <script>
+    // State management
+    let conversationHistory = [];
+    let currentTopics = {
+      'Company Overview': 'completed',
+      'Business Model': 'completed',
+      'Key Personnel': 'in-progress',
+      'Financials': 'not-started',
+      'Competition': 'not-started',
+      'Risks': 'not-started'
+    };
+    let attachedFile = null;
+
+    // DOM elements
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const uploadButton = document.getElementById('uploadButton');
+    const fileInput = document.getElementById('fileInput');
+    const attachmentDisplay = document.getElementById('attachmentDisplay');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const reportButton = document.getElementById('reportButton');
+    const scheduleButton = document.getElementById('scheduleButton');
+
+    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
-      // --- CONFIGURATION ---
-      const config = {
-        webhookUrl: 'YOUR_NEW_N8N_WEBHOOK_URL', // <<< IMPORTANT: REPLACE THIS URL
-        reportWebhookUrl: 'YOUR_REPORT_WEBHOOK_URL', // (Optional) Replace if you have a report generator
-        scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
-      };
-      const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
-      const INITIAL_TOPICS = [
-        {"name": "Company Background", "status": "Not Started"},
-        {"name": "Business Scale", "status": "Not Started"},
-        {"name": "Finance & Costing", "status": "Not Started"},
-        {"name": "Purchasing", "status": "Not Started"},
-        {"name": "Core Operations", "status": "Not Started"},
-        {"name": "Sales & Logistics", "status": "Not Started"},
-        {"name": "Current Pains & Future Needs", "status": "Not Started"},
-        {"name": "Reporting & Analytics", "status": "Not Started"}
-      ];
+      messageInput.focus();
+      updateTopicDisplay();
+    });
+
+    // Event listeners
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    uploadButton.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileUpload);
+    newChatBtn.addEventListener('click', startNewChat);
+    reportButton.addEventListener('click', generateReport);
+    scheduleButton.addEventListener('click', scheduleMeeting);
+
+    // Topic items click handler
+    document.querySelectorAll('.topic-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const topicName = this.textContent;
+        messageInput.value = `Tell me about the ${topicName}`;
+        sendMessage();
+      });
+    });
+
+    function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message) return;
+
+      // Add user message
+      addMessage(message, 'user');
+      conversationHistory.push({ role: 'user', content: message });
       
-      // --- DOM ELEMENTS ---
-      const elements = {
-        chat: document.getElementById('chat'),
-        input: document.getElementById('messageInput'),
-        sendButton: document.getElementById('sendButton'),
-        reportButton: document.getElementById('reportButton'),
-        scheduleButton: document.getElementById('scheduleButton'),
-        topicTracker: document.getElementById('topicTracker'),
-        uploadButton: document.getElementById('uploadButton'),
-        fileUploader: document.getElementById('fileUploader'),
-        newChatButton: document.getElementById('newChatBtn'),
-        attachmentDisplay: document.getElementById('attachmentDisplay'),
-      };
+      // Clear input and attachment
+      messageInput.value = '';
+      if (attachedFile) {
+        attachedFile = null;
+        attachmentDisplay.classList.remove('active');
+        attachmentDisplay.textContent = '';
+      }
+
+      // Show typing indicator
+      showTyping();
+
+      // Simulate bot response
+      setTimeout(() => {
+        const response = generateBotResponse(message);
+        hideTyping();
+        addMessage(response, 'bot');
+        conversationHistory.push({ role: 'bot', content: response });
+        
+        // Update topics based on conversation
+        updateTopicsBasedOnConversation(message);
+        
+        // Show action buttons after certain topics
+        checkForActionButtons();
+      }, 1500);
+    }
+
+    function addMessage(content, sender) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg ${sender}`;
+      msgDiv.textContent = content;
+      chatContainer.appendChild(msgDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTyping() {
+      typingIndicator.classList.add('active');
+      chatContainer.appendChild(typingIndicator);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function hideTyping() {
+      typingIndicator.classList.remove('active');
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        attachedFile = file;
+        attachmentDisplay.textContent = `📎 Attached: ${file.name}`;
+        attachmentDisplay.classList.add('active');
+      }
+    }
+
+    function generateBotResponse(message) {
+      const lowerMessage = message.toLowerCase();
       
-      // --- STATE MANAGEMENT ---
-      let sessionId = null;
-      let selectedFile = null;
-
-      // --- CORE FUNCTIONS ---
-      function getSessionId(forceNew = false) {
-        if (sessionId && !forceNew) return sessionId;
-
-        let storedId = localStorage.getItem('inecta_chat_session_id');
-        if (!storedId || forceNew) {
-          storedId = crypto.randomUUID();
-          localStorage.setItem('inecta_chat_session_id', storedId);
-        }
-        sessionId = storedId;
-        return sessionId;
+      if (lowerMessage.includes('company overview')) {
+        return "The target company is a technology firm specializing in cloud infrastructure solutions. Founded in 2015, they've grown to serve over 500 enterprise clients across North America. Their primary focus is on providing scalable, secure cloud migration and management services.";
+      } else if (lowerMessage.includes('business model')) {
+        return "The company operates on a SaaS subscription model with three tiers: Basic, Professional, and Enterprise. Revenue streams include monthly subscriptions (70%), professional services (20%), and training/certification programs (10%). Average contract value is $125,000 annually.";
+      } else if (lowerMessage.includes('key personnel')) {
+        return "CEO: Sarah Johnson (ex-AWS, 15 years experience)\nCTO: Michael Chen (ex-Google, 12 years experience)\nCFO: Robert Williams (ex-Deloitte, 18 years experience)\n\nThe leadership team has strong industry credentials and a proven track record in scaling technology companies.";
+      } else if (lowerMessage.includes('financial')) {
+        return "Based on available data:\n• Annual Revenue: $45M (2023)\n• Growth Rate: 35% YoY\n• EBITDA Margin: 22%\n• Customer Retention: 94%\n• Burn Rate: Currently cash flow positive\n\nWould you like me to dive deeper into any specific financial metrics?";
+      } else if (lowerMessage.includes('competition')) {
+        return "Main competitors include:\n1. CloudForce (Market leader, $2B valuation)\n2. NexGen Cloud ($500M valuation)\n3. Several regional players\n\nThe company differentiates through superior customer service and specialized vertical solutions for healthcare and finance sectors.";
+      } else if (lowerMessage.includes('risk')) {
+        return "Key risks identified:\n• Dependency on AWS infrastructure (60% of operations)\n• Customer concentration (top 10 clients = 40% revenue)\n• Talent retention in competitive market\n• Regulatory compliance in healthcare vertical\n• Technology disruption from AI-native competitors";
+      } else {
+        return "I can help you explore various aspects of this opportunity. Try asking about specific topics like financials, competition, key personnel, or risks. You can also click on any topic above to learn more.";
       }
+    }
 
-      function startNewChat() {
-        const currentSessionId = getSessionId();
-        localStorage.removeItem(`chatHistory_${currentSessionId}`);
-        localStorage.removeItem(`topics_${currentSessionId}`);
-        
-        elements.chat.innerHTML = '';
-        elements.topicTracker.innerHTML = '';
-        removeAttachment();
-        
-        initializeSession(true);
-      }
-
-      function renderMessage(role, content, save = true) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `msg ${role}`;
-        
-        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        content = content.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
-        msgDiv.innerHTML = content.trim(); 
-        
-        elements.chat.appendChild(msgDiv);
-        scrollToBottom();
-
-        if (save) {
-          const history = getChatHistory();
-          history.push({ role, content });
-          saveChatHistory(history);
-        }
-      }
-
-      function updateTopicTracker(newTopics = []) {
-        if (!newTopics || newTopics.length === 0) return;
-        
-        localStorage.setItem(`topics_${getSessionId()}`, JSON.stringify(newTopics));
-        
-        elements.topicTracker.innerHTML = '';
-        newTopics.forEach(topic => {
-          const topicDiv = document.createElement('div');
-          topicDiv.className = 'topic-item';
-          const statusClass = `status-${topic.status.toLowerCase().replace(/\s+/g, '-')}`;
-          topicDiv.classList.add(statusClass);
-          topicDiv.textContent = topic.status === 'Completed' ? `✓ ${topic.name}` : topic.name;
-          elements.topicTracker.appendChild(topicDiv);
-        });
-      }
+    function updateTopicsBasedOnConversation(message) {
+      const lowerMessage = message.toLowerCase();
       
-      function setUiLoadingState(isLoading) {
-        if (isLoading) {
-            elements.sendButton.disabled = true;
-            elements.uploadButton.disabled = true;
-            const indicator = document.createElement('div');
-            indicator.id = 'typingIndicator';
-            indicator.className = 'msg bot typing-indicator';
-            indicator.innerHTML = '<span></span><span></span><span></span>';
-            elements.chat.appendChild(indicator);
-            scrollToBottom();
-        } else {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.remove();
-            elements.sendButton.disabled = false;
-            elements.uploadButton.disabled = false;
-            elements.input.focus();
-        }
-      }
-
-      function scrollToBottom() {
-        elements.chat.scrollTop = elements.chat.scrollHeight;
-      }
-
-      // --- LOCAL STORAGE HELPERS ---
-      function getChatHistory() {
-        const saved = localStorage.getItem(`chatHistory_${getSessionId()}`);
-        return saved ? JSON.parse(saved) : [];
-      }
-
-      function saveChatHistory(history) {
-        localStorage.setItem(`chatHistory_${getSessionId()}`, JSON.stringify(history));
-      }
-
-      function loadSessionState() {
-        const history = getChatHistory();
-        const topicsRaw = localStorage.getItem(`topics_${getSessionId()}`);
-        const topics = topicsRaw ? JSON.parse(topicsRaw) : INITIAL_TOPICS;
-
-        elements.chat.innerHTML = '';
-        if (history.length > 0) {
-            history.forEach(msg => renderMessage(msg.role, msg.content, false));
-        } else {
-            renderMessage('bot', INTRO_MESSAGE, true);
-        }
-        updateTopicTracker(topics);
-      }
-      
-      // --- NEW ATTACHMENT UI FUNCTIONS ---
-      function updateAttachmentDisplay() {
-        if (selectedFile) {
-            elements.attachmentDisplay.style.display = 'inline-block';
-            elements.attachmentDisplay.innerHTML = `
-                <span>${selectedFile.name}</span>
-                <button style="margin-left: 10px; cursor:pointer; border:none; background:none;" onclick="removeAttachment()">✖</button>
-            `;
-        } else {
-            elements.attachmentDisplay.style.display = 'none';
-            elements.attachmentDisplay.innerHTML = '';
-        }
-      }
-      
-      window.removeAttachment = () => {
-        selectedFile = null;
-        elements.fileUploader.value = ''; // Clear the file input's memory
-        updateAttachmentDisplay();
-      };
-
-
-      // --- NEW UNIFIED SEND FUNCTION ---
-      async function sendMessage() {
-        const userContent = elements.input.value.trim();
-        if (!userContent && !selectedFile) return;
-
-        renderMessage('user', userContent || `<em>Sent file: ${selectedFile.name}</em>`);
-        elements.input.value = '';
-        setUiLoadingState(true);
-        
-        const formData = new FormData();
-        formData.append('session_id', getSessionId());
-        formData.append('message', userContent);
-        if (selectedFile) {
-          formData.append('fileUploader', selectedFile);
-        }
-
-        try {
-          const response = await fetch(config.webhookUrl, {
-            method: 'POST',
-            body: formData,
-          });
-
-          if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+      Object.keys(currentTopics).forEach(topic => {
+        if (lowerMessage.includes(topic.toLowerCase())) {
+          // Mark topic as completed
+          currentTopics[topic] = 'completed';
           
-          const responseData = await response.json();
-          renderMessage('bot', responseData.reply);
-          
-          if (responseData.topics) {
-            updateTopicTracker(responseData.topics);
+          // Mark next topic as in-progress
+          const topics = Object.keys(currentTopics);
+          const currentIndex = topics.indexOf(topic);
+          if (currentIndex < topics.length - 1) {
+            const nextTopic = topics[currentIndex + 1];
+            if (currentTopics[nextTopic] === 'not-started') {
+              currentTopics[nextTopic] = 'in-progress';
+            }
           }
-
-          if (responseData.isDiscoveryComplete === true) {
-            showCompletionControls(true);
-          }
-          
-        } catch (error) {
-          console.error('Chat Fetch error:', error);
-          renderMessage('bot', 'Sorry, there was an error connecting. Please try again.', false);
-        } finally {
-          setUiLoadingState(false);
-          removeAttachment();
-        }
-      }
-      
-      async function handleViewReport() {
-        elements.reportButton.textContent = 'GENERATING...';
-        elements.reportButton.disabled = true;
-        try {
-          const response = await fetch(config.reportWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: getSessionId() })
-          });
-          if (!response.ok) throw new Error(`Report Error: ${response.statusText}`);
-          
-          const reportHtml = await response.text();
-          const reportWindow = window.open();
-          if (reportWindow) {
-            reportWindow.document.write(reportHtml);
-            reportWindow.document.close();
-          } else {
-            renderMessage('bot', '<em>Please allow pop-ups to view the report.</em>', false);
-          }
-        } catch (error) {
-          console.error('Report Fetch error:', error);
-          renderMessage('bot', '<em>Could not generate the report at this time.</em>', false);
-        } finally {
-          elements.reportButton.textContent = 'VIEW REPORT';
-          elements.reportButton.disabled = false;
-        }
-      }
-
-      function showCompletionControls(isComplete) {
-        if (isComplete) {
-            elements.reportButton.style.display = 'inline-block';
-            elements.scheduleButton.style.display = 'inline-block';
-            elements.sendButton.style.display = 'none';
-            elements.uploadButton.style.display = 'none';
-            elements.input.style.display = 'none';
-        } else {
-            elements.reportButton.style.display = 'none';
-            elements.scheduleButton.style.display = 'none';
-            elements.sendButton.style.display = 'inline-flex';
-            elements.uploadButton.style.display = 'inline-flex';
-            elements.input.style.display = 'block';
-        }
-      }
-
-      // --- INITIALIZATION & EVENT LISTENERS ---
-      function initializeSession(isNewChat = false) {
-        const currentSessionId = getSessionId(isNewChat);
-        const history = getChatHistory();
-        
-        if (isNewChat || history.length === 0) {
-          elements.chat.innerHTML = ''; 
-          renderMessage('bot', INTRO_MESSAGE, true);
-          updateTopicTracker(INITIAL_TOPICS);
-        } else {
-          loadSessionState();
-        }
-        showCompletionControls(false);
-      }
-
-      elements.sendButton.addEventListener('click', sendMessage);
-      elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) sendMessage(); });
-      elements.reportButton.addEventListener('click', handleViewReport);
-      elements.scheduleButton.addEventListener('click', () => window.open(config.scheduleUrl, '_blank'));
-      elements.uploadButton.addEventListener('click', () => elements.fileUploader.click());
-      elements.fileUploader.addEventListener('change', (event) => {
-        if (event.target.files.length > 0) {
-          selectedFile = event.target.files[0];
-          updateAttachmentDisplay();
         }
       });
-      elements.newChatButton.addEventListener('click', startNewChat);
+      
+      updateTopicDisplay();
+    }
 
-      initializeSession();
-    });
+    function updateTopicDisplay() {
+      document.querySelectorAll('.topic-item').forEach(item => {
+        const topicName = item.textContent;
+        const status = currentTopics[topicName];
+        
+        // Remove all status classes
+        item.classList.remove('status-not-started', 'status-in-progress', 'status-completed');
+        
+        // Add appropriate status class
+        item.classList.add(`status-${status.replace(' ', '-')}`);
+      });
+    }
+
+    function checkForActionButtons() {
+      const completedCount = Object.values(currentTopics).filter(status => status === 'completed').length;
+      
+      if (completedCount >= 4) {
+        reportButton.classList.add('active');
+      }
+      
+      if (completedCount >= 5) {
+        scheduleButton.classList.add('active');
+      }
+    }
+
+    function startNewChat() {
+      // Clear chat
+      chatContainer.innerHTML = '<div class="msg bot">Welcome to Inecta Discovery Assistant! I\'m here to help you explore business opportunities and gather intelligence. What would you like to know about today?</div>';
+      
+      // Reset topics
+      currentTopics = {
+        'Company Overview': 'not-started',
+        'Business Model': 'not-started',
+        'Key Personnel': 'not-started',
+        'Financials': 'not-started',
+        'Competition': 'not-started',
+        'Risks': 'not-started'
+      };
+      
+      // Reset conversation history
+      conversationHistory = [];
+      
+      // Hide action buttons
+      reportButton.classList.remove('active');
+      scheduleButton.classList.remove('active');
+      
+      // Update display
+      updateTopicDisplay();
+      messageInput.focus();
+    }
+
+    function generateReport() {
+      addMessage("Generating comprehensive discovery report...", 'bot');
+      setTimeout(() => {
+        addMessage("Report generated! The discovery report has been compiled with all gathered information about the target company. It includes executive summary, detailed analysis of all topics discussed, and recommended next steps. The report has been saved to your dashboard.", 'bot');
+      }, 2000);
+    }
+
+    function scheduleMeeting() {
+      addMessage("Opening calendar to schedule follow-up meeting...", 'bot');
+      setTimeout(() => {
+        addMessage("Meeting scheduler opened! Please select your preferred time slots for the discovery review meeting. An invitation will be sent to all stakeholders once confirmed.", 'bot');
+      }, 1500);
+    }
   </script>
 </body>
 </html>
