@@ -28,36 +28,29 @@
       --font-heading: 'Open Sans', sans-serif;
       --font-body: 'Verdana', sans-serif;
     }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
     body {
       font-family: var(--font-body);
       background: var(--background-light);
       color: var(--body-text-color);
       padding: 20px;
+      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      box-sizing: border-box;
     }
-    
     .container {
       width: 100%;
       max-width: 800px;
-      height: 90vh;
       display: flex;
       flex-direction: column;
+      height: 100%;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
       border-radius: 16px;
       overflow: hidden;
       background: #FFFFFF;
     }
-    
     .header {
       padding: 15px 20px;
       background: #FFFFFF;
@@ -66,15 +59,10 @@
       justify-content: space-between;
       align-items: center;
     }
-    
-    .logo {
-      font-family: var(--font-heading);
-      font-weight: 700;
-      font-size: 20px;
-      color: var(--inecta-green);
-      letter-spacing: 2px;
+    .header img {
+      height: 28px;
+      width: auto;
     }
-    
     #newChatBtn {
       padding: 6px 12px;
       font-size: 12px;
@@ -87,11 +75,9 @@
       cursor: pointer;
       transition: background-color 0.2s ease;
     }
-    
     #newChatBtn:hover {
       background-color: var(--dark-grey);
     }
-    
     .topic-tracker { 
       display: flex; 
       flex-wrap: wrap; 
@@ -99,9 +85,7 @@
       padding: 15px 20px;
       justify-content: center;
       border-bottom: 1px solid var(--border-color);
-      background: #FFFFFF;
     }
-    
     .topic-item { 
       padding: 6px 12px; 
       border-radius: 15px; 
@@ -109,31 +93,16 @@
       font-family: var(--font-heading);
       font-weight: 700;
       transition: all 0.3s ease; 
-      position: relative;
+      border: 1px solid transparent; 
     }
-    
-    .status-not-started { 
-      background-color: #E0E0E0; 
-      color: #616161; 
-    }
-    
-    .status-in-progress { 
-      background-color: var(--inecta-tan); 
-      color: var(--inecta-green); 
-      animation: pulse-tan 2s infinite; 
-    }
-    
-    .status-completed { 
-      background-color: var(--inecta-green); 
-      color: #FFFFFF; 
-    }
-    
+    .status-not-started { background-color: #E0E0E0; color: #616161; }
+    .status-in-progress { background-color: var(--inecta-tan); color: var(--inecta-green); animation: pulse-tan 2s infinite; }
+    .status-completed { background-color: var(--inecta-green); color: #FFFFFF; }
     @keyframes pulse-tan {
       0% { box-shadow: 0 0 0 0 rgba(222, 207, 158, 0.7); }
       70% { box-shadow: 0 0 0 8px rgba(222, 207, 158, 0); }
       100% { box-shadow: 0 0 0 0 rgba(222, 207, 158, 0); }
     }
-    
     .chat {
       padding: 30px;
       flex-grow: 1;
@@ -143,25 +112,10 @@
       gap: 15px;
       background-color: var(--background-light);
     }
-    
-    .chat::-webkit-scrollbar { 
-      width: 8px; 
-    }
-    
-    .chat::-webkit-scrollbar-track { 
-      background: var(--background-light); 
-      border-radius: 4px; 
-    }
-    
-    .chat::-webkit-scrollbar-thumb { 
-      background-color: #d4d4d4; 
-      border-radius: 4px; 
-    }
-    
-    .chat::-webkit-scrollbar-thumb:hover { 
-      background-color: var(--dark-grey); 
-    }
-    
+    .chat::-webkit-scrollbar { width: 8px; }
+    .chat::-webkit-scrollbar-track { background: var(--background-light); border-radius: 4px; }
+    .chat::-webkit-scrollbar-thumb { background-color: #d4d4d4; border-radius: 4px; }
+    .chat::-webkit-scrollbar-thumb:hover { background-color: var(--dark-grey); }
     .msg {
       padding: 12px 18px;
       border-radius: 20px;
@@ -169,21 +123,13 @@
       max-width: 80%;
       white-space: pre-wrap;
       word-wrap: break-word;
-      animation: fadeIn 0.3s ease;
     }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
     .user {
       background-color: var(--user-bubble-bg);
       color: #FFFFFF;
       border-bottom-right-radius: 5px;
       align-self: flex-end;
     }
-    
     .bot {
       background-color: var(--bot-bubble-bg);
       color: var(--body-text-color);
@@ -191,70 +137,41 @@
       border-bottom-left-radius: 5px;
       align-self: flex-start;
     }
-    
     .typing-indicator {
-      display: none;
+      display: flex;
       align-items: center;
       padding: 12px 18px;
-      background-color: var(--bot-bubble-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      border-bottom-left-radius: 5px;
-      align-self: flex-start;
-      max-width: 80px;
     }
-    
-    .typing-indicator.active {
-      display: flex;
-    }
-    
     .typing-indicator span {
-      height: 8px; 
-      width: 8px; 
-      background-color: #BDBDBD;
-      border-radius: 50%; 
-      display: inline-block; 
-      margin: 0 2px;
+      height: 8px; width: 8px; background-color: #BDBDBD;
+      border-radius: 50%; display: inline-block; margin: 0 2px;
       animation: bounce 1.4s infinite ease-in-out both;
     }
-    
-    .typing-indicator span:nth-of-type(2) { 
-      animation-delay: -0.2s; 
-    }
-    
-    .typing-indicator span:nth-of-type(3) { 
-      animation-delay: -0.4s; 
-    }
-    
+    .typing-indicator span:nth-of-type(2) { animation-delay: -0.2s; }
+    .typing-indicator span:nth-of-type(3) { animation-delay: -0.4s; }
     @keyframes bounce {
       0%, 80%, 100% { transform: scale(0); }
       40% { transform: scale(1.0); }
     }
-    
     .input-container {
-      padding: 20px;
-      border-top: 1px solid var(--border-color);
-      background: #FFFFFF;
+        padding: 20px;
+        border-top: 1px solid var(--border-color);
+        background: #FFFFFF;
     }
-    
-    #attachmentDisplay {
-      font-size: 12px;
-      font-style: italic;
-      margin-bottom: 8px;
-      color: var(--dark-grey);
-      display: none;
-    }
-    
-    #attachmentDisplay.active {
-      display: block;
-    }
-    
     .input-area {
       display: flex;
       gap: 10px;
       align-items: center;
     }
-    
+     #attachmentDisplay { /* NEW: For showing the attached file */
+      font-size: 12px;
+      font-style: italic;
+      margin-bottom: 8px;
+      padding: 5px 10px;
+      background-color: #f0f0f0;
+      border-radius: 12px;
+      display: none; /* Hidden by default */
+    }
     #messageInput {
       flex-grow: 1;
       padding: 12px 18px;
@@ -264,21 +181,13 @@
       color: var(--body-text-color);
       font-size: 16px;
       font-family: var(--font-body);
-      transition: all 0.2s ease;
     }
-    
     #messageInput:focus {
-      outline: none;
-      border-color: var(--inecta-teal);
-      box-shadow: 0 0 0 2px rgba(0, 204, 204, 0.2);
+        outline: none;
+        border-color: var(--inecta-teal);
+        box-shadow: 0 0 0 2px rgba(0, 204, 204, 0.2);
     }
-    
-    #messageInput:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    .action-button {
+    #sendButton, #uploadButton {
       background-color: var(--inecta-teal);
       color: #000000;
       border: none;
@@ -292,414 +201,345 @@
       transition: all 0.2s ease;
       flex-shrink: 0;
     }
-    
-    .action-button:disabled {
+    #reportButton, #scheduleButton {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      font-size: 16px;
+      white-space: nowrap;
+      background-color: var(--inecta-green);
+      color: #FFFFFF;
+      display: none; /* Hidden by default */
+      flex-grow: 1;
+    }
+    #sendButton:disabled, #uploadButton:disabled {
       background-color: #BDBDBD;
       cursor: not-allowed;
     }
-    
-    .action-button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    #fileInput {
-      display: none;
-    }
-    
-    .error-message {
-      background-color: #ffebee;
-      color: #c62828;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-    
-    .success-message {
-      background-color: #e8f5e9;
-      color: #2e7d32;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-    
-    .session-info {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      font-size: 10px;
-      color: #999;
-      font-family: monospace;
+    #sendButton:hover:not(:disabled), #uploadButton:hover:not(:disabled), #reportButton:hover:not(:disabled), #scheduleButton:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <div class="header">
-      <div class="logo">INECTA</div>
-      <button id="newChatBtn">NEW SESSION</button>
+      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcyIgogICB3aWR0aD0iNjM1Ljc5OTk5IgogICBoZWlnaHQ9IjE0MC4yOTMzMyIKICAgdmlld0JveD0iMCAwIDYzNS43OTk5OSAxNDAuMjkzMzMiCiAgIHNvZGlwb2RpOmRvY25hbWU9IklORUNUQV9MT0dPX1BSSU1BUlkuZXBzIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnM2IiAvPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3NCIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIiAvPgogIDxnCiAgICAgaWQ9Imc4IgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaW5rc2NhcGU6bGFiZWw9Imlua19leHRfWFhYWFhYIgogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuMzMzMzMzMywwLDAsLTEuMzMzMzMzMywwLDE0MC4yOTMzMykiPgogICAgPGcKICAgICAgIGlkPSJnMTAiCiAgICAgICB0cmFuc2Zvcm09InNjYWxlKDAuMSkiPgogICAgICA8cGF0aAogICAgICAgICBkPSJNIDk4OS41OTgsNzcyLjY2NCBIIDExOTIuNTUgViAyMi44Nzg5IEggOTg5LjU5OCBWIDc3My42NjQiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Ik0gMTQ5MC4xMiwyMi44NzExIEggMTI4Ny4xNyBWIDc3My42NTYgaCAxOTYuODQgdiAtOTMuMDkzIGMgNDUuNzcsNzcuODUxIDEzNS44MiwxMTIuOTI5IDIxNi43LDExMi4yMjkgMTg2LjE2LDAgMjcxLjYxLC0xMzIuNzYyIDI3MS42MSwtMjk3LjU2MiBWIDIyLjg3MTEgSCAxNzY5LjM4IFYgNDYwLjg1MiBjIDAsODMuOTE4IC00MS4yMSwxNDkuNTQzIC0xMzguODcsMTQ5LjU0MyAtODguNSwwIC0xNDAuMzksLTY4LjY3MiAtMTQwLjM5LC0xNTUuNjc2IFYgMjIuODcxMSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgxNCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0iTSAyNzU5Ljc3LDIzOC4wMiBDIDI3MjEuNjMsMTA4LjMzMiAyNjAyLjU5LDAgMjQxNy45NiwwIGMgLTIwNi4wMiwwIC0zODcuNTksMTQ4IC0zODcuNTksNDAxLjMyIDAsMjM5LjU5IDE3NywzOTUuMjM1IDM2OS4yOCwzOTUuMjM1IDIyMS45NCwwIDM3MC44LC0xNDguMDIgMzcwLjgsLTM4OS4xMjkgMCwtMjguOTg1IC0zLjA0LC01OS41MjQgLTMuMDQsLTYyLjU3MSBoIC01MzcuMTYgYyA0LjU5LC05OS4xNzkgODguNTEsLTE3MC44ODYgMTg5LjIzLC0xNzAuODg2IDk0LjYyLDAgMTQ2LjUsNDcuMjg1IDE3MC45LDExNC40NDAgeiBtIC0xODkuMjIsMjQ1LjcwMyBjIC0zLjA1LDc0Ljc4OSAtNTEuODcsMTQ4LjAyMyAtMTY3Ljg2LDE0OC4wMjMgLTEwNS4zMSwwIC0xNjMuMjgsLTc5LjM0IC0xNjcuODUsLTE0OC4wMjMgaCAzMzUuNzEiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMTYiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMzA0Ni42OSwzOTguMjczIGMgMCwtMTM1LjgxOCA4OC41LC0yMTIuMTI4IDE5Mi4yNywtMjEyLjEyOCAxMDMuNzcsMCAxNTUuNjYsNjguNjcxIDE3Mi40NCwxMjYuNjYgbCAxNzguNTQsLTU5LjUxMiBDIDM1NTYuMzksMTI4LjE3NiAzNDM4Ljg3LDAgMzIzOC45NiwwIDMwMTcuNywwIDI4NDMuNzQsMTY3Ljg0NCAyODQzLjc0LDM5OC4yNzMgYyAwLDIzMS45MzggMTcwLjksMzk4LjI2NiAzODkuMTEsMzk4LjI2NiAyMDQuNDgsMCAzMjAuNDcsLTEyNi42NDggMzUyLjUyLC0yNTMuMjg5IGwgLTE4MS41OSwtNjEuMDM5IGMgLTE4LjMzLDYyLjU1OSAtNjUuNjQsMTI2LjY0NCAtMTY2LjM2LDEyNi42NDQgLTEwMy43NSwwIC0xOTAuNzMsLTc0Ljc2OSAtMTkwLjczLC0yMTAuNTgyIgogICAgICAgICBzdHlsZT0iZmlsbDojMWY0OTNhO2ZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIgogICAgICAgICBpZD0icGF0aDE4IiAvPgogICAgICA8cGF0aAogICAgICAgICBkPSJtIDM2NzIuODIsMTA1Mi4xNiBoIDIwMS44MyBWIDc3My42NDUgaCAxNTEuMDYgViA1OTMuNjE3IEggMzg3NC4yNSBWIDI3OS4yNDIgYyAwLC02NS42MzcgMzAuNTIsLTg2Ljk2NSA4OC41LC04Ni45NjUgMjQuNDIsMCA1MS44OSwzLjAyOCA2Mi41Niw2LjA4NiBWIDMwLjUxMTcgYyAtMTguMjksLTcuNjQwNiAtNTQuOTMsLTE4LjMzMiAtMTE0LjQ0LC0xOC4zMzIgLTE0Ni40OSwwIC0yMzguMDUsODYuOTg0NCAtMjM4LjA1LDIzMS45NjUzIHYgODA4LjAxNSIKICAgICAgICAgc3R5bGU9ImZpbGw6IzFmNDkzYTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIKICAgICAgICAgaWQ9InBhdGgyMCIgLz4KICAgICAgPHBhdGgKICAgICAgICAgZD0ibSA0MzE5LjgyLDQ1NC43MyAxODQuNjUsMjcuNDY5IGMgNDIuNzMsNi4xMDYgNTYuNDcsMjcuNDgxIDU2LjQ3LDUzLjQwMyAwLDUzLjQwNiAtNDEuMjEsOTcuNjc1IC0xMjYuNjcsOTcuNjc1IC04OC40OCwwIC0xMzcuMzIsLTU2LjQ3MiAtMTQzLjQxLC0xMjIuMDkzIGwgLTE4MC4xLDM4LjE1NiBjIDEyLjIzLDExNy41MTkgMTIwLjU5LDI0Ny4yMDcgMzIxLjk5LDI0Ny4yMDcgMjM4LjA3LDAgMzI2LjU3LC0xMzQuMjg1IDMyNi41NywtMjg1LjM2MyBWIDE0MS44OTggYyAwLC0zOS42ODcgNC41NywtOTMuMDg5NCA5LjE2LC0xMTkuMDE5MSBoIC0xODYuMTkgYyAtNC41NywxOS44NTE2IC03LjYxLDYxLjA1MDggLTcuNjEsOTAuMDM1MSBDIDQ1MzYuNTEsNTMuMzkwNiA0NDY0LjgsMS41MTE3MiA0MzUzLjQsMS41MTE3MiBjIC0xNjAuMjMsMCAtMjU3Ljg4LDEwOC4zMzYyOCAtMjU3Ljg4LDIyNS44NDMyOCAwLDEzNC4yOSA5OS4xOSwyMDkuMDYzIDIyNC4zLDIyNy4zNzUgbSAyNDEuMTIsLTEyOC4xNzUgdiAzMy41NTQgbCAtMTY5LjM4LC0yNS45MTggYyAtNTEuODgsLTcuNjM2IC05My4wOCwtMzYuNjQgLTkzLjA4LC05NC42MTcgMCwtNDQuMjY5IDMyLjA1LC04Ni45ODQgOTcuNjcsLTg2Ljk4NCA4NS40NCwwIDE2NC43OSw0MS4xOTEgMTY0Ljc5LDE3My45NjUiCiAgICAgICAgIHN0eWxlPSJmaWxsOiMxZjQ5M2E7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiCiAgICAgICAgIGlkPSJwYXRoMjIiIC8+CiAgICAgIDxwYXRoCiAgICAgICAgIGQ9Im0gMTE5MS44Miw5NTEuNDAyIGMgMCw1NSA...
+      alt="Inecta Logo">
+      <button id="newChatBtn" title="Start a new conversation">New Chat</button>
     </div>
-    
-    <div class="topic-tracker" id="topicTracker">
-      <!-- Topics will be dynamically updated based on backend response -->
-    </div>
-    
-    <div class="chat" id="chatContainer">
-      <div class="msg bot">Welcome to Inecta Discovery Assistant! I'll help gather information about your business needs and requirements. You can also upload documents (PDF, Excel, or text files) to help speed up the process.</div>
-    </div>
-    
-    <div class="typing-indicator" id="typingIndicator">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-    
+    <div id="topicTracker" class="topic-tracker"></div>
+    <div id="chat" class="chat"></div>
     <div class="input-container">
-      <div id="attachmentDisplay"></div>
-      <div class="input-area">
-        <input type="text" id="messageInput" placeholder="Type your message..." />
-        <button class="action-button" id="uploadButton" title="Upload document">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
-          </svg>
-        </button>
-        <button class="action-button" id="sendButton" title="Send message">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </div>
-      <input type="file" id="fileInput" accept=".pdf,.xlsx,.xls,.csv,.txt,.md" />
+        <div id="attachmentDisplay"></div>
+        <div class="input-area">
+            <input id="messageInput" type="text" placeholder="Type your message..." autofocus/>
+            
+            <input type="file" id="fileUploader" style="display: none;" accept=".txt,.md,.pdf,.doc,.docx, .xlsx, .xls, .csv"/>
+            <button id="uploadButton" title="Upload a document">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+            </button>
+
+            <button id="sendButton" title="Send message">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+
+            <button id="reportButton">VIEW REPORT</button>
+            <button id="scheduleButton">SCHEDULE A CALL</button>
+        </div>
     </div>
-    <div class="session-info" id="sessionInfo"></div>
   </div>
 
   <script>
-    // Configuration - UPDATE THIS WITH YOUR ACTUAL WEBHOOK URL
-    const WEBHOOK_URL = 'https://inecta.app.n8n.cloud/webhook/chat-handler'; // Replace with your actual webhook URL
-    
-    // State management
-    let sessionId = null;
-    let isProcessing = false;
-    let attachedFile = null;
-    
-    // DOM elements
-    const chatContainer = document.getElementById('chatContainer');
-    const messageInput = document.getElementById('messageInput');
-    const sendButton = document.getElementById('sendButton');
-    const uploadButton = document.getElementById('uploadButton');
-    const fileInput = document.getElementById('fileInput');
-    const attachmentDisplay = document.getElementById('attachmentDisplay');
-    const typingIndicator = document.getElementById('typingIndicator');
-    const newChatBtn = document.getElementById('newChatBtn');
-    const topicTracker = document.getElementById('topicTracker');
-    const sessionInfo = document.getElementById('sessionInfo');
-    
-    // Initialize session
-    function initializeSession() {
-      // Generate a UUID v4 for the session
-      sessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-      
-      sessionInfo.textContent = `Session: ${sessionId.slice(0, 8)}...`;
-      
-      // Store in localStorage for persistence
-      localStorage.setItem('inecta_session_id', sessionId);
-      localStorage.setItem('inecta_session_start', new Date().toISOString());
-    }
-    
-    // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
-      // Try to restore existing session
-      const storedSessionId = localStorage.getItem('inecta_session_id');
-      const sessionStart = localStorage.getItem('inecta_session_start');
+      // --- CONFIGURATION ---
+      const config = {
+        webhookUrl: 'YOUR_NEW_N8N_WEBHOOK_URL', // <<< IMPORTANT: REPLACE THIS URL
+        reportWebhookUrl: 'YOUR_REPORT_WEBHOOK_URL', // (Optional) Replace if you have a report generator
+        scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
+      };
+      const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
+      const INITIAL_TOPICS = [
+        {"name": "Company Background", "status": "Not Started"},
+        {"name": "Business Scale", "status": "Not Started"},
+        {"name": "Finance & Costing", "status": "Not Started"},
+        {"name": "Purchasing", "status": "Not Started"},
+        {"name": "Core Operations", "status": "Not Started"},
+        {"name": "Sales & Logistics", "status": "Not Started"},
+        {"name": "Current Pains & Future Needs", "status": "Not Started"},
+        {"name": "Reporting & Analytics", "status": "Not Started"}
+      ];
       
-      if (storedSessionId && sessionStart) {
-        // Check if session is less than 24 hours old
-        const hoursSinceStart = (new Date() - new Date(sessionStart)) / (1000 * 60 * 60);
-        if (hoursSinceStart < 24) {
-          sessionId = storedSessionId;
-          sessionInfo.textContent = `Session: ${sessionId.slice(0, 8)}...`;
+      // --- DOM ELEMENTS ---
+      const elements = {
+        chat: document.getElementById('chat'),
+        input: document.getElementById('messageInput'),
+        sendButton: document.getElementById('sendButton'),
+        reportButton: document.getElementById('reportButton'),
+        scheduleButton: document.getElementById('scheduleButton'),
+        topicTracker: document.getElementById('topicTracker'),
+        uploadButton: document.getElementById('uploadButton'),
+        fileUploader: document.getElementById('fileUploader'),
+        newChatButton: document.getElementById('newChatBtn'),
+        attachmentDisplay: document.getElementById('attachmentDisplay'),
+      };
+      
+      // --- STATE MANAGEMENT ---
+      let sessionId = null;
+      let selectedFile = null;
+
+      // --- CORE FUNCTIONS ---
+      function getSessionId(forceNew = false) {
+        if (sessionId && !forceNew) return sessionId;
+
+        let storedId = localStorage.getItem('inecta_chat_session_id');
+        if (!storedId || forceNew) {
+          storedId = crypto.randomUUID();
+          localStorage.setItem('inecta_chat_session_id', storedId);
+        }
+        sessionId = storedId;
+        return sessionId;
+      }
+
+      function startNewChat() {
+        const currentSessionId = getSessionId();
+        localStorage.removeItem(`chatHistory_${currentSessionId}`);
+        localStorage.removeItem(`topics_${currentSessionId}`);
+        
+        elements.chat.innerHTML = '';
+        elements.topicTracker.innerHTML = '';
+        removeAttachment();
+        
+        initializeSession(true);
+      }
+
+      function renderMessage(role, content, save = true) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${role}`;
+        
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        content = content.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+        msgDiv.innerHTML = content.trim(); 
+        
+        elements.chat.appendChild(msgDiv);
+        scrollToBottom();
+
+        if (save) {
+          const history = getChatHistory();
+          history.push({ role, content });
+          saveChatHistory(history);
+        }
+      }
+
+      function updateTopicTracker(newTopics = []) {
+        if (!newTopics || newTopics.length === 0) return;
+        
+        localStorage.setItem(`topics_${getSessionId()}`, JSON.stringify(newTopics));
+        
+        elements.topicTracker.innerHTML = '';
+        newTopics.forEach(topic => {
+          const topicDiv = document.createElement('div');
+          topicDiv.className = 'topic-item';
+          const statusClass = `status-${topic.status.toLowerCase().replace(/\s+/g, '-')}`;
+          topicDiv.classList.add(statusClass);
+          topicDiv.textContent = topic.status === 'Completed' ? `✓ ${topic.name}` : topic.name;
+          elements.topicTracker.appendChild(topicDiv);
+        });
+      }
+      
+      function setUiLoadingState(isLoading) {
+        if (isLoading) {
+            elements.sendButton.disabled = true;
+            elements.uploadButton.disabled = true;
+            const indicator = document.createElement('div');
+            indicator.id = 'typingIndicator';
+            indicator.className = 'msg bot typing-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            elements.chat.appendChild(indicator);
+            scrollToBottom();
         } else {
-          initializeSession();
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+            elements.sendButton.disabled = false;
+            elements.uploadButton.disabled = false;
+            elements.input.focus();
         }
-      } else {
-        initializeSession();
       }
-      
-      messageInput.focus();
-    });
-    
-    // Event listeners
-    sendButton.addEventListener('click', sendMessage);
-    messageInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey && !isProcessing) {
-        e.preventDefault();
-        sendMessage();
+
+      function scrollToBottom() {
+        elements.chat.scrollTop = elements.chat.scrollHeight;
       }
-    });
-    
-    uploadButton.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFileUpload);
-    newChatBtn.addEventListener('click', startNewSession);
-    
-    async function sendMessage() {
-      const message = messageInput.value.trim();
-      if (!message || isProcessing) return;
-      
-      isProcessing = true;
-      setUIState('disabled');
-      
-      // Add user message to chat
-      addMessage(message, 'user');
-      messageInput.value = '';
-      
-      // Show typing indicator
-      showTyping();
-      
-      try {
-        // Prepare the request body
-        const requestBody = {
-          session_id: sessionId,
-          message: message
-        };
-        
-        // Send to backend
-        const response = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody)
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
+
+      // --- LOCAL STORAGE HELPERS ---
+      function getChatHistory() {
+        const saved = localStorage.getItem(`chatHistory_${getSessionId()}`);
+        return saved ? JSON.parse(saved) : [];
+      }
+
+      function saveChatHistory(history) {
+        localStorage.setItem(`chatHistory_${getSessionId()}`, JSON.stringify(history));
+      }
+
+      function loadSessionState() {
+        const history = getChatHistory();
+        const topicsRaw = localStorage.getItem(`topics_${getSessionId()}`);
+        const topics = topicsRaw ? JSON.parse(topicsRaw) : INITIAL_TOPICS;
+
+        elements.chat.innerHTML = '';
+        if (history.length > 0) {
+            history.forEach(msg => renderMessage(msg.role, msg.content, false));
+        } else {
+            renderMessage('bot', INTRO_MESSAGE, true);
         }
-        
-        const data = await response.json();
-        
-        // Hide typing indicator
-        hideTyping();
-        
-        // Process response
-        processBackendResponse(data);
-        
-      } catch (error) {
-        console.error('Error sending message:', error);
-        hideTyping();
-        addMessage('Sorry, I encountered an error. Please try again.', 'bot');
-        showError('Failed to send message. Please check your connection.');
-      } finally {
-        isProcessing = false;
-        setUIState('enabled');
-      }
-    }
-    
-    async function handleFileUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      // Validate file size (10MB limit)
-      if (file.size > 10 * 1024 * 1024) {
-        showError('File is too large. Please upload a file smaller than 10MB.');
-        return;
+        updateTopicTracker(topics);
       }
       
-      isProcessing = true;
-      setUIState('disabled');
+      // --- NEW ATTACHMENT UI FUNCTIONS ---
+      function updateAttachmentDisplay() {
+        if (selectedFile) {
+            elements.attachmentDisplay.style.display = 'inline-block';
+            elements.attachmentDisplay.innerHTML = `
+                <span>${selectedFile.name}</span>
+                <button style="margin-left: 10px; cursor:pointer; border:none; background:none;" onclick="removeAttachment()">✖</button>
+            `;
+        } else {
+            elements.attachmentDisplay.style.display = 'none';
+            elements.attachmentDisplay.innerHTML = '';
+        }
+      }
       
-      // Show file attachment
-      attachmentDisplay.textContent = `📎 Uploading: ${file.name}...`;
-      attachmentDisplay.classList.add('active');
-      
-      try {
-        // Create FormData for file upload
+      window.removeAttachment = () => {
+        selectedFile = null;
+        elements.fileUploader.value = ''; // Clear the file input's memory
+        updateAttachmentDisplay();
+      };
+
+
+      // --- NEW UNIFIED SEND FUNCTION ---
+      async function sendMessage() {
+        const userContent = elements.input.value.trim();
+        if (!userContent && !selectedFile) return;
+
+        renderMessage('user', userContent || `<em>Sent file: ${selectedFile.name}</em>`);
+        elements.input.value = '';
+        setUiLoadingState(true);
+        
         const formData = new FormData();
-        formData.append('session_id', sessionId);
-        formData.append('fileUploader', file);
-        formData.append('message', `Uploaded file: ${file.name}`);
-        
-        // Show typing indicator
-        showTyping();
-        
-        // Send to backend
-        const response = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          body: formData
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
+        formData.append('session_id', getSessionId());
+        formData.append('message', userContent);
+        if (selectedFile) {
+          formData.append('fileUploader', selectedFile);
         }
-        
-        const data = await response.json();
-        
-        // Hide typing and update attachment display
-        hideTyping();
-        attachmentDisplay.textContent = `✅ Uploaded: ${file.name}`;
-        
-        // Show success message
-        addMessage(`I've received your file "${file.name}". Let me analyze it...`, 'bot');
-        
-        // Process the response (which should include document analysis)
-        if (data.documentAnalysis) {
-          setTimeout(() => {
-            processBackendResponse(data);
-          }, 1000);
+
+        try {
+          const response = await fetch(config.webhookUrl, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+          
+          const responseData = await response.json();
+          renderMessage('bot', responseData.reply);
+          
+          if (responseData.topics) {
+            updateTopicTracker(responseData.topics);
+          }
+
+          if (responseData.isDiscoveryComplete === true) {
+            showCompletionControls(true);
+          }
+          
+        } catch (error) {
+          console.error('Chat Fetch error:', error);
+          renderMessage('bot', 'Sorry, there was an error connecting. Please try again.', false);
+        } finally {
+          setUiLoadingState(false);
+          removeAttachment();
         }
-        
-        // Clear the file input
-        fileInput.value = '';
-        
-        // Hide attachment display after 3 seconds
-        setTimeout(() => {
-          attachmentDisplay.classList.remove('active');
-          attachmentDisplay.textContent = '';
-        }, 3000);
-        
-      } catch (error) {
-        console.error('Error uploading file:', error);
-        hideTyping();
-        showError('Failed to upload file. Please try again.');
-        attachmentDisplay.textContent = `❌ Upload failed: ${file.name}`;
-      } finally {
-        isProcessing = false;
-        setUIState('enabled');
-      }
-    }
-    
-    function processBackendResponse(data) {
-      // Add bot reply
-      if (data.reply) {
-        addMessage(data.reply, 'bot');
       }
       
-      // Update topics if provided
-      if (data.topics && Array.isArray(data.topics)) {
-        updateTopics(data.topics);
-      }
-      
-      // Check if discovery is complete
-      if (data.isDiscoveryComplete) {
-        handleDiscoveryComplete();
-      }
-      
-      // Handle document analysis summary
-      if (data.documentSummary) {
-        addMessage(data.documentSummary, 'bot');
-      }
-    }
-    
-    function updateTopics(topics) {
-      topicTracker.innerHTML = '';
-      
-      topics.forEach(topic => {
-        const topicElement = document.createElement('div');
-        topicElement.className = 'topic-item';
-        
-        // Determine status class
-        let statusClass = 'status-not-started';
-        if (topic.status === 'Completed') {
-          statusClass = 'status-completed';
-        } else if (topic.status === 'In Progress') {
-          statusClass = 'status-in-progress';
+      async function handleViewReport() {
+        elements.reportButton.textContent = 'GENERATING...';
+        elements.reportButton.disabled = true;
+        try {
+          const response = await fetch(config.reportWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: getSessionId() })
+          });
+          if (!response.ok) throw new Error(`Report Error: ${response.statusText}`);
+          
+          const reportHtml = await response.text();
+          const reportWindow = window.open();
+          if (reportWindow) {
+            reportWindow.document.write(reportHtml);
+            reportWindow.document.close();
+          } else {
+            renderMessage('bot', '<em>Please allow pop-ups to view the report.</em>', false);
+          }
+        } catch (error) {
+          console.error('Report Fetch error:', error);
+          renderMessage('bot', '<em>Could not generate the report at this time.</em>', false);
+        } finally {
+          elements.reportButton.textContent = 'VIEW REPORT';
+          elements.reportButton.disabled = false;
         }
+      }
+
+      function showCompletionControls(isComplete) {
+        if (isComplete) {
+            elements.reportButton.style.display = 'inline-block';
+            elements.scheduleButton.style.display = 'inline-block';
+            elements.sendButton.style.display = 'none';
+            elements.uploadButton.style.display = 'none';
+            elements.input.style.display = 'none';
+        } else {
+            elements.reportButton.style.display = 'none';
+            elements.scheduleButton.style.display = 'none';
+            elements.sendButton.style.display = 'inline-flex';
+            elements.uploadButton.style.display = 'inline-flex';
+            elements.input.style.display = 'block';
+        }
+      }
+
+      // --- INITIALIZATION & EVENT LISTENERS ---
+      function initializeSession(isNewChat = false) {
+        const currentSessionId = getSessionId(isNewChat);
+        const history = getChatHistory();
         
-        topicElement.classList.add(statusClass);
-        topicElement.textContent = topic.name;
-        
-        topicTracker.appendChild(topicElement);
+        if (isNewChat || history.length === 0) {
+          elements.chat.innerHTML = ''; 
+          renderMessage('bot', INTRO_MESSAGE, true);
+          updateTopicTracker(INITIAL_TOPICS);
+        } else {
+          loadSessionState();
+        }
+        showCompletionControls(false);
+      }
+
+      elements.sendButton.addEventListener('click', sendMessage);
+      elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) sendMessage(); });
+      elements.reportButton.addEventListener('click', handleViewReport);
+      elements.scheduleButton.addEventListener('click', () => window.open(config.scheduleUrl, '_blank'));
+      elements.uploadButton.addEventListener('click', () => elements.fileUploader.click());
+      elements.fileUploader.addEventListener('change', (event) => {
+        if (event.target.files.length > 0) {
+          selectedFile = event.target.files[0];
+          updateAttachmentDisplay();
+        }
       });
-    }
-    
-    function addMessage(content, sender) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `msg ${sender}`;
-      msgDiv.textContent = content;
-      chatContainer.appendChild(msgDiv);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-    
-    function showTyping() {
-      typingIndicator.classList.add('active');
-      chatContainer.appendChild(typingIndicator);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-    
-    function hideTyping() {
-      typingIndicator.classList.remove('active');
-    }
-    
-    function setUIState(state) {
-      const disabled = state === 'disabled';
-      messageInput.disabled = disabled;
-      sendButton.disabled = disabled;
-      uploadButton.disabled = disabled;
-    }
-    
-    function showError(message) {
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'error-message';
-      errorDiv.textContent = message;
-      chatContainer.appendChild(errorDiv);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-      
-      // Remove after 5 seconds
-      setTimeout(() => {
-        errorDiv.remove();
-      }, 5000);
-    }
-    
-    function showSuccess(message) {
-      const successDiv = document.createElement('div');
-      successDiv.className = 'success-message';
-      successDiv.textContent = message;
-      chatContainer.appendChild(successDiv);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-      
-      // Remove after 5 seconds
-      setTimeout(() => {
-        successDiv.remove();
-      }, 5000);
-    }
-    
-    function handleDiscoveryComplete() {
-      showSuccess('Discovery process complete! Our team will review the information and contact you soon.');
-      
-      // Optionally disable further input
-      setTimeout(() => {
-        addMessage('Thank you for completing the discovery process. A consultant will review your requirements and reach out within 24 hours with next steps.', 'bot');
-      }, 1000);
-    }
-    
-    function startNewSession() {
-      if (confirm('Start a new session? This will clear the current conversation.')) {
-        // Clear localStorage
-        localStorage.removeItem('inecta_session_id');
-        localStorage.removeItem('inecta_session_start');
-        
-        // Generate new session
-        initializeSession();
-        
-        // Clear chat
-        chatContainer.innerHTML = '<div class="msg bot">Welcome to Inecta Discovery Assistant! I\'ll help gather information about your business needs and requirements. You can also upload documents (PDF, Excel, or text files) to help speed up the process.</div>';
-        
-        // Clear topics
-        topicTracker.innerHTML = '';
-        
-        // Reset UI
-        isProcessing = false;
-        setUIState('enabled');
-        messageInput.focus();
-      }
-    }
+      elements.newChatButton.addEventListener('click', startNewChat);
+
+      initializeSession();
+    });
   </script>
 </body>
 </html>
