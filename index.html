@@ -261,8 +261,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       // --- CONFIGURATION ---
       const config = {
-        webhookUrl: 'YOUR_NEW_N8N_WEBHOOK_URL', // <<< IMPORTANT: REPLACE THIS URL
-        reportWebhookUrl: 'YOUR_REPORT_WEBHOOK_URL', // (Optional) Replace if you have a report generator
+        webhookUrl: 'https://inecta.app.n8n.cloud/webhook/chat-handler', // <<< IMPORTANT: REPLACE THIS URL
+        reportWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/generate-report', // (Optional) Replace if you have a report generator
         scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
       };
       const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
