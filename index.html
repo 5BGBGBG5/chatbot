@@ -262,7 +262,7 @@
       // --- CONFIGURATION ---
       const config = {
         webhookUrl: 'https://inecta.app.n8n.cloud/webhook/chat-handler', // <<< IMPORTANT: REPLACE THIS URL
-        reportWebhookUrl: 'https://inecta.app.n8n.cloud/webhook/generate-report', // (Optional) Replace if you have a report generator
+        // REMOVED: reportWebhookUrl is no longer needed here
         scheduleUrl: 'https://meetings.hubspot.com/daniel430/mini-rg-dan-and-sheila'
       };
       const INTRO_MESSAGE = "Hello! I'm an AI assistant from Inecta, here to help with your business requirements and gap analysis. To get started, could you please tell me your name and a bit about your company? You can also upload a document (like an RFP) at any time using the paperclip icon.";
@@ -422,7 +422,7 @@
       };
 
 
-      // --- NEW UNIFIED SEND FUNCTION ---
+      // --- UNIFIED SEND FUNCTION ---
       async function sendMessage() {
         const userContent = elements.input.value.trim();
         if (!userContent && !selectedFile) return;
@@ -452,6 +452,11 @@
           if (responseData.topics) {
             updateTopicTracker(responseData.topics);
           }
+          
+          // *** CHANGE #1: Check for the reportUrl and update the button's click action ***
+          if (responseData.reportUrl) {
+            elements.reportButton.onclick = () => window.open(responseData.reportUrl, '_blank');
+          }
 
           if (responseData.isDiscoveryComplete === true) {
             showCompletionControls(true);
@@ -466,33 +471,7 @@
         }
       }
       
-      async function handleViewReport() {
-        elements.reportButton.textContent = 'GENERATING...';
-        elements.reportButton.disabled = true;
-        try {
-          const response = await fetch(config.reportWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: getSessionId() })
-          });
-          if (!response.ok) throw new Error(`Report Error: ${response.statusText}`);
-          
-          const reportHtml = await response.text();
-          const reportWindow = window.open();
-          if (reportWindow) {
-            reportWindow.document.write(reportHtml);
-            reportWindow.document.close();
-          } else {
-            renderMessage('bot', '<em>Please allow pop-ups to view the report.</em>', false);
-          }
-        } catch (error) {
-          console.error('Report Fetch error:', error);
-          renderMessage('bot', '<em>Could not generate the report at this time.</em>', false);
-        } finally {
-          elements.reportButton.textContent = 'VIEW REPORT';
-          elements.reportButton.disabled = false;
-        }
-      }
+      // *** CHANGE #2: The handleViewReport function is no longer needed and has been removed. ***
 
       function showCompletionControls(isComplete) {
         if (isComplete) {
@@ -527,7 +506,7 @@
 
       elements.sendButton.addEventListener('click', sendMessage);
       elements.input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !elements.sendButton.disabled) sendMessage(); });
-      elements.reportButton.addEventListener('click', handleViewReport);
+      // *** CHANGE #3: Removed the old event listener for the report button. ***
       elements.scheduleButton.addEventListener('click', () => window.open(config.scheduleUrl, '_blank'));
       elements.uploadButton.addEventListener('click', () => elements.fileUploader.click());
       elements.fileUploader.addEventListener('change', (event) => {
