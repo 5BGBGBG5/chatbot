@@ -228,6 +228,59 @@
   </style>
 </head>
 <body>
+  <!-- Legal Agreement Modal -->
+<div id="legalModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <img src="data:image/svg+xml;base64,PD94bWw..." alt="Inecta Logo" class="modal-logo">
+      <h2>Terms of Use & Privacy Policy</h2>
+    </div>
+    
+    <div class="modal-content">
+      <div class="legal-text">
+        <h3>Terms of Service</h3>
+        <p>By using the Inecta Discovery Assistant, you agree to the following terms:</p>
+        
+        <h4>1. Data Collection and Use</h4>
+        <p>We collect and process business information you provide to deliver customized ERP/manufacturing software recommendations. This includes company details, operational data, and any documents you upload.</p>
+        
+        <h4>2. Confidentiality</h4>
+        <p>All information shared during this discovery process will be treated as confidential and used solely for the purpose of providing business analysis and recommendations.</p>
+        
+        <h4>3. Data Security</h4>
+        <p>We implement industry-standard security measures to protect your information. Data is encrypted in transit and at rest.</p>
+        
+        <h4>4. Document Upload</h4>
+        <p>By uploading documents, you confirm you have the right to share this information and that it does not violate any third-party rights or confidentiality agreements.</p>
+        
+        <h3>Privacy Notice</h3>
+        <p>Your session data will be retained for 90 days to allow for follow-up and report generation. You may request deletion at any time by contacting privacy@inecta.com.</p>
+        
+        <h4>Contact Information</h4>
+        <p>For questions about these terms or your data, contact us at legal@inecta.com</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <div class="consent-container">
+        <label class="checkbox-container">
+          <input type="checkbox" id="consentCheckbox">
+          <span class="checkmark"></span>
+          <span class="consent-text">I have read and agree to the Terms of Service and Privacy Policy</span>
+        </label>
+      </div>
+      
+      <div class="modal-actions">
+        <button id="declineBtn" class="btn-secondary">Decline</button>
+        <button id="acceptBtn" class="btn-primary" disabled>I Agree</button>
+      </div>
+      
+      <div class="timestamp-notice">
+        <small>Your agreement will be recorded with timestamp and IP address for compliance purposes.</small>
+      </div>
+    </div>
+  </div>
+</div>
 
   <div class="container">
     <div class="header">
